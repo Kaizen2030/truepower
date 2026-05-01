@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "editor-browser",
+            "request": "launch",
+            "name": "Open site on localhost",
+            "url": "http://127.0.0.1:5500/index.html",
+            "preLaunchTask": "Serve site on localhost"
+        }
+    ]
+}
