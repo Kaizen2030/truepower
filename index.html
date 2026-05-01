@@ -32,12 +32,28 @@
 </nav>
 
 <div class="nav-mobile-menu" id="navMobileMenu">
-  <div class="nav-mobile-links">
+  <!-- Public links (always visible) -->
+  <div class="nav-mobile-links" id="mobilePublicLinks">
     <a href="#home" data-nav="home" onclick="event.preventDefault();window.goPage('home');window.closeMobileMenu()">Home</a>
     <a href="#shop" data-nav="shop" onclick="event.preventDefault();window.goPage('shop');window.closeMobileMenu()">Shop</a>
     <a href="#about" data-nav="about" onclick="event.preventDefault();window.goPage('about');window.closeMobileMenu()">About</a>
     <a href="#wishlist" data-nav="wishlist" onclick="event.preventDefault();window.goPage('wishlist');window.closeMobileMenu()">Wishlist</a>
   </div>
+  
+  <!-- Admin links (only visible when user is admin, shown after public links) -->
+  <div class="nav-mobile-links" id="mobileAdminLinks" style="display:none;">
+    <div class="nav-mobile-divider">Admin Menu</div>
+    <a href="#admin-dashboard" onclick="event.preventDefault();window.goPage('admin');window.adminNavMobile('dashboard');window.closeMobileMenu()">📊 Dashboard</a>
+    <a href="#admin-products" onclick="event.preventDefault();window.goPage('admin');window.adminNavMobile('products');window.closeMobileMenu()">📦 All Products</a>
+    <a href="#admin-addproduct" onclick="event.preventDefault();window.goPage('admin');window.adminNavMobile('addproduct');window.closeMobileMenu()">➕ Add Product</a>
+    <a href="#admin-homepage" onclick="event.preventDefault();window.goPage('admin');window.adminNavMobile('homepage');window.closeMobileMenu()">🎨 Homepage & About</a>
+    <a href="#admin-whatsapp" onclick="event.preventDefault();window.goPage('admin');window.adminNavMobile('whatsapp');window.closeMobileMenu()">💬 WhatsApp Settings</a>
+    <a href="#admin-adminusers" onclick="event.preventDefault();window.goPage('admin');window.adminNavMobile('adminusers');window.closeMobileMenu()">👥 Manage Admins</a>
+    <a href="#admin-password" onclick="event.preventDefault();window.goPage('admin');window.adminNavMobile('password');window.closeMobileMenu()">🔐 Change Password</a>
+    <div class="nav-mobile-divider"></div>
+    <a href="#back-to-site" onclick="event.preventDefault();window.goPage('home');window.closeMobileMenu()">🏠 Back to Site</a>
+  </div>
+  
   <div class="nav-mobile-auth">
     <a id="mobileNavAdminBtn" href="#admin" onclick="event.preventDefault();window.goPage('admin');window.closeMobileMenu()" style="display:none;">Dashboard</a>
     <a id="mobileNavUserName" class="nav-mobile-user" style="display:none;"></a>

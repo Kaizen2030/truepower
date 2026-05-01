@@ -1120,7 +1120,7 @@ async function loadAdminList() {
                 </td>
                 <td>
                   <span class="admin-badge admin-badge-regular">
-                    ${admin.email === '2000kaizen@gmail.com' ? '⭐ Super Admin' : 'Admin'}
+                    Admin
                   </span>
                 </td>
                 <td style="font-size: 0.85rem;">${new Date(admin.created_at).toLocaleDateString()}</td>
@@ -1131,10 +1131,9 @@ async function loadAdminList() {
                   }
                 </td>
                 <td>
-                  ${admin.email !== currentEmail && admin.email !== '2000kaizen@gmail.com' ? `
+                  ${admin.email !== currentEmail ? `
                     <button class="btn btn-danger btn-sm" onclick="window.removeAdmin('${esc(admin.email)}')">Remove Admin</button>
-                  ` : admin.email === '2000kaizen@gmail.com' ? 
-                    '<span style="font-size:0.75rem; color:var(--text-500);">Super Admin (cannot remove)</span>' : 
+                  ` : 
                     '<span style="font-size:0.75rem; color:var(--text-500);">Current user</span>'
                   }
                 </td>

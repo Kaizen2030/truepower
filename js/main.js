@@ -29,6 +29,23 @@ window.closeMobileMenu = function() {
   setMobileMenuState(false)
 }
 
+// Update mobile menu admin links visibility
+window.updateMobileMenuAdminLinks = function() {
+  const adminLinksDiv = document.getElementById('mobileAdminLinks')
+  const isUserAdmin = document.getElementById('navAdminBtn')?.style.display !== 'none'
+  if (adminLinksDiv) {
+    adminLinksDiv.style.display = isUserAdmin ? 'flex' : 'none'
+  }
+}
+
+// Navigate to admin section from mobile menu
+window.adminNavMobile = function(section) {
+  setTimeout(() => {
+    const btn = document.querySelector(`[data-sec="${section}"]`)
+    if (btn) btn.click()
+  }, 100)
+}
+
 let login = backendUnavailable
 let logout = async () => {}
 let isAdmin = async () => false
@@ -239,7 +256,10 @@ window.goPage = function(page) {
   if (page === 'shop') renderShop()
   if (page === 'wishlist') renderWishlist()
   if (page === 'about') renderAbout()
-  if (page === 'admin') initAdmin()
+  if (page === 'admin') {
+    window.updateMobileMenuAdminLinks()
+    initAdmin()
+  }
 }
 
 window.goBack = () => window.goPage(fromPage)
@@ -980,6 +1000,7 @@ window.doLogin = async function() {
     const isUserAdmin = await isAdmin()
     
     if (isUserAdmin) {
+      window.updateMobileMenuAdminLinks()
       showMsg(msg, 'success', 'Welcome Admin! Redirecting to dashboard…')
       setTimeout(() => window.goPage('admin'), 600)
     } else {
@@ -997,6 +1018,7 @@ window.doLogin = async function() {
 window.doLogout = async function() {
   await logout()
   wishlistIds = new Set()
+  window.updateMobileMenuAdminLinks()
   window.goPage('home')
 }
 
@@ -1121,7 +1143,7 @@ async function loadAdminList() {
                 </td>
                 <td>
                   <span class="admin-badge admin-badge-regular">
-                    ${admin.email === '2000kaizen@gmail.com' ? '⭐ Super Admin' : 'Admin'}
+                    Admin
                   </span>
                 </td>
                 <td style="font-size: 0.85rem;">${new Date(admin.created_at).toLocaleDateString()}</td>
@@ -1132,10 +1154,9 @@ async function loadAdminList() {
                   }
                 </td>
                 <td>
-                  ${admin.email !== currentEmail && admin.email !== '2000kaizen@gmail.com' ? `
+                  ${admin.email !== currentEmail ? `
                     <button class="btn btn-danger btn-sm" onclick="window.removeAdmin('${esc(admin.email)}')">Remove Admin</button>
-                  ` : admin.email === '2000kaizen@gmail.com' ? 
-                    '<span style="font-size:0.75rem; color:var(--text-500);">Super Admin (cannot remove)</span>' : 
+                  ` : 
                     '<span style="font-size:0.75rem; color:var(--text-500);">Current user</span>'
                   }
                 </td>
