@@ -376,6 +376,9 @@ async function renderHome() {
       const titleEl = document.getElementById('heroTitle')
       if (titleEl) titleEl.innerHTML = titleHtml
       setEl('heroSubtitle', heroSubtitle)
+      // Proof cards
+      setEl('heroRating', hp.hero_proof2 || '4.9/5')
+      setEl('heroPickup', hp.hero_proof3 || 'Same Day')
       // Why cards
       for (let i=1;i<=4;i++) {
         setEl(`why${i}icon`, hp[`why${i}_icon`])
@@ -1790,6 +1793,9 @@ async function loadHomepageEditor() {
       document.getElementById('hpKicker').value = hp.hero_kicker||''
       document.getElementById('hpTitle').value = hp.hero_title||''
       document.getElementById('hpSubtitle').value = hp.hero_subtitle||''
+      document.getElementById('hpProof1').value = hp.hero_proof1||''
+      document.getElementById('hpProof2').value = hp.hero_proof2 || '4.9/5'
+      document.getElementById('hpProof3').value = hp.hero_proof3 || 'Same Day'
       for(let i=1;i<=4;i++) {
         const icon = document.getElementById(`adminWhy${i}icon`)
         const title = document.getElementById(`adminWhy${i}title`)
@@ -1835,7 +1841,10 @@ window.saveHomepageSection = async function(section) {
         saveHomepage({
           hero_kicker: document.getElementById('hpKicker').value,
           hero_title: document.getElementById('hpTitle').value,
-          hero_subtitle: document.getElementById('hpSubtitle').value
+          hero_subtitle: document.getElementById('hpSubtitle').value,
+          hero_proof1: document.getElementById('hpProof1').value || '22+',
+          hero_proof2: document.getElementById('hpProof2').value || '4.9/5',
+          hero_proof3: document.getElementById('hpProof3').value || 'Same Day'
         }),
         saveSetting('home_media_json', JSON.stringify(heroMedia))
       ])
