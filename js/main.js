@@ -377,6 +377,7 @@ async function renderHome() {
       if (titleEl) titleEl.innerHTML = titleHtml
       setEl('heroSubtitle', heroSubtitle)
       // Proof cards
+      setEl('heroStatProducts', hp.hero_proof1 || '22+')
       setEl('heroRating', hp.hero_proof2 || '4.9/5')
       setEl('heroPickup', hp.hero_proof3 || 'Same Day')
       // Why cards
@@ -389,7 +390,6 @@ async function renderHome() {
   } catch(e) {}
 
   const statEl = document.getElementById('heroStatProducts')
-  if (statEl) statEl.textContent = products.length + '+'
   setEl('metricProducts', products.length + '+')
 
   renderCategoryCards()
