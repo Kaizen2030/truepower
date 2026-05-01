@@ -11,6 +11,23 @@ async function backendUnavailable() {
   throw getBackendUnavailableError()
 }
 
+function setMobileMenuState(open) {
+  const menu = document.getElementById('navMobileMenu')
+  const button = document.getElementById('navHamburger')
+  if (!menu) return
+  menu.classList.toggle('open', open)
+  document.body.classList.toggle('mobile-menu-open', open)
+  if (button) button.setAttribute('aria-expanded', open ? 'true' : 'false')
+}
+
+window.toggleMobileMenu = function() {
+  const menu = document.getElementById('navMobileMenu')
+  setMobileMenuState(!(menu && menu.classList.contains('open')))
+}
+window.closeMobileMenu = function() {
+  setMobileMenuState(false)
+}
+
 let login = backendUnavailable
 let logout = async () => {}
 let isAdmin = async () => false
@@ -201,6 +218,7 @@ function refreshWishlistViews() {
 // ── Router ────────────────────────────────────────────
 window.goPage = function(page) {
   currentPage = page
+  window.closeMobileMenu()
   PAGES.forEach(p => {
     const el = document.getElementById(`page-${p}`)
     if (el) el.style.display = (p === page) ? '' : 'none'
@@ -234,6 +252,9 @@ async function boot() {
 
   syncRoute()
   window.addEventListener('hashchange', syncRoute)
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 768) window.closeMobileMenu()
+  })
 
   const backendLoaded = await ensureBackend()
 
@@ -269,16 +290,33 @@ async function boot() {
 async function updateNavAuth(session) {
   const loggedIn = !!session
   const navAdminBtn = document.getElementById('navAdminBtn')
+  const mobileNavAdminBtn = document.getElementById('mobileNavAdminBtn')
   navAdminBtn.style.display = 'none'
+  if (mobileNavAdminBtn) mobileNavAdminBtn.style.display = 'none'
   document.getElementById('navLoginBtn').style.display = loggedIn ? 'none' : ''
   document.getElementById('navRegisterBtn').style.display = loggedIn ? 'none' : ''
   document.getElementById('navLogoutBtn').style.display = loggedIn ? '' : 'none'
+  const mobileLoginBtn = document.getElementById('mobileNavLoginBtn')
+  const mobileRegisterBtn = document.getElementById('mobileNavRegisterBtn')
+  const mobileLogoutBtn = document.getElementById('mobileNavLogoutBtn')
+  if (mobileLoginBtn) mobileLoginBtn.style.display = loggedIn ? 'none' : ''
+  if (mobileRegisterBtn) mobileRegisterBtn.style.display = loggedIn ? 'none' : ''
+  if (mobileLogoutBtn) mobileLogoutBtn.style.display = loggedIn ? '' : 'none'
   const nameEl = document.getElementById('navUserName')
+  const mobileNameEl = document.getElementById('mobileNavUserName')
   if (loggedIn && session.user) {
     nameEl.style.display = ''
     nameEl.textContent = session.user.email.split('@')[0]
+    if (mobileNameEl) {
+      mobileNameEl.style.display = ''
+      mobileNameEl.textContent = `Signed in as ${session.user.email.split('@')[0]}`
+    }
   } else {
     nameEl.style.display = 'none'
+    if (mobileNameEl) {
+      mobileNameEl.style.display = 'none'
+      mobileNameEl.textContent = ''
+    }
   }
 
   if (loggedIn) {
@@ -286,8 +324,10 @@ async function updateNavAuth(session) {
     try {
       const admin = await isAdmin()
       navAdminBtn.style.display = admin ? '' : 'none'
+      if (mobileNavAdminBtn) mobileNavAdminBtn.style.display = admin ? '' : 'none'
     } catch (_e) {
       navAdminBtn.style.display = 'none'
+      if (mobileNavAdminBtn) mobileNavAdminBtn.style.display = 'none'
     }
   } else {
     wishlistIds = new Set()
@@ -302,13 +342,19 @@ async function renderHome() {
   try {
     const hp = await fetchHomepage()
     if (hp) {
-      setEl('heroKicker', hp.hero_kicker)
+      const heroKicker = hp.hero_kicker === '🔥 Hot Water Experts Since 2020'
+        ? 'Trusted Hot Water Specialists'
+        : (hp.hero_kicker || 'Trusted Hot Water Specialists')
+      const heroSubtitle = hp.hero_subtitle === "Kenya's most reliable electric showers and water heaters. Built for borehole water, low pressure, and salty conditions — so you never wake up to a cold shower again."
+        ? 'Electric showers, wall heaters, and pump-assisted systems selected for Kenyan homes, borehole water, and low-pressure plumbing.'
+        : (hp.hero_subtitle || 'Electric showers, wall heaters, and pump-assisted systems selected for Kenyan homes, borehole water, and low-pressure plumbing.')
+      setEl('heroKicker', heroKicker)
       // Title with | as line break, second segment highlighted
       const parts = (hp.hero_title || '').split('|')
       const titleHtml = parts.map((p,i) => i===1 ? `<span>${esc(p)}</span>` : esc(p)).join('<br>')
       const titleEl = document.getElementById('heroTitle')
       if (titleEl) titleEl.innerHTML = titleHtml
-      setEl('heroSubtitle', hp.hero_subtitle)
+      setEl('heroSubtitle', heroSubtitle)
       // Why cards
       for (let i=1;i<=4;i++) {
         setEl(`why${i}icon`, hp[`why${i}_icon`])

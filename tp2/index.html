@@ -26,7 +26,26 @@
     <a id="navLoginBtn" href="#login" onclick="event.preventDefault();window.goPage('login')" class="btn btn-ghost btn-sm">Sign In</a>
     <a id="navRegisterBtn" href="#register" onclick="event.preventDefault();window.goPage('register')" class="btn btn-primary btn-sm">Register</a>
   </div>
+  <button class="nav-hamburger" id="navHamburger" type="button" aria-label="Open navigation menu" aria-controls="navMobileMenu" aria-expanded="false" onclick="window.toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <div class="nav-mobile-links">
+    <a href="#home" data-nav="home" onclick="event.preventDefault();window.goPage('home');window.closeMobileMenu()">Home</a>
+    <a href="#shop" data-nav="shop" onclick="event.preventDefault();window.goPage('shop');window.closeMobileMenu()">Shop</a>
+    <a href="#about" data-nav="about" onclick="event.preventDefault();window.goPage('about');window.closeMobileMenu()">About</a>
+    <a href="#wishlist" data-nav="wishlist" onclick="event.preventDefault();window.goPage('wishlist');window.closeMobileMenu()">Wishlist</a>
+  </div>
+  <div class="nav-mobile-auth">
+    <a id="mobileNavAdminBtn" href="#admin" onclick="event.preventDefault();window.goPage('admin');window.closeMobileMenu()" style="display:none;">Dashboard</a>
+    <a id="mobileNavUserName" class="nav-mobile-user" style="display:none;"></a>
+    <a id="mobileNavLoginBtn" href="#login" onclick="event.preventDefault();window.goPage('login');window.closeMobileMenu()">Sign In</a>
+    <a id="mobileNavRegisterBtn" href="#register" onclick="event.preventDefault();window.goPage('register');window.closeMobileMenu()">Register</a>
+    <a id="mobileNavLogoutBtn" href="#" onclick="event.preventDefault();window.doLogout();window.closeMobileMenu()" style="display:none;">Sign Out</a>
+  </div>
+</div>
 
 <div id="app">
 
@@ -34,12 +53,12 @@
   <section class="hero hero-showcase">
     <div class="hero-inner hero-showcase-inner">
       <div class="hero-copy">
-        <div class="hero-kicker" id="heroKicker">🔥 Hot Water Experts Since 2020</div>
+        <div class="hero-kicker" id="heroKicker">Trusted Hot Water Specialists</div>
         <h1 id="heroTitle">Hot Water.<br><span>Every Morning.</span><br>Without the Headache.</h1>
-        <p id="heroSubtitle">Kenya's most reliable electric showers and water heaters. Built for borehole water, low pressure, and salty conditions — so you never wake up to a cold shower again.</p>
+        <p id="heroSubtitle">Electric showers, wall heaters, and pump-assisted systems selected for Kenyan homes, borehole water, and low-pressure plumbing.</p>
         <div class="hero-btns">
-          <button class="btn btn-primary btn-lg" onclick="window.goPage('shop')">📦 Browse Products →</button>
-          <button class="btn btn-outline btn-lg" onclick="window.openWA()">💬 Chat with Expert →</button>
+          <button class="btn btn-primary btn-lg" onclick="window.goPage('shop')">Browse Products</button>
+          <button class="btn btn-outline btn-lg" onclick="window.openWA()">Speak to an Advisor</button>
         </div>
         <div class="hero-proof-row">
           <div class="hero-proof-card">
@@ -47,7 +66,7 @@
             <span>Happy Customers</span>
           </div>
           <div class="hero-proof-card">
-            <strong>4.9 ★</strong>
+            <strong>4.9/5</strong>
             <span>Customer Rating</span>
           </div>
           <div class="hero-proof-card">
@@ -57,8 +76,8 @@
         </div>
       </div>
       <div class="hero-media-shell">
-        <div class="hero-media-chip hero-media-chip-top">🏆 Kenya's #1 Choice</div>
-        <div class="hero-media-chip hero-media-chip-bottom">📸 Real Store Photos</div>
+        <div class="hero-media-chip hero-media-chip-top">Engineered for Kenyan Conditions</div>
+        <div class="hero-media-chip hero-media-chip-bottom">Real Product and Showroom Images</div>
         <div class="hero-media-stage" id="heroMediaStage">
           <div class="hero-media-empty">Featured visuals will appear here soon.</div>
         </div>
