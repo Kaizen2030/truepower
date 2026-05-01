@@ -26,7 +26,17 @@
     <a id="navLoginBtn" href="#login" onclick="event.preventDefault();window.goPage('login')" class="btn btn-ghost btn-sm">Sign In</a>
     <a id="navRegisterBtn" href="#register" onclick="event.preventDefault();window.goPage('register')" class="btn btn-primary btn-sm">Register</a>
   </div>
+  <button class="nav-hamburger" id="navHamburger" onclick="window.toggleMobileMenu()">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<div class="nav-mobile-menu" id="navMobileMenu">
+  <a href="#home" onclick="event.preventDefault();window.goPage('home');window.closeMobileMenu()">Home</a>
+  <a href="#shop" onclick="event.preventDefault();window.goPage('shop');window.closeMobileMenu()">Shop</a>
+  <a href="#about" onclick="event.preventDefault();window.goPage('about');window.closeMobileMenu()">About</a>
+  <a href="#wishlist" onclick="event.preventDefault();window.goPage('wishlist');window.closeMobileMenu()">My Wishlist</a>
+</div>
 
 <div id="app">
 

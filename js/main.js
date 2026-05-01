@@ -11,6 +11,15 @@ async function backendUnavailable() {
   throw getBackendUnavailableError()
 }
 
+// ── Mobile Menu Functions ───────────────────────
+window.toggleMobileMenu = function() {
+  const menu = document.getElementById('navMobileMenu')
+  menu.classList.toggle('open')
+}
+window.closeMobileMenu = function() {
+  document.getElementById('navMobileMenu').classList.remove('open')
+}
+
 let login = backendUnavailable
 let logout = async () => {}
 let isAdmin = async () => false
