@@ -6,7 +6,7 @@ import {
   getSettings, saveSettings,
   getTestimonials, upsertTestimonial, deleteTestimonial,
   getAllPageContent, uploadImage, getPageSectionSchemas,
-  getGalleryImages
+  getGalleryImages, supabase
 } from '../lib/supabase'
 import PageContentEditor from '../components/PageContentEditor'
 import { useAuth } from '../context/AuthContext'
@@ -166,13 +166,8 @@ export default function AdminPage() {
   }
 
   const handleLogout = async () => {
-    try {
-      await authSignOut()
-    } catch (error) {
-      console.error('Admin logout failed:', error)
-    } finally {
-      navigate('/admin/login')
-    }
+    await authSignOut()
+    navigate('/admin/login')
   }
 
   if (authLoading) {
@@ -520,7 +515,7 @@ export default function AdminPage() {
                 onClick={async () => {
                   if (!galleryImageUrl) return alert('Please upload an image first.')
                   try {
-                    const { error } = await (await import('../lib/supabase')).supabase
+                    const { error } = await supabase
                       .from('gallery_images')
                       .insert({ image_url: galleryImageUrl, title: galleryForm.title, description: galleryForm.description, category: galleryForm.category })
                     if (error) throw error
@@ -551,7 +546,6 @@ export default function AdminPage() {
                     <button
                       onClick={async () => {
                         if (!confirm('Delete this image?')) return
-                        const { supabase } = await import('../lib/supabase')
                         await supabase.from('gallery_images').delete().eq('id', img.id)
                         getGalleryImages().then(setGalleryImages)
                       }}
