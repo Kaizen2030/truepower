@@ -1,0 +1,441 @@
+import { createClient } from '@supabase/supabase-js'
+
+const supabaseUrl     = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// ── Products ──────────────────────────────────────────────────────────────────
+// Your DB uses: cat, desc, image_url, images
+// The app uses: images
+
+export async function getProducts({ category, search, limit } = {}) {
+  let q = supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  // FIX: use 'cat' not 'category'
+  if (category && category !== 'all') q = q.eq('cat', category)
+  if (search) q = q.ilike('name', `%${search}%`)
+  if (limit) q = q.limit(limit)
+
+  const { data, error } = await q
+  if (error) throw error
+  return data || []
+}
+
+export async function getProduct(id) {
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .eq('id', id)
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function upsertProduct(product) {
+  // Map to actual DB column names
+  const dbProduct = {
+    id: product.id,
+    name: product.name,
+    cat: product.category || product.cat,
+    catLabel: product.catLabel,
+    price: Number(product.price),
+    desc: product.description || product.desc,
+    model: product.model,
+    badge: product.badge,
+    features: product.features || [],
+    specs: product.specs || {},
+    images: product.images || [],
+    original_price: product.original_price,
+    updated_at: new Date()
+  }
+  
+  const { data, error } = await supabase
+    .from('products')
+    .upsert(dbProduct)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function deleteProduct(id) {
+  const { error } = await supabase.from('products').delete().eq('id', id)
+  if (error) throw error
+}
+
+// ── Settings (key/value table) ─────────────────────────────────────────────────
+export async function getSettings() {
+  const { data } = await supabase.from('settings').select('key, value')
+  if (!data) return {}
+
+  const map = {}
+  data.forEach(r => { map[r.key] = r.value })
+
+  return {
+    whatsapp_number: map.wa_number        || '254701039256',
+    hero_title:      map.hero_title       || 'Hot Water.\nEvery Morning.',
+    hero_subtitle:   map.hero_subtitle    || 'Electric showers, wall heaters, and pump-assisted systems — selected for Kenyan homes, borehole water, and low-pressure plumbing.',
+    stat_customers:  map.stat_customers   || '500+',
+    stat_rating:     map.stat_rating      || '4.9★',
+    home_media:      safeJson(map.home_media_json, []),
+    raw: map,  // expose raw in case admin needs it
+  }
+}
+
+export async function saveSetting(key, value) {
+  const { error } = await supabase
+    .from('settings')
+    .upsert({ key, value: typeof value === 'string' ? value : JSON.stringify(value) },
+             { onConflict: 'key' })
+  if (error) throw error
+}
+
+// ── Testimonials ───────────────────────────────────────────────────────────────
+export async function getTestimonials() {
+  // Try real table first (after migration), fall back to settings JSON
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (!error && data?.length) return data
+
+  // Fallback: read from settings JSON (pre-migration)
+  const { data: rows } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('key', 'testimonials_json')
+    .single()
+
+  const arr = safeJson(rows?.value, [])
+  return arr.map((t, i) => ({
+    id:       i,
+    name:     t.name,
+    text:     t.quote || t.text,
+    rating:   t.rating || 5,
+    location: t.location || 'Nairobi',
+  }))
+}
+
+export async function getGalleryImages() {
+  const { data, error } = await supabase
+    .from('gallery_images')
+    .select('*')
+    .order('created_at', { ascending: false })
+
+  if (error) return []
+  return data || []
+}
+
+// ── Editable page content CMS ───────────────────────────────────────────────
+export async function getPageContent(pageSlug) {
+  const { data, error } = await supabase
+    .from('page_content')
+    .select('section_key, content')
+    .eq('page_slug', pageSlug)
+
+  if (error) throw error
+
+  const result = {}
+  data.forEach(item => {
+    result[item.section_key] = item.content
+  })
+  return result
+}
+
+export async function updatePageContent(pageSlug, sectionKey, content) {
+  const { data, error } = await supabase
+    .from('page_content')
+    .upsert({
+      page_slug: pageSlug,
+      section_key: sectionKey,
+      content,
+      updated_at: new Date()
+    }, { onConflict: 'page_slug, section_key' })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
+export async function getAllPageContent() {
+  const { data, error } = await supabase
+    .from('page_content')
+    .select('*')
+    .order('page_slug', { ascending: true })
+    .order('id', { ascending: true })
+
+  if (error) throw error
+  return data || []
+}
+
+// ── Page Content Schema (for visual editor) ─────────────────────────────────
+export function getPageSectionSchemas() {
+  return {
+    about: {
+      hero: {
+        label: 'Hero Section',
+        description: 'Main headline and subtitle at the top of the About page',
+        schema: [
+          { name: 'badge', label: 'Badge Text', type: 'text', placeholder: '🇰🇪 About TruePower' },
+          { name: 'title', label: 'Main Title', type: 'text', placeholder: 'Hot water for every Kenyan home.' },
+          { name: 'subtitle', label: 'Subtitle', type: 'textarea', rows: 2, placeholder: 'Electric showers, wall heaters...' }
+        ]
+      },
+      stats: {
+        label: 'Statistics',
+        description: 'Numbers that show your impact (Customers, Rating, etc.)',
+        schema: [
+          { 
+            name: 'items', 
+            label: 'Stat Items', 
+            type: 'array',
+            itemLabel: 'Stat',
+            itemTemplate: { value: '', label: '', icon: 'Users' },
+            itemFields: [
+              { name: 'value', label: 'Value', type: 'text', placeholder: '500+' },
+              { name: 'label', label: 'Label', type: 'text', placeholder: 'Customers Served' },
+              { name: 'icon', label: 'Icon Name', type: 'text', placeholder: 'Users, Star, Zap, MapPin' }
+            ]
+          }
+        ]
+      },
+      story: {
+        label: 'Our Story',
+        description: 'The story behind TruePower',
+        schema: [
+          { name: 'title', label: 'Section Title', type: 'text', placeholder: 'Built by Kenyans, for Kenyans' },
+          { 
+            name: 'paragraphs', 
+            label: 'Story Paragraphs', 
+            type: 'array',
+            itemLabel: 'Paragraph',
+            itemTemplate: '',
+            itemFields: [{ name: 'text', label: 'Paragraph', type: 'textarea', rows: 3 }]
+          },
+          { 
+            name: 'features', 
+            label: 'Feature Badges', 
+            type: 'array',
+            itemLabel: 'Feature',
+            itemTemplate: '',
+            itemFields: [{ name: 'text', label: 'Feature', type: 'text', placeholder: 'Borehole Tested' }]
+          }
+        ]
+      },
+      showroom: {
+        label: 'Showroom Info',
+        description: 'Location, hours, and contact details',
+        schema: [
+          { name: 'title', label: 'Section Title', type: 'text', placeholder: 'Nyamakima Showroom, Nairobi CBD' },
+          { name: 'address', label: 'Address', type: 'text', placeholder: 'Nyamakima, Nairobi CBD' },
+          { name: 'phone', label: 'Phone Number', type: 'text', placeholder: '+254 701 039 256' },
+          { 
+            name: 'hours', 
+            label: 'Opening Hours', 
+            type: 'array',
+            itemLabel: 'Hour Entry',
+            itemTemplate: { day: '', hours: '' },
+            itemFields: [
+              { name: 'day', label: 'Day', type: 'text', placeholder: 'Monday – Friday' },
+              { name: 'hours', label: 'Hours', type: 'text', placeholder: '8:00 AM – 6:00 PM' }
+            ]
+          }
+        ]
+      },
+      cta: {
+        label: 'Call to Action',
+        description: 'Final WhatsApp CTA section',
+        schema: [
+          { name: 'title', label: 'Title', type: 'text', placeholder: 'Ready to order?' },
+          { name: 'subtitle', label: 'Subtitle', type: 'textarea', rows: 2, placeholder: 'Chat with us...' },
+          { name: 'button_text', label: 'Button Text', type: 'text', placeholder: 'Chat Now on WhatsApp' },
+          { name: 'button_link', label: 'WhatsApp Link', type: 'text', placeholder: 'https://wa.me/254701039256' }
+        ]
+      }
+    },
+    portfolio: {
+      hero: {
+        label: 'Hero Section',
+        description: 'Main headline for Portfolio page',
+        schema: [
+          { name: 'badge', label: 'Badge Text', type: 'text', placeholder: 'TruePower Portfolio' },
+          { name: 'title', label: 'Main Title', type: 'text', placeholder: 'Our Portfolio' },
+          { name: 'subtitle', label: 'Subtitle', type: 'textarea', rows: 2, placeholder: 'Real installations, genuine reviews...' }
+        ]
+      },
+      how_it_works: {
+        label: 'How It Works (3 Steps)',
+        description: 'The 3-step process',
+        schema: [
+          { name: 'title', label: 'Section Title', type: 'text', placeholder: 'From "I Need Hot Water" to "This is Perfect"' },
+          { name: 'subtitle', label: 'Subtitle', type: 'text', placeholder: '3 simple steps. No confusion.' },
+          { 
+            name: 'steps', 
+            label: 'Steps', 
+            type: 'array',
+            itemLabel: 'Step',
+            itemTemplate: { step: '', title: '', description: '', icon: '' },
+            itemFields: [
+              { name: 'step', label: 'Step Number', type: 'text', placeholder: '01' },
+              { name: 'title', label: 'Title', type: 'text', placeholder: 'Tell Us Your Situation' },
+              { name: 'description', label: 'Description', type: 'textarea', rows: 2, placeholder: 'Explain what the customer needs to do...' }
+            ]
+          }
+        ]
+      },
+      services: {
+        label: 'Services / What Makes Us Different',
+        description: 'The 4 key selling points',
+        schema: [
+          { name: 'title', label: 'Section Title', type: 'text', placeholder: 'What makes us different' },
+          { 
+            name: 'items', 
+            label: 'Service Items', 
+            type: 'array',
+            itemLabel: 'Service',
+            itemTemplate: { title: '', description: '', icon: '' },
+            itemFields: [
+              { name: 'title', label: 'Title', type: 'text', placeholder: 'Borehole Ready' },
+              { name: 'description', label: 'Description', type: 'textarea', rows: 2, placeholder: 'Heavy-duty copper coils...' }
+            ]
+          }
+        ]
+      },
+      cta: {
+        label: 'Call to Action',
+        description: 'Final CTA section',
+        schema: [
+          { name: 'title', label: 'Title', type: 'text', placeholder: 'Ready to get hot water working perfectly?' },
+          { name: 'subtitle', label: 'Subtitle', type: 'textarea', rows: 2, placeholder: 'Chat with us...' },
+          { name: 'button_text', label: 'Primary Button Text', type: 'text', placeholder: 'WhatsApp Us' },
+          { name: 'secondary_button_text', label: 'Secondary Button Text', type: 'text', placeholder: 'Browse Products' },
+          { name: 'secondary_button_link', label: 'Secondary Button Link', type: 'text', placeholder: '/shop' }
+        ]
+      }
+    }
+  }
+}
+
+export async function upsertTestimonial(t) {
+  const { error } = await supabase.from('testimonials').upsert(t)
+  if (error) throw error
+}
+
+export async function deleteTestimonial(id) {
+  await supabase.from('testimonials').delete().eq('id', id)
+}
+
+// ── Auth ──────────────────────────────────────────────────────────────────────
+export async function signIn(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) throw error
+  return data
+}
+
+export async function signUp(email, password, fullName) {
+  return await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { full_name: fullName },
+    },
+  })
+}
+
+export async function resetPassword(email, redirectTo) {
+  return await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: redirectTo || `${window.location.origin}/admin/login`,
+  })
+}
+
+export async function isAdminUser(userId) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', userId)
+    .maybeSingle()
+  if (error) throw error
+  return data?.role === 'admin'
+}
+
+export async function createCustomer(customer) {
+  // Upsert into profiles table, not customers
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert({
+      id: customer.user_id,
+      email: customer.email,
+      name: customer.name,
+      role: 'user',
+      updated_at: new Date()
+    })
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function createOrder(order) {
+  const { data, error } = await supabase
+    .from('orders')
+    .insert(order)
+    .select()
+    .single()
+  if (error) throw error
+  return data
+}
+
+export async function getOrders() {
+  const { data, error } = await supabase.from('orders').select('*').order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function getCustomers() {
+  const { data, error } = await supabase.from('customers').select('*').order('created_at', { ascending: false })
+  if (error) throw error
+  return data
+}
+
+export async function signOut() {
+  const { error } = await supabase.auth.signOut()
+  if (error) throw error
+}
+
+export async function getUser() {
+  const { data: { user } } = await supabase.auth.getUser()
+  return user
+}
+
+export async function getCurrentUser() {
+  return getUser()
+}
+
+// ── Storage ───────────────────────────────────────────────────────────────────
+export async function uploadImage(file, bucket = 'products') {
+  const ext  = file.name.split('.').pop()
+  const name = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+  const { error } = await supabase.storage.from(bucket).upload(name, file)
+  if (error) throw error
+  const { data } = supabase.storage.from(bucket).getPublicUrl(name)
+  return data.publicUrl
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function safeJson(str, fallback) {
+  try { return str ? JSON.parse(str) : fallback } catch { return fallback }
+}
+
+// Alias used by AdminPage
+export async function saveSettings(settingsObj) {
+  const entries = Object.entries(settingsObj)
+  for (const [key, value] of entries) {
+    await saveSetting(key, value)
+  }
+}
