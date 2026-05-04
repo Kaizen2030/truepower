@@ -59,8 +59,8 @@ export default function LoginPage() {
       <main className="min-h-screen bg-muted flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="card p-8 text-center">
-            <div className="w-32 h-32 flex items-center justify-center mx-auto mb-4">
-              <TruePowerLogo size={40} />
+            <div className="w-40 h-40 flex items-center justify-center mx-auto mb-4">
+              <TruePowerLogo size={52} />
             </div>
             <h2 className="font-display font-bold text-2xl mb-3">Check your email</h2>
             <p className="text-sub text-sm mb-6">
@@ -79,8 +79,8 @@ export default function LoginPage() {
     <main className="min-h-screen bg-muted flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-32 h-32 flex items-center justify-center mx-auto mb-4">
-            <TruePowerLogo size={40} />
+          <div className="w-40 h-40 flex items-center justify-center mx-auto mb-4">
+            <TruePowerLogo size={52} />
           </div>
           <h1 className="font-display font-bold text-3xl text-ink">TruePower</h1>
           <p className="text-sub text-sm mt-1">

@@ -66,8 +66,8 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group shrink-0">
-              <div className="w-10 h-10 flex items-center justify-center">
-                <TruePowerLogo size={38} />
+              <div className="w-12 h-12 flex items-center justify-center">
+                <TruePowerLogo size={48} />
               </div>
               <span className="font-display font-bold text-[18px] tracking-tight text-ink">
                 True<span className="text-brand-500">Power</span>

@@ -1,4 +1,4 @@
-export default function TruePowerLogo({ size = 40 }) {
+export default function TruePowerLogo({ size = 48 }) {
   return (
     <img
       src="/logo.png"
