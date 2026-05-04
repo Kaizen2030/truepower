@@ -20,6 +20,7 @@ import {
   Wrench,
 } from 'lucide-react'
 import { getPageContent } from '../lib/supabase'
+import Seo from '../components/Seo'
 
 const IconMap = {
   Users,
@@ -80,6 +81,11 @@ export default function AboutPage() {
 
   return (
     <main className="pt-[68px] min-h-screen bg-white">
+      <Seo
+        title="About TruePower Kenya"
+        description="Learn about TruePower Kenya, our hot water solutions, Nyamakima showroom, and how we help homes with borehole water, salty water, and low pressure."
+        path="/about"
+      />
       <section className="relative bg-gradient-to-br from-brand-900 via-brand-800 to-brand-600 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-white/20 blur-3xl" />

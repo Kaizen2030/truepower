@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import { signIn, signUp, resetPassword, isAdminUser } from '../lib/supabase'
 import TruePowerLogo from '../components/TruePowerLogo'
+import Seo from '../components/Seo'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -57,6 +58,7 @@ export default function LoginPage() {
   if (resetSent) {
     return (
       <main className="min-h-screen bg-muted flex items-center justify-center px-4">
+        <Seo title="Admin Login" description="Admin login for TruePower Kenya." path="/admin/login" noindex />
         <div className="w-full max-w-md">
           <div className="card p-8 text-center">
             <div className="w-40 h-40 flex items-center justify-center mx-auto mb-4">
@@ -77,6 +79,7 @@ export default function LoginPage() {
 
   return (
     <main className="min-h-screen bg-muted flex items-center justify-center px-4">
+      <Seo title="Admin Login" description="Admin login for TruePower Kenya." path="/admin/login" noindex />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="w-48 h-48 flex items-center justify-center mx-auto mb-4">

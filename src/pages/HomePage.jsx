@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ShoppingBag } from 'lucide-react'
 import { getProducts, getSettings } from '../lib/supabase'
 import ProductCard from '../components/ProductCard'
+import Seo, { SITE_URL, DEFAULT_IMAGE } from '../components/Seo'
 
 export default function HomePage() {
   const [products, setProducts] = useState([])
@@ -28,9 +29,30 @@ export default function HomePage() {
   }, [])
 
   const whatsappNum = settings?.whatsapp_number || '254701039256'
+  const homeJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Store',
+    name: 'TruePower Kenya',
+    url: SITE_URL,
+    image: DEFAULT_IMAGE,
+    description: 'Electric showers, wall heaters, booster pumps, and hot water systems for Kenyan homes.',
+    areaServed: 'Kenya',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Nairobi',
+      addressCountry: 'KE',
+    },
+    sameAs: [`https://wa.me/${whatsappNum}`],
+  }
 
   return (
     <main className="pt-[68px] min-h-screen bg-white">
+      <Seo
+        title="Electric Showers & Hot Water Solutions"
+        description="Buy electric showers, wall heaters, shower heads, and booster pumps in Kenya. TruePower helps with salty water, borehole water, and low-pressure homes."
+        path="/"
+        jsonLd={homeJsonLd}
+      />
       <section className="border-b border-border">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-10">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
@@ -112,4 +134,3 @@ export default function HomePage() {
     </main>
   )
 }
-

@@ -4,6 +4,7 @@ import { Heart, MessageCircle, ChevronLeft, ChevronRight, Zap, Check, ShoppingBa
 import { getProduct, getProducts } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
 import ProductCard from '../components/ProductCard'
+import Seo, { SITE_URL, DEFAULT_IMAGE } from '../components/Seo'
 
 export default function ProductPage() {
   const { id } = useParams()
@@ -66,6 +67,27 @@ export default function ProductPage() {
   const specs    = product.specs    || {}
   const features = product.features || []
   const wishlisted = isWishlisted(product.id)
+  const productImage = images[0] || DEFAULT_IMAGE
+  const productDescription = product.description || `Buy ${product.name} from TruePower Kenya.`
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    image: images.length ? images : [DEFAULT_IMAGE],
+    description: productDescription,
+    sku: product.model || String(product.id),
+    brand: {
+      '@type': 'Brand',
+      name: 'TruePower Kenya',
+    },
+    offers: {
+      '@type': 'Offer',
+      priceCurrency: 'KES',
+      price: String(product.price),
+      availability: 'https://schema.org/InStock',
+      url: `${SITE_URL}/product/${product.id}`,
+    },
+  }
 
   const waMessage = encodeURIComponent(
     `Hi TruePower! I want to order *${product.name}* × ${qty} = KSh ${Number(product.price * qty).toLocaleString()}. Please assist.`
@@ -79,6 +101,14 @@ export default function ProductPage() {
 
   return (
     <main className="pt-[68px] min-h-screen bg-white">
+      <Seo
+        title={product.name}
+        description={productDescription}
+        path={`/product/${product.id}`}
+        image={productImage}
+        type="product"
+        jsonLd={productJsonLd}
+      />
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-sm text-sub mb-8">

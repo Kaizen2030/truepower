@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { Search, X, SlidersHorizontal } from 'lucide-react'
 import { getProducts } from '../lib/supabase'
 import ProductCard from '../components/ProductCard'
+import Seo from '../components/Seo'
 
 const CATS = [
   { key: 'all', label: 'All Products' },
@@ -71,9 +72,23 @@ export default function ShopPage() {
   }
 
   const catLabel = CATS.find(c => c.key === category)?.label || 'All Products'
+  const seoTitle = activeSearch
+    ? `${catLabel} for "${activeSearch}"`
+    : catLabel === 'All Products'
+      ? 'Shop Electric Showers, Pumps & Wall Heaters'
+      : `${catLabel} Shop`
+  const seoDescription = activeSearch
+    ? `Browse ${catLabel.toLowerCase()} matching "${activeSearch}" at TruePower Kenya. Compare prices and find the right hot water solution for your home.`
+    : `Shop ${catLabel.toLowerCase()} at TruePower Kenya. Compare electric showers, wall heaters, shower heads, and booster pumps built for Kenyan homes.`
+  const canonicalPath = `/shop${params.toString() ? `?${params.toString()}` : ''}`
 
   return (
     <main className="pt-[68px] min-h-screen bg-white">
+      <Seo
+        title={seoTitle}
+        description={seoDescription}
+        path={canonicalPath}
+      />
       {/* Page header */}
       <div className="border-b border-border bg-muted">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-10">
@@ -150,4 +165,3 @@ export default function ShopPage() {
     </main>
   )
 }
-

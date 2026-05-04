@@ -10,6 +10,7 @@ import {
 } from '../lib/supabase'
 import PageContentEditor from '../components/PageContentEditor'
 import { useAuth } from '../context/AuthContext'
+import Seo from '../components/Seo'
 
 // Your DB has: standard, pump, showerhead, accessory
 const CATS = [
@@ -302,6 +303,7 @@ export default function AdminPage() {
 
   return (
     <main className="pt-16 min-h-screen">
+      <Seo title="Admin Dashboard" description="Private admin dashboard for TruePower Kenya." path="/admin" noindex />
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
 
         {/* Header */}

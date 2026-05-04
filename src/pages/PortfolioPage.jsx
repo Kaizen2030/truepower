@@ -20,6 +20,7 @@ import {
   Quote,
 } from 'lucide-react'
 import { getGalleryImages, getTestimonials, getPageContent } from '../lib/supabase'
+import Seo from '../components/Seo'
 
 export default function PortfolioPage() {
   const [galleryImages, setGalleryImages] = useState([])
@@ -91,6 +92,11 @@ export default function PortfolioPage() {
 
   return (
     <main className="pt-[68px] min-h-screen bg-white">
+      <Seo
+        title="Portfolio & Installations"
+        description="See TruePower Kenya installations, product finishes, and customer reviews for electric showers, wall heaters, and hot water systems."
+        path="/portfolio"
+      />
       <section className="relative bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-20 left-20 w-64 h-64 rounded-full bg-white/20 blur-3xl animate-pulse" />
