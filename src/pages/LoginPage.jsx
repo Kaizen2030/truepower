@@ -79,8 +79,8 @@ export default function LoginPage() {
     <main className="min-h-screen bg-muted flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-44 h-44 flex items-center justify-center mx-auto mb-4">
-            <TruePowerLogo size={60} />
+          <div className="w-48 h-48 flex items-center justify-center mx-auto mb-4">
+            <TruePowerLogo size={80} />
           </div>
           <h1 className="font-display font-bold text-3xl text-ink">TruePower</h1>
           <p className="text-sub text-sm mt-1">
