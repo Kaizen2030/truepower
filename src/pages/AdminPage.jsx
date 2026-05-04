@@ -253,12 +253,12 @@ export default function AdminPage() {
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="font-display font-bold text-2xl">Admin Dashboard</h1>
             <p className="text-sub text-sm">{user?.email}</p>
           </div>
-          <button onClick={handleLogout} className="btn-ghost flex items-center gap-2 text-sub hover:text-red-400">
+          <button onClick={handleLogout} className="btn-ghost inline-flex items-center gap-2 text-sub hover:text-red-400">
             <LogOut size={16} /> Sign out
           </button>
         </div>
@@ -280,7 +280,7 @@ export default function AdminPage() {
         {/* ── PRODUCTS TAB ── */}
         {tab === 'products' && (
           <div>
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <p className="text-sub text-sm">{products.length} products</p>
               <button onClick={startNew} className="btn-primary text-sm px-4 py-2.5">
                 <Plus size={16} /> Add Product
@@ -290,7 +290,7 @@ export default function AdminPage() {
             {/* Product form */}
             {editing && (
               <div className="card p-6 mb-6 border-brand-500/20">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
                   <h3 className="font-display font-bold text-lg">{editing.id ? 'Edit Product' : 'New Product'}</h3>
                   <button onClick={() => setEditing(null)} className="text-sub hover:text-ink"><X size={18} /></button>
                 </div>
@@ -389,7 +389,7 @@ export default function AdminPage() {
             )}
 
             {/* Product list */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {products.map(p => (
                 <div key={p.id} className="card p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted shrink-0">
