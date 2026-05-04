@@ -360,17 +360,17 @@ export default function PortfolioPage() {
 
       {selectedImage && (
         <div className="fixed inset-0 z-[300] bg-black/90 flex items-center justify-center p-4 overflow-auto" onClick={() => setSelectedImage(null)}>
-          <div className="relative max-w-4xl w-full max-h-[calc(100vh-120px)] overflow-auto" onClick={(e) => e.stopPropagation()}>
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-4 right-4 z-10 rounded-full bg-black/60 p-2 text-white hover:bg-black transition-colors"
-            >
-              <X size={24} />
-            </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); setSelectedImage(null) }}
+            className="fixed top-4 right-4 z-50 rounded-full bg-black/80 p-2 text-white hover:bg-black transition-colors"
+          >
+            <X size={24} />
+          </button>
+          <div className="relative max-w-[95vw] w-full max-h-[95vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
             <img
               src={selectedImage.image_url}
               alt={selectedImage.title}
-              className="w-full max-h-[75vh] object-contain rounded-2xl"
+              className="w-full max-h-[85vh] object-contain rounded-2xl mx-auto"
             />
             {(selectedImage.title || selectedImage.description) && (
               <div className="mt-4 text-white text-center">
