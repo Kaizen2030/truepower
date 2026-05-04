@@ -85,18 +85,20 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          <div className="flex flex-row gap-2 mt-4">
+          <div className="flex items-center justify-between gap-3 mt-4">
             <Link
               to={`/product/${product.id}`}
-              className="flex-1 text-center text-sm font-semibold py-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all"
+              className="flex-1 text-center text-sm font-semibold h-9 leading-9 px-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all"
             >
               View
             </Link>
+
             <button
               onClick={() => addToCart(product)}
-              className="flex-1 text-center text-sm font-semibold py-3 rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-all"
+              aria-label="Add to cart"
+              className="h-9 w-9 flex items-center justify-center rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-sm"
             >
-              Add to Cart
+              <ShoppingBag size={16} />
             </button>
           </div>
         </div>
