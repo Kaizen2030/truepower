@@ -27,6 +27,21 @@ function normalizeProduct(row) {
   }
 }
 
+function sortProductsBySavedOrder(products, orderIds = []) {
+  const orderMap = new Map(orderIds.map((id, index) => [String(id), index]))
+
+  return [...products].sort((a, b) => {
+    const aIndex = orderMap.get(String(a.id))
+    const bIndex = orderMap.get(String(b.id))
+
+    if (aIndex != null && bIndex != null) return aIndex - bIndex
+    if (aIndex != null) return -1
+    if (bIndex != null) return 1
+
+    return new Date(b.created_at || 0) - new Date(a.created_at || 0)
+  })
+}
+
 // ── Products ──────────────────────────────────────────────────────────────────
 // Your DB uses: cat, desc, image_url, images
 // The app uses: images
@@ -35,16 +50,19 @@ export async function getProducts({ category, search, limit } = {}) {
   let q = supabase
     .from('products')
     .select('*')
-    .order('created_at', { ascending: false })
 
   // FIX: use 'cat' not 'category'
   if (category && category !== 'all') q = q.eq('cat', category)
   if (search) q = q.ilike('name', `%${search}%`)
-  if (limit) q = q.limit(limit)
 
   const { data, error } = await q
   if (error) throw error
-  return (data || []).map(normalizeProduct)
+
+  const normalized = (data || []).map(normalizeProduct)
+  const orderIds = await getProductOrder()
+  const sorted = sortProductsBySavedOrder(normalized, orderIds)
+
+  return limit ? sorted.slice(0, limit) : sorted
 }
 
 export async function getProduct(id) {
@@ -115,6 +133,21 @@ export async function saveSetting(key, value) {
     .upsert({ key, value: typeof value === 'string' ? value : JSON.stringify(value) },
              { onConflict: 'key' })
   if (error) throw error
+}
+
+export async function getProductOrder() {
+  const { data, error } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('key', 'products_order')
+    .maybeSingle()
+
+  if (error) throw error
+  return safeJson(data?.value, [])
+}
+
+export async function saveProductOrder(productIds) {
+  await saveSetting('products_order', productIds.map(String))
 }
 
 // ── Testimonials ───────────────────────────────────────────────────────────────

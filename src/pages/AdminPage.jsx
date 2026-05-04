@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Trash2, Edit2, Save, X, Upload, LogOut, Settings, Package, Star, Image, Users } from 'lucide-react'
+import { Plus, Trash2, Edit2, Save, X, Upload, LogOut, Settings, Package, Star, Image, Users, GripVertical } from 'lucide-react'
 import {
   getProducts, upsertProduct, deleteProduct,
-  getSettings, saveSettings,
+  getSettings, saveSettings, saveProductOrder,
   getTestimonials, upsertTestimonial, deleteTestimonial,
   getAllPageContent, uploadImage, getPageSectionSchemas,
   getGalleryImages, promoteUserToAdmin, demoteAdmin, supabase
@@ -40,6 +40,18 @@ const EMPTY_PRODUCT = {
   specs: {}
 }
 
+function moveProduct(products, draggedId, targetId) {
+  const fromIndex = products.findIndex(product => product.id === draggedId)
+  const toIndex = products.findIndex(product => product.id === targetId)
+
+  if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return products
+
+  const nextProducts = [...products]
+  const [dragged] = nextProducts.splice(fromIndex, 1)
+  nextProducts.splice(toIndex, 0, dragged)
+  return nextProducts
+}
+
 export default function AdminPage() {
   const auth = useAuth()
   const { user, loading: authLoading, isAdmin, signOut: authSignOut } = auth ?? { user: null, loading: true, isAdmin: false, signOut: async () => {} }
@@ -53,6 +65,10 @@ export default function AdminPage() {
   const [featureInput, setFeatureInput] = useState('')
   const [specKey, setSpecKey] = useState('')
   const [specVal, setSpecVal] = useState('')
+  const [draggedProductId, setDraggedProductId] = useState(null)
+  const [dragOverProductId, setDragOverProductId] = useState(null)
+  const [orderSaving, setOrderSaving] = useState(false)
+  const [orderMessage, setOrderMessage] = useState('')
 
   // Testimonials
   const [testimonials, setTestimonials] = useState([])
@@ -163,7 +179,43 @@ export default function AdminPage() {
   const handleDelete = async (id) => {
     if (!confirm('Delete this product?')) return
     await deleteProduct(id)
+    const nextProducts = products.filter(product => product.id !== id)
+    setProducts(nextProducts)
+    await saveProductOrder(nextProducts.map(product => product.id))
     loadProducts()
+  }
+
+  const persistProductOrder = async (nextProducts) => {
+    setProducts(nextProducts)
+    setOrderSaving(true)
+    setOrderMessage('Saving order...')
+
+    try {
+      await saveProductOrder(nextProducts.map(product => product.id))
+      setOrderMessage('Order saved')
+    } catch (error) {
+      console.error('Failed to save product order:', error)
+      setOrderMessage('Could not save order')
+      loadProducts()
+    } finally {
+      setOrderSaving(false)
+      window.setTimeout(() => {
+        setOrderMessage(current => (current === 'Order saved' ? '' : current))
+      }, 1800)
+    }
+  }
+
+  const handleProductDrop = async (targetId) => {
+    if (!draggedProductId || draggedProductId === targetId) {
+      setDraggedProductId(null)
+      setDragOverProductId(null)
+      return
+    }
+
+    const nextProducts = moveProduct(products, draggedProductId, targetId)
+    setDraggedProductId(null)
+    setDragOverProductId(null)
+    await persistProductOrder(nextProducts)
   }
 
   const handleImageUpload = async (e) => {
@@ -281,11 +333,20 @@ export default function AdminPage() {
         {tab === 'products' && (
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
-              <p className="text-sub text-sm">{products.length} products</p>
+              <div>
+                <p className="text-sub text-sm">{products.length} products</p>
+                <p className="text-faint text-xs mt-1">Drag products with the handle to move them to the top, middle, or bottom.</p>
+              </div>
               <button onClick={startNew} className="btn-primary text-sm px-4 py-2.5">
                 <Plus size={16} /> Add Product
               </button>
             </div>
+
+            {orderMessage && (
+              <div className="mb-4 rounded-2xl border border-brand-100 bg-brand-50 px-4 py-3 text-sm text-brand-600">
+                {orderSaving ? 'Saving order...' : orderMessage}
+              </div>
+            )}
 
             {/* Product form */}
             {editing && (
@@ -391,7 +452,37 @@ export default function AdminPage() {
             {/* Product list */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {products.map(p => (
-                <div key={p.id} className="card p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div
+                  key={p.id}
+                  draggable
+                  onDragStart={() => setDraggedProductId(p.id)}
+                  onDragEnd={() => {
+                    setDraggedProductId(null)
+                    setDragOverProductId(null)
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    if (dragOverProductId !== p.id) setDragOverProductId(p.id)
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault()
+                    handleProductDrop(p.id)
+                  }}
+                  className={`card p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 cursor-move transition-all ${
+                    draggedProductId === p.id ? 'opacity-60 ring-2 ring-brand-200' : ''
+                  } ${
+                    dragOverProductId === p.id ? 'ring-2 ring-brand-400 shadow-product-hover' : ''
+                  }`}
+                >
+                  <button
+                    type="button"
+                    draggable
+                    onDragStart={() => setDraggedProductId(p.id)}
+                    className="shrink-0 rounded-xl border border-border bg-muted p-2 text-sub hover:text-brand-500"
+                    title="Drag to reorder"
+                  >
+                    <GripVertical size={16} />
+                  </button>
                   <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted shrink-0">
                     {p.images?.[0] ? <img src={p.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />}
                   </div>
@@ -719,4 +810,3 @@ export default function AdminPage() {
     </main>
   )
 }
-
