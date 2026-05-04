@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { Heart, Search, Menu, X, ShoppingBag, Zap } from 'lucide-react'
+import { Heart, Search, Menu, X, ShoppingBag } from 'lucide-react'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
+import TruePowerLogo from './TruePowerLogo'
 
 export default function Navbar() {
   const [open, setOpen] = useState(false)
@@ -65,8 +66,8 @@ export default function Navbar() {
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group shrink-0">
-              <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center group-hover:bg-brand-600 transition-colors">
-                <Zap size={15} className="text-white" fill="white" />
+              <div className="w-10 h-10 flex items-center justify-center">
+                <TruePowerLogo size={24} />
               </div>
               <span className="font-display font-bold text-[18px] tracking-tight text-ink">
                 True<span className="text-brand-500">Power</span>

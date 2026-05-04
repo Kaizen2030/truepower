@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
-import { Zap, MapPin, Phone, Mail } from 'lucide-react'
+import { MapPin, Phone, Mail } from 'lucide-react'
+import TruePowerLogo from './TruePowerLogo'
 
 export default function Footer() {
   return (
@@ -9,8 +10,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-brand-500 rounded-lg flex items-center justify-center">
-                <Zap size={15} className="text-white" fill="white" />
+              <div className="w-8 h-8 flex items-center justify-center">
+                <TruePowerLogo size={20} />
               </div>
               <span className="font-display font-bold text-white text-lg">TruePower</span>
             </div>

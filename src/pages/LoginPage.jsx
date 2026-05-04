@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Zap, Eye, EyeOff } from 'lucide-react'
-import { signIn, signUp, resetPassword, createCustomer, isAdminUser } from '../lib/supabase'
+import { Eye, EyeOff } from 'lucide-react'
+import { signIn, signUp, resetPassword, isAdminUser } from '../lib/supabase'
+import TruePowerLogo from '../components/TruePowerLogo'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -43,10 +44,6 @@ export default function LoginPage() {
 
       const { data, error: signUpError } = await signUp(email, password, name)
       if (signUpError) throw signUpError
-      const userId = data?.user?.id
-      if (userId) {
-        await createCustomer({ user_id: userId, email, name })
-      }
       setIsLogin(true)
       setPassword('')
       alert('Account created! Please check your email if verification is required.')
@@ -62,8 +59,8 @@ export default function LoginPage() {
       <main className="min-h-screen bg-muted flex items-center justify-center px-4">
         <div className="w-full max-w-md">
           <div className="card p-8 text-center">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Zap size={28} className="text-green-600" />
+            <div className="w-20 h-20 flex items-center justify-center mx-auto mb-4">
+              <TruePowerLogo size={40} />
             </div>
             <h2 className="font-display font-bold text-2xl mb-3">Check your email</h2>
             <p className="text-sub text-sm mb-6">
@@ -82,8 +79,8 @@ export default function LoginPage() {
     <main className="min-h-screen bg-muted flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-brand-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Zap size={28} className="text-white" fill="white" />
+          <div className="w-20 h-20 flex items-center justify-center mx-auto mb-4">
+            <TruePowerLogo size={40} />
           </div>
           <h1 className="font-display font-bold text-3xl text-ink">TruePower</h1>
           <p className="text-sub text-sm mt-1">
