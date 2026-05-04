@@ -78,16 +78,16 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          <div className="flex gap-2 mt-4">
+          <div className="flex flex-col sm:flex-row gap-2 mt-4">
             <Link
               to={`/product/${product.id}`}
-              className="flex-1 text-center text-sm font-semibold py-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all"
+              className="w-full sm:flex-1 text-center text-sm font-semibold py-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all whitespace-nowrap"
             >
               View
             </Link>
             <button
               onClick={() => addToCart(product)}
-              className="flex-1 text-center text-xs font-semibold py-2 rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-all"
+              className="w-full sm:flex-1 text-center text-sm font-semibold py-3 rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-all whitespace-nowrap"
             >
               Add to Cart
             </button>
