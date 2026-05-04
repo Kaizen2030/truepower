@@ -19,7 +19,16 @@ function AdminRoute({ children }) {
   if (!auth) return null
   const { user, loading, isAdmin } = auth
 
-  if (loading) return null
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-12 w-12 rounded-full border-4 border-brand-500 border-t-transparent animate-spin" />
+          <p className="text-base text-sub">Checking admin access…</p>
+        </div>
+      </div>
+    )
+  }
   if (!user) return <Navigate to="/admin/login" replace />
   if (!isAdmin) return <Navigate to="/" replace />
   return children
