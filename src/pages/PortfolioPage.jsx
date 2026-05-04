@@ -360,18 +360,20 @@ export default function PortfolioPage() {
 
       {selectedImage && (
         <div className="fixed inset-0 z-[300] bg-black/90 flex items-center justify-center p-4 overflow-auto" onClick={() => setSelectedImage(null)}>
-          <button
-            onClick={(e) => { e.stopPropagation(); setSelectedImage(null) }}
-            className="fixed top-4 right-4 z-50 rounded-full bg-black/80 p-2 text-white hover:bg-black transition-colors"
-          >
-            <X size={24} />
-          </button>
-          <div className="relative max-w-[95vw] w-full max-h-[95vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
-            <img
-              src={selectedImage.image_url}
-              alt={selectedImage.title}
-              className="w-full max-h-[85vh] object-contain rounded-2xl mx-auto"
-            />
+          <div className="relative max-w-[90vw] w-full max-h-[90vh] overflow-auto mx-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="relative">
+              <img
+                src={selectedImage.image_url}
+                alt={selectedImage.title}
+                className="w-full max-h-[85vh] object-contain rounded-2xl mx-auto"
+              />
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-3 right-3 z-50 rounded-full bg-black/80 p-2 text-white hover:bg-black transition-colors"
+              >
+                <X size={24} />
+              </button>
+            </div>
             {(selectedImage.title || selectedImage.description) && (
               <div className="mt-4 text-white text-center">
                 {selectedImage.title && <p className="font-display font-semibold text-xl">{selectedImage.title}</p>}
