@@ -5,6 +5,28 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
+function normalizeProduct(row) {
+  if (!row) return row
+
+  const images = Array.isArray(row.images)
+    ? row.images
+    : row.images
+      ? [row.images]
+      : row.image_url
+        ? [row.image_url]
+        : []
+
+  return {
+    ...row,
+    cat: row.cat ?? row.category ?? null,
+    category: row.category ?? row.cat ?? null,
+    desc: row.desc ?? row.description ?? '',
+    description: row.description ?? row.desc ?? '',
+    images,
+    image_url: row.image_url ?? images[0] ?? null,
+  }
+}
+
 // ── Products ──────────────────────────────────────────────────────────────────
 // Your DB uses: cat, desc, image_url, images
 // The app uses: images
@@ -22,7 +44,7 @@ export async function getProducts({ category, search, limit } = {}) {
 
   const { data, error } = await q
   if (error) throw error
-  return data || []
+  return (data || []).map(normalizeProduct)
 }
 
 export async function getProduct(id) {
@@ -32,7 +54,7 @@ export async function getProduct(id) {
     .eq('id', id)
     .single()
   if (error) throw error
-  return data
+  return normalizeProduct(data)
 }
 
 export async function upsertProduct(product) {
@@ -49,6 +71,7 @@ export async function upsertProduct(product) {
     features: product.features || [],
     specs: product.specs || {},
     images: product.images || [],
+    image_url: product.image_url || product.images?.[0] || null,
     original_price: product.original_price,
     updated_at: new Date()
   }

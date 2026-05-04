@@ -15,9 +15,16 @@ export default function HomePage() {
         setProducts(data)
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((error) => {
+        console.error('Failed to load products:', error)
+        setLoading(false)
+      })
 
-    getSettings().then(setSettings).catch(() => {})
+    getSettings()
+      .then(setSettings)
+      .catch((error) => {
+        console.error('Failed to load settings:', error)
+      })
   }, [])
 
   const whatsappNum = settings?.whatsapp_number || '254701039256'

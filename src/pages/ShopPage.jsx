@@ -46,7 +46,8 @@ export default function ShopPage() {
       if (sort === 'price-asc')  data = [...data].sort((a, b) => a.price - b.price)
       if (sort === 'price-desc') data = [...data].sort((a, b) => b.price - a.price)
       setProducts(data)
-    } catch {
+    } catch (error) {
+      console.error('Failed to load shop products:', error)
       setProducts([])
     } finally {
       setLoading(false)

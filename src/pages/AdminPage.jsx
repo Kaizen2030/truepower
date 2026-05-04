@@ -93,7 +93,12 @@ export default function AdminPage() {
     loadPageContent()
   }, [isAdmin])
 
-  const loadProducts = () => getProducts().then(setProducts).catch(() => {})
+  const loadProducts = () =>
+    getProducts()
+      .then(setProducts)
+      .catch((error) => {
+        console.error('Failed to load admin products:', error)
+      })
 
   // ── Product CRUD ──────────────────────────────────────────
   const startNew = () => setEditing({ ...EMPTY_PRODUCT })
@@ -601,4 +606,3 @@ export default function AdminPage() {
     </main>
   )
 }
-

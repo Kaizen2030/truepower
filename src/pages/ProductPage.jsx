@@ -23,12 +23,17 @@ export default function ProductPage() {
     getProduct(id).then(p => {
       setProduct(p)
       setLoading(false)
-      if (p?.category) {
-        getProducts({ category: p.category, limit: 5 })
+      if (p?.cat) {
+        getProducts({ category: p.cat, limit: 5 })
           .then(r => setRelated(r.filter(x => x.id !== id)))
-          .catch(() => {})
+          .catch((error) => {
+            console.error('Failed to load related products:', error)
+          })
       }
-    }).catch(() => setLoading(false))
+    }).catch((error) => {
+      console.error('Failed to load product:', error)
+      setLoading(false)
+    })
   }, [id])
 
   if (loading) return (
