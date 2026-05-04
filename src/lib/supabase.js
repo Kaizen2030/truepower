@@ -220,10 +220,22 @@ export async function promoteUserToAdmin(email) {
   if (error) {
     throw new Error(error.message || 'Unable to promote user. Ensure the user exists and has signed up.')
   }
-  if (!data) {
-    throw new Error('No user found with that email. Make sure the user signed up first.')
+
+  if (data) {
+    return data
   }
-  return data
+
+  // If no profile row exists yet, create one with admin role
+  const { data: created, error: createError } = await supabase
+    .from('profiles')
+    .upsert({ email, role: 'admin', updated_at: new Date() }, { onConflict: 'email' })
+    .select()
+    .maybeSingle()
+
+  if (createError) {
+    throw new Error(createError.message || 'Unable to create admin profile.')
+  }
+  return created
 }
 
 export async function demoteAdmin(id) {

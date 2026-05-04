@@ -1,4 +1,5 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
 import Navbar     from './components/Navbar'
 import Footer     from './components/Footer'
 import WhatsAppFab from './components/WhatsAppFab'
@@ -57,5 +58,19 @@ function AppInner() {
 }
 
 export default function App() {
+  const { pathname } = useLocation()
+
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual'
+    }
+  }, [])
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+    document.body.scrollTop = 0
+    document.documentElement.scrollTop = 0
+  }, [pathname])
+
   return <AppInner />
 }
