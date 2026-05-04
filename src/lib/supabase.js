@@ -383,6 +383,24 @@ export function getPageSectionSchemas() {
           { name: 'subtitle', label: 'Subtitle', type: 'textarea', rows: 2, placeholder: 'Real installations, genuine reviews...' }
         ]
       },
+      stats: {
+        label: 'Top Stats',
+        description: 'The 4 statistic cards shown under the hero section',
+        schema: [
+          {
+            name: 'items',
+            label: 'Stat Items',
+            type: 'array',
+            itemLabel: 'Stat',
+            itemTemplate: { value: '', label: '', icon: 'Users' },
+            itemFields: [
+              { name: 'value', label: 'Value', type: 'text', placeholder: '500+' },
+              { name: 'label', label: 'Label', type: 'text', placeholder: 'Happy Customers' },
+              { name: 'icon', label: 'Icon Name', type: 'text', placeholder: 'Users, Star, MessageCircle, Truck' }
+            ]
+          }
+        ]
+      },
       how_it_works: {
         label: 'How It Works (3 Steps)',
         description: 'The 3-step process',

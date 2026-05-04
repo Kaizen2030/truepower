@@ -22,6 +22,30 @@ import {
 import { getGalleryImages, getTestimonials, getPageContent } from '../lib/supabase'
 import Seo from '../components/Seo'
 
+const PortfolioIconMap = {
+  Star,
+  MessageCircle,
+  MapPin,
+  Users,
+  Sparkles,
+  Award,
+  Truck,
+  Shield,
+  Droplets,
+  Sun,
+  Store,
+  Camera,
+  Briefcase,
+  ThumbsUp,
+  ArrowRight,
+  Quote,
+}
+
+function DynamicPortfolioIcon({ name, size = 24 }) {
+  const IconComponent = PortfolioIconMap[name] || Sparkles
+  return <IconComponent size={size} />
+}
+
 export default function PortfolioPage() {
   const [galleryImages, setGalleryImages] = useState([])
   const [testimonials, setTestimonials] = useState([])
@@ -55,7 +79,7 @@ export default function PortfolioPage() {
     { key: 'product', label: 'Products', icon: <ThumbsUp size={14} /> },
   ]
 
-  const stats = pageData?.stats || [
+  const stats = pageData?.stats?.items || pageData?.stats || [
     { value: '500+', label: 'Happy Customers', icon: <Users size={24} /> },
     { value: '4.9★', label: 'Average Rating', icon: <Star size={24} /> },
     { value: '24/7', label: 'WhatsApp Support', icon: <MessageCircle size={24} /> },
@@ -121,7 +145,9 @@ export default function PortfolioPage() {
             {stats.map((stat) => (
               <div key={stat.label} className="text-center group">
                 <div className="text-brand-500 mb-2 flex justify-center group-hover:scale-110 transition-transform">
-                  {stat.icon}
+                  {typeof stat.icon === 'string'
+                    ? <DynamicPortfolioIcon name={stat.icon} size={24} />
+                    : stat.icon}
                 </div>
                 <p className="font-display font-extrabold text-2xl text-ink">{stat.value}</p>
                 <p className="text-sub text-xs">{stat.label}</p>
