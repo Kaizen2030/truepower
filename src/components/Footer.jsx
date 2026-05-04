@@ -55,7 +55,6 @@ export default function Footer() {
                 { l: 'Portfolio', to: '/portfolio' },
                 { l: 'Shop', to: '/shop' },
                 { l: 'Wishlist', to: '/wishlist' },
-                { l: 'Admin Login', to: '/admin/login' },
               ].map(i => (
                 <li key={i.l}><Link to={i.to} className="hover:text-white transition-colors">{i.l}</Link></li>
               ))}
@@ -85,4 +84,3 @@ export default function Footer() {
     </footer>
   )
 }
-
