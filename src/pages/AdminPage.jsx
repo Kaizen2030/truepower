@@ -6,7 +6,7 @@ import {
   getSettings, saveSettings,
   getTestimonials, upsertTestimonial, deleteTestimonial,
   getAllPageContent, uploadImage, getPageSectionSchemas,
-  getGalleryImages, getAdmins, promoteUserToAdmin, demoteAdmin
+  getGalleryImages, promoteUserToAdmin, demoteAdmin, supabase
 } from '../lib/supabase'
 import PageContentEditor from '../components/PageContentEditor'
 import { useAuth } from '../context/AuthContext'
@@ -77,6 +77,7 @@ export default function AdminPage() {
   // Page content CMS
   const [pageContent, setPageContent] = useState({ about: null, portfolio: null })
   const [admins, setAdmins] = useState([])
+  const [adminsLoading, setAdminsLoading] = useState(false)
   const [newAdminEmail, setNewAdminEmail] = useState('')
   const [adminMessage, setAdminMessage] = useState('')
   const [adminActionLoading, setAdminActionLoading] = useState(false)
@@ -100,7 +101,19 @@ export default function AdminPage() {
   }, [isAdmin])
 
   const loadProducts = () => getProducts().then(setProducts).catch(() => {})
-  const loadAdmins = () => getAdmins().then(setAdmins).catch(() => {})
+  const loadAdmins = async () => {
+    setAdminsLoading(true)
+    try {
+      const { data, error } = await supabase.rpc('get_admin_users')
+      if (error) throw error
+      setAdmins(data || [])
+    } catch (e) {
+      console.error('loadAdmins error:', e)
+      setAdmins([])
+    } finally {
+      setAdminsLoading(false)
+    }
+  }
 
   const handlePromoteAdmin = async () => {
     if (!newAdminEmail.trim()) return alert('Enter an email to promote.')
@@ -251,15 +264,17 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-2 border-b border-border mb-8">
-          {TABS.map(t => (
-            <button key={t.key} onClick={() => setTab(t.key)}
-              className={`flex items-center gap-2 px-4 py-3 font-display font-semibold text-sm transition-colors border-b-2 -mb-[2px] ${
-                tab === t.key ? 'border-brand-500 text-brand-500' : 'border-transparent text-sub hover:text-ink'
-              }`}>
-              {t.icon} {t.label}
-            </button>
-          ))}
+        <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 border-b border-border mb-8">
+          <div className="flex gap-2 min-w-max">
+            {TABS.map(t => (
+              <button key={t.key} onClick={() => setTab(t.key)}
+                className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 font-display font-semibold text-sm transition-colors border-b-2 -mb-[2px] ${
+                  tab === t.key ? 'border-brand-500 text-brand-500' : 'border-transparent text-sub hover:text-ink'
+                }`}>
+                {t.icon} {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── PRODUCTS TAB ── */}
@@ -374,9 +389,9 @@ export default function AdminPage() {
             )}
 
             {/* Product list */}
-            <div className="flex flex-col gap-3">
+            <div className="grid grid-cols-2 gap-3">
               {products.map(p => (
-                <div key={p.id} className="card p-4 flex items-center gap-4">
+                <div key={p.id} className="card p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted shrink-0">
                     {p.images?.[0] ? <img src={p.images[0]} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-muted" />}
                   </div>
@@ -384,7 +399,7 @@ export default function AdminPage() {
                     <p className="font-display font-semibold text-sm text-ink truncate">{p.name}</p>
                     <p className="text-sub text-xs capitalize">{p.catLabel || p.cat} · KSh {Number(p.price).toLocaleString()}</p>
                   </div>
-                  <div className="flex gap-2 shrink-0">
+                  <div className="flex gap-2 mt-3 sm:mt-0 shrink-0">
                     <button onClick={() => startEdit(p)} className="p-2 text-sub hover:text-brand-500 transition-colors"><Edit2 size={16} /></button>
                     <button onClick={() => handleDelete(p.id)} className="p-2 text-sub hover:text-red-400 transition-colors"><Trash2 size={16} /></button>
                   </div>
