@@ -19,7 +19,7 @@ function AdminRoute({ children }) {
   if (!auth) return null
   const { user, loading, isAdmin } = auth
 
-  if (loading) return children
+  if (loading) return null
   if (!user) return <Navigate to="/admin/login" replace />
   if (!isAdmin) return <Navigate to="/" replace />
   return children
