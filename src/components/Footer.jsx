@@ -10,8 +10,8 @@ export default function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 flex items-center justify-center">
-                <TruePowerLogo size={20} />
+              <div className="w-10 h-10 flex items-center justify-center">
+                <TruePowerLogo size={38} />
               </div>
               <span className="font-display font-bold text-white text-lg">TruePower</span>
             </div>
