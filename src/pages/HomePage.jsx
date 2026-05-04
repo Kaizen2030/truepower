@@ -39,7 +39,7 @@ export default function HomePage() {
                 TruePower Store
               </p>
               <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-ink leading-tight">
-                Shop the best hot water solutions.
+                Smart hot water systems
               </h1>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -61,7 +61,7 @@ export default function HomePage() {
 
       <section className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-10">
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
             {Array.from({ length: 12 }).map((_, index) => (
               <div key={index} className="rounded-3xl bg-muted animate-pulse aspect-[3/4]" />
             ))}
@@ -77,7 +77,7 @@ export default function HomePage() {
                 View full shop
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
