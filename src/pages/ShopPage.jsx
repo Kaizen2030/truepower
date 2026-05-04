@@ -145,9 +145,9 @@ export default function ShopPage() {
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {Array(8).fill(0).map((_, i) => (
-              <div key={i} className="rounded-2xl bg-muted animate-pulse" style={{ aspectRatio: '3/4' }} />
+              <div key={i} className="rounded-2xl bg-muted animate-pulse" style={{ aspectRatio: '3 / 4' }} />
             ))}
           </div>
         ) : products.length === 0 ? (
@@ -157,7 +157,7 @@ export default function ShopPage() {
             <p className="text-sub text-sm">Try a different category or search term</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map(p => <ProductCard key={p.id} product={p} />)}
           </div>
         )}

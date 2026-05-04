@@ -17,7 +17,7 @@ export default function ProductCard({ product }) {
   return (
     <div className="card group flex flex-col w-full">
       {/* Image */}
-      <Link to={`/product/${product.id}`} className="block relative overflow-hidden bg-muted" style={{ aspectRatio: '5 / 4' }}>
+      <Link to={`/product/${product.id}`} className="block relative overflow-hidden bg-muted" style={{ aspectRatio: '3 / 4' }}>
         {img ? (
           <img
             src={img}
@@ -31,15 +31,15 @@ export default function ProductCard({ product }) {
           </div>
         )}
 
-        {/* Top badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
-          {product.badge && (
-            <span className="badge-green text-[10px]">{product.badge}</span>
-          )}
-          <span className="bg-white/80 backdrop-blur-sm text-sub text-[10px] font-display font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
-            {product.catLabel || CAT_LABELS[product.cat] || product.cat}
-          </span>
-        </div>
+        {/* Primary badge: top-left, visible on all sizes (keeps 'bestseller', 'new', 'sale' visible) */}
+        {product.badge && (
+          <span className="absolute top-3 left-3 badge-green text-[10px]">{product.badge}</span>
+        )}
+
+        {/* Category label: top-right (to the left of wishlist), shown on md+ to avoid covering mobile images */}
+        <span className="absolute top-3 right-12 hidden md:inline-block bg-white/80 backdrop-blur-sm text-sub text-[10px] font-display font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
+          {product.catLabel || CAT_LABELS[product.cat] || product.cat}
+        </span>
 
         {/* Wishlist */}
         <button
@@ -53,6 +53,13 @@ export default function ProductCard({ product }) {
           <Heart size={13} fill={wishlisted ? 'currentColor' : 'none'} />
         </button>
       </Link>
+
+      {/* Category badge for small screens: placed below image (primary badge already overlays image) */}
+      <div className="p-4 pt-3 md:hidden flex gap-2 items-center flex-wrap">
+        <span className="bg-white text-sub text-[11px] font-display font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-border">
+          {product.catLabel || CAT_LABELS[product.cat] || product.cat}
+        </span>
+      </div>
 
       {/* Info */}
       <div className="p-5 flex flex-col flex-1">
@@ -78,16 +85,16 @@ export default function ProductCard({ product }) {
             )}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+          <div className="flex flex-row gap-2 mt-4">
             <Link
               to={`/product/${product.id}`}
-              className="w-full sm:flex-1 text-center text-sm font-semibold py-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all whitespace-nowrap"
+              className="flex-1 text-center text-sm font-semibold py-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all"
             >
               View
             </Link>
             <button
               onClick={() => addToCart(product)}
-              className="w-full sm:flex-1 text-center text-sm font-semibold py-3 rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-all whitespace-nowrap"
+              className="flex-1 text-center text-sm font-semibold py-3 rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-all"
             >
               Add to Cart
             </button>
