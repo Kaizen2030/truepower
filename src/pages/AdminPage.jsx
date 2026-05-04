@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Trash2, Edit2, Save, X, Upload, LogOut, Settings, Package, Star, Image } from 'lucide-react'
+import { Plus, Trash2, Edit2, Save, X, Upload, LogOut, Settings, Package, Star, Image, Users } from 'lucide-react'
 import {
   getProducts, upsertProduct, deleteProduct,
   getSettings, saveSettings,
   getTestimonials, upsertTestimonial, deleteTestimonial,
   getAllPageContent, uploadImage, getPageSectionSchemas,
-  getGalleryImages, supabase
+  getGalleryImages, getAdmins, promoteUserToAdmin, demoteAdmin
 } from '../lib/supabase'
 import PageContentEditor from '../components/PageContentEditor'
 import { useAuth } from '../context/AuthContext'
@@ -24,6 +24,7 @@ const TABS = [
   { key: 'gallery', label: 'Gallery', icon: <Image size={16} /> },
   { key: 'pageContent', label: 'Pages', icon: <Settings size={16} /> },
   { key: 'settings', label: 'Settings', icon: <Settings size={16} /> },
+  { key: 'admins', label: 'Admins', icon: <Users size={16} /> },
 ]
 
 const EMPTY_PRODUCT = {
@@ -75,6 +76,10 @@ export default function AdminPage() {
 
   // Page content CMS
   const [pageContent, setPageContent] = useState({ about: null, portfolio: null })
+  const [admins, setAdmins] = useState([])
+  const [newAdminEmail, setNewAdminEmail] = useState('')
+  const [adminMessage, setAdminMessage] = useState('')
+  const [adminActionLoading, setAdminActionLoading] = useState(false)
 
   const fileRef = useRef()
 
@@ -87,18 +92,45 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isAdmin) return
     loadProducts()
+    loadAdmins()
     getTestimonials().then(setTestimonials).catch(() => {})
     getGalleryImages().then(setGalleryImages).catch(() => {})
     getSettings().then(s => s && setSettings(prev => ({ ...prev, ...s }))).catch(() => {})
     loadPageContent()
   }, [isAdmin])
 
-  const loadProducts = () =>
-    getProducts()
-      .then(setProducts)
-      .catch((error) => {
-        console.error('Failed to load admin products:', error)
-      })
+  const loadProducts = () => getProducts().then(setProducts).catch(() => {})
+  const loadAdmins = () => getAdmins().then(setAdmins).catch(() => {})
+
+  const handlePromoteAdmin = async () => {
+    if (!newAdminEmail.trim()) return alert('Enter an email to promote.')
+    setAdminActionLoading(true)
+    setAdminMessage('')
+    try {
+      await promoteUserToAdmin(newAdminEmail.trim())
+      setAdminMessage(`${newAdminEmail.trim()} is now an admin.`)
+      setNewAdminEmail('')
+      loadAdmins()
+    } catch (err) {
+      alert(err.message || 'Unable to add admin. Make sure the user has signed up.')
+    } finally {
+      setAdminActionLoading(false)
+    }
+  }
+
+  const handleDemoteAdmin = async (id) => {
+    if (!confirm('Remove admin access for this user?')) return
+    setAdminActionLoading(true)
+    try {
+      await demoteAdmin(id)
+      setAdminMessage('Admin access removed.')
+      loadAdmins()
+    } catch (err) {
+      alert(err.message || 'Unable to remove admin.')
+    } finally {
+      setAdminActionLoading(false)
+    }
+  }
 
   // ── Product CRUD ──────────────────────────────────────────
   const startNew = () => setEditing({ ...EMPTY_PRODUCT })
@@ -171,8 +203,13 @@ export default function AdminPage() {
   }
 
   const handleLogout = async () => {
-    await authSignOut()
-    navigate('/admin/login')
+    try {
+      await authSignOut()
+    } catch (error) {
+      console.error('Admin logout failed:', error)
+    } finally {
+      navigate('/admin/login')
+    }
   }
 
   if (authLoading) {
@@ -520,7 +557,7 @@ export default function AdminPage() {
                 onClick={async () => {
                   if (!galleryImageUrl) return alert('Please upload an image first.')
                   try {
-                    const { error } = await supabase
+                    const { error } = await (await import('../lib/supabase')).supabase
                       .from('gallery_images')
                       .insert({ image_url: galleryImageUrl, title: galleryForm.title, description: galleryForm.description, category: galleryForm.category })
                     if (error) throw error
@@ -551,6 +588,7 @@ export default function AdminPage() {
                     <button
                       onClick={async () => {
                         if (!confirm('Delete this image?')) return
+                        const { supabase } = await import('../lib/supabase')
                         await supabase.from('gallery_images').delete().eq('id', img.id)
                         getGalleryImages().then(setGalleryImages)
                       }}
@@ -602,7 +640,68 @@ export default function AdminPage() {
           </div>
         )}
 
+        {tab === 'admins' && (
+          <div>
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
+              <div>
+                <p className="text-sub text-sm">{admins.length} admin{admins.length === 1 ? '' : 's'}</p>
+                <h2 className="font-display font-bold text-xl">Admin users</h2>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                <input
+                  type="email"
+                  value={newAdminEmail}
+                  onChange={e => setNewAdminEmail(e.target.value)}
+                  placeholder="Enter user email"
+                  className="input w-full sm:w-[280px]"
+                />
+                <button
+                  type="button"
+                  onClick={handlePromoteAdmin}
+                  disabled={adminActionLoading}
+                  className="btn-primary px-4 py-2"
+                >
+                  Add Admin
+                </button>
+              </div>
+            </div>
+            {adminMessage && (
+              <div className="mb-6 rounded-2xl bg-emerald-50 border border-emerald-200 px-4 py-3 text-emerald-700">
+                {adminMessage}
+              </div>
+            )}
+            <div className="overflow-hidden rounded-3xl border border-border bg-white">
+              {admins.length === 0 ? (
+                <div className="p-6 text-center text-sub">No admins added yet.</div>
+              ) : (
+                <div className="grid gap-2">
+                  {admins.map((admin) => (
+                    <div key={admin.id} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-5 border-b border-border last:border-b-0">
+                      <div>
+                        <p className="font-medium text-ink">{admin.email}</p>
+                        <p className="text-sm text-sub">{admin.name || 'No name provided'}</p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full bg-brand-100 px-3 py-1 text-[11px] font-semibold uppercase text-brand-700">Admin</span>
+                        <button
+                          type="button"
+                          onClick={() => handleDemoteAdmin(admin.id)}
+                          disabled={adminActionLoading || admin.id === user?.id}
+                          className="btn-ghost text-sm text-red-500 disabled:opacity-50"
+                        >
+                          {admin.id === user?.id ? 'Current admin' : 'Remove'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
       </div>
     </main>
   )
 }
+

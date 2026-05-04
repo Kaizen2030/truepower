@@ -197,6 +197,52 @@ export async function getAllPageContent() {
   return data || []
 }
 
+// ── Admin management helpers ─────────────────────────────────────────────────
+export async function getAdmins() {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, email, name, role')
+    .eq('role', 'admin')
+    .order('updated_at', { ascending: false })
+
+  if (error) throw error
+  return data || []
+}
+
+export async function promoteUserToAdmin(email) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ role: 'admin', updated_at: new Date() })
+    .eq('email', email)
+    .select()
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(error.message || 'Unable to promote user. Ensure the user exists and has signed up.')
+  }
+  if (!data) {
+    throw new Error('No user found with that email. Make sure the user signed up first.')
+  }
+  return data
+}
+
+export async function demoteAdmin(id) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .update({ role: 'user', updated_at: new Date() })
+    .eq('id', id)
+    .select()
+    .maybeSingle()
+
+  if (error) {
+    throw new Error(error.message || 'Unable to demote admin.')
+  }
+  if (!data) {
+    throw new Error('Admin user not found.')
+  }
+  return data
+}
+
 // ── Page Content Schema (for visual editor) ─────────────────────────────────
 export function getPageSectionSchemas() {
   return {
