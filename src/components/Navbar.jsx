@@ -23,6 +23,9 @@ export default function Navbar() {
   const initials = user ? ((user.user_metadata?.full_name || user.email || '').split(' ').map(s => s[0]).slice(0,2).join('')).toUpperCase() : ''
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const accountRef = useRef(null)
+  const accountBtnRef = useRef(null)
+  const accountMenuRef = useRef(null)
+  const [menuPos, setMenuPos] = useState(null)
 
   const handleLogout = async () => {
     try {
@@ -48,8 +51,9 @@ export default function Navbar() {
 
   useEffect(() => {
     function onDocClick(e) {
-      if (!accountRef.current) return
-      if (!accountRef.current.contains(e.target)) setAccountMenuOpen(false)
+      if (accountBtnRef.current && accountBtnRef.current.contains(e.target)) return
+      if (accountMenuRef.current && accountMenuRef.current.contains(e.target)) return
+      setAccountMenuOpen(false)
     }
     if (accountMenuOpen) document.addEventListener('click', onDocClick)
     return () => document.removeEventListener('click', onDocClick)
@@ -210,18 +214,26 @@ export default function Navbar() {
             <div className="flex items-center gap-0.5 shrink-0">
               {/* Desktop profile / Login button placed next to wishlist/cart */}
               {user ? (
-                <div className="hidden md:inline-flex items-center ml-2 relative" ref={accountRef}>
-                  <button type="button" onClick={() => setAccountMenuOpen(s => !s)} className="flex items-center focus:outline-none">
-                    {user.user_metadata?.avatar_url ? (
-                      <img src={user.user_metadata.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-ink">
-                        {initials || 'U'}
-                      </div>
-                    )}
-                  </button>
-                  {accountMenuOpen && (
-                    <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-lg shadow-lg z-40">
+                <>
+                  <div className="hidden md:inline-flex items-center ml-2" ref={accountRef}>
+                    <button type="button" ref={accountBtnRef} onClick={() => {
+                      if (!accountMenuOpen) {
+                        const r = accountBtnRef.current.getBoundingClientRect()
+                        setMenuPos({ top: Math.round(r.bottom + 8), left: Math.round(r.right - 176) })
+                      }
+                      setAccountMenuOpen(s => !s)
+                    }} className="flex items-center focus:outline-none">
+                      {user.user_metadata?.avatar_url ? (
+                        <img src={user.user_metadata.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-ink">
+                          {initials || 'U'}
+                        </div>
+                      )}
+                    </button>
+                  </div>
+                  {accountMenuOpen && menuPos && (
+                    <div ref={accountMenuRef} style={{ position: 'fixed', top: menuPos.top, left: menuPos.left, width: 176 }} className="bg-white border border-border rounded-lg shadow-lg z-[9999]">
                       <div className="flex flex-col py-1">
                         <Link to="/account" onClick={() => setAccountMenuOpen(false)} className="px-4 py-2 text-sm text-ink hover:bg-muted">Profile</Link>
                         <Link to="/orders" onClick={() => setAccountMenuOpen(false)} className="px-4 py-2 text-sm text-ink hover:bg-muted">Orders</Link>
@@ -229,7 +241,7 @@ export default function Navbar() {
                       </div>
                     </div>
                   )}
-                </div>
+                </>
               ) : (
                 <NavLink to="/admin/login" className="hidden md:inline-flex btn-primary ml-2">
                   <User size={16} />
