@@ -291,6 +291,15 @@ export default function Navbar() {
                   {l.label}
                 </NavLink>
               ))}
+              {!user && (
+                <NavLink
+                  to="/admin/login"
+                  onClick={() => setOpen(false)}
+                  className="font-display font-semibold text-base px-4 py-3 rounded-xl text-sub"
+                >
+                  Login
+                </NavLink>
+              )}
               <div className="pt-3 border-t border-border mt-2">
                 <p className="px-4 text-sm font-medium text-sub">Categories</p>
                 <div className="flex gap-2 px-4 pt-2 overflow-x-auto">
@@ -320,15 +329,7 @@ export default function Navbar() {
                     Logout
                   </button>
                 </>
-              ) : (
-                <NavLink
-                  to="/admin/login"
-                  onClick={() => setOpen(false)}
-                  className="btn-primary w-full justify-center"
-                >
-                  Login
-                </NavLink>
-              )}
+              ) : null}
               <div className="pt-3 border-t border-border mt-2">
                 <a
                   href="https://wa.me/254701039256"
