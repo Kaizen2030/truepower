@@ -83,7 +83,7 @@ export default function AboutPage() {
     <main className="pt-[68px] min-h-screen bg-white">
       <Seo
         title="About TruePower Kenya"
-        description="Learn about TruePower Kenya, our hot water solutions, Nyamakima showroom, and how we help homes with borehole water, salty water, and low pressure."
+        description="Learn about TruePower Kenya — our water heaters, pumps, solar and electrical solutions, Nyamakima showroom, and how we help homes with borehole water and low pressure."
         path="/about"
       />
       <section className="relative bg-gradient-to-br from-brand-900 via-brand-800 to-brand-600 text-white overflow-hidden">
@@ -102,7 +102,7 @@ export default function AboutPage() {
                 {hero.title || 'Hot water for every Kenyan home.'}
               </h1>
               <p className="text-brand-100 text-lg lg:text-xl mb-8 max-w-xl leading-relaxed">
-                {hero.subtitle || 'Electric showers, wall heaters, and pump-assisted systems — selected for Kenyan homes, borehole water, and low-pressure plumbing.'}
+                {hero.subtitle || 'Water heaters, solar and electrical solutions — selected for Kenyan homes, borehole water, and low-pressure plumbing.'}
               </p>
 
               <div className="flex flex-wrap gap-4">

@@ -119,7 +119,7 @@ export async function getSettings() {
   return {
     whatsapp_number: map.wa_number        || '254701039256',
     hero_title:      map.hero_title       || 'Hot Water.\nEvery Morning.',
-    hero_subtitle:   map.hero_subtitle    || 'Electric showers, wall heaters, and pump-assisted systems — selected for Kenyan homes, borehole water, and low-pressure plumbing.',
+    hero_subtitle:   map.hero_subtitle    || 'Water heaters, solar and electrical solutions — selected for Kenyan homes, borehole water, and low-pressure plumbing.',
     stat_customers:  map.stat_customers   || '500+',
     stat_rating:     map.stat_rating      || '4.9★',
     home_media:      safeJson(map.home_media_json, []),

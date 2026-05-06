@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
 
 const SITE_URL = 'https://truepower.co.ke'
-const DEFAULT_TITLE = 'TruePower Kenya | Electric Showers, Wall Heaters & Hot Water Solutions'
-const DEFAULT_DESCRIPTION = 'Shop electric showers, wall heaters, booster pumps, and hot water solutions in Kenya. TruePower helps homes with salty water, borehole water, and low water pressure.'
+const DEFAULT_TITLE = 'TruePower Kenya | Water Heaters, Solar & Electrical Solutions'
+const DEFAULT_DESCRIPTION = 'Shop water heaters, pumps, solar solutions, lighting and electrical gear in Kenya. TruePower helps homes with borehole water, salty water, and low water pressure.'
 const DEFAULT_IMAGE = `${SITE_URL}/logo.png`
 
 function ensureMeta(selector, attributes = {}) {

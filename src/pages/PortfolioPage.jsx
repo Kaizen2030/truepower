@@ -89,7 +89,7 @@ export default function PortfolioPage() {
   const hero = pageData?.hero || {
     badge: 'TruePower Portfolio',
     title: 'Our Portfolio',
-    subtitle: 'Real installations, genuine reviews, and the proof that we deliver hot water solutions that actually work in Kenyan homes.',
+    subtitle: 'Real installations, genuine reviews, and proof that we deliver reliable water, solar and electrical solutions for Kenyan homes.',
   }
 
   const gallerySection = pageData?.gallerySection || {
@@ -108,8 +108,8 @@ export default function PortfolioPage() {
   }
 
   const cta = pageData?.cta || {
-    title: 'Ready to get hot water working perfectly?',
-    subtitle: 'Chat with us on WhatsApp — we’ll help you choose the right solution for your home.',
+    title: 'Ready to find the right solution for your home?',
+    subtitle: 'Chat with us on WhatsApp — we’ll help you choose the right water heater, pump or solar option.',
     button_text: 'WhatsApp Us',
     button_link: 'https://wa.me/254701039256',
   }

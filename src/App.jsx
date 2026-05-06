@@ -9,6 +9,7 @@ import ShopPage   from './pages/ShopPage'
 import ProductPage from './pages/ProductPage'
 import WishlistPage from './pages/WishlistPage'
 import AboutPage      from './pages/AboutPage'
+import ServicesPage   from './pages/ServicesPage'
 import PortfolioPage  from './pages/PortfolioPage'
 import AdminPage      from './pages/AdminPage'
 import LoginPage      from './pages/LoginPage'
@@ -48,6 +49,7 @@ function AppInner() {
         <Route path="/product/:id"   element={<ProductPage />}  />
         <Route path="/wishlist"      element={<WishlistPage />} />
         <Route path="/about"         element={<AboutPage />}    />
+        <Route path="/services"      element={<ServicesPage />} />
         <Route path="/admin"         element={<AdminRoute><AdminPage /></AdminRoute>} />
         <Route path="/admin/login"   element={<LoginPage />}    />
       </Routes>

@@ -15,7 +15,7 @@ export default function Footer() {
               </div>
               <span className="font-display font-bold text-white text-lg">TruePower</span>
             </div>
-            <p className="text-sm leading-relaxed mb-5">Hot water solutions built for Kenyan homes, borehole water, and low-pressure plumbing.</p>
+            <p className="text-sm leading-relaxed mb-5">Water heaters, pumps, solar and electrical solutions built for Kenyan homes, borehole water, and low-pressure plumbing.</p>
             <div className="flex flex-col gap-2 text-sm">
               <a href="tel:+254701039256" className="flex items-center gap-2 hover:text-white transition-colors">
                 <Phone size={14} className="text-brand-400" /> +254 701 039 256
@@ -34,10 +34,12 @@ export default function Footer() {
             <p className="font-display font-bold text-white text-sm mb-4 uppercase tracking-wider">Shop</p>
             <ul className="flex flex-col gap-2 text-sm">
               {[
-                { label: 'Wall Heaters', slug: 'standard' },
-                { label: 'With Pump', slug: 'pump' },
-                { label: 'Shower Heads', slug: 'showerhead' },
-                { label: 'Accessories', slug: 'accessory' },
+                { label: 'All Products', slug: 'all' },
+                { label: 'Water Heaters', slug: 'water_heaters' },
+                { label: 'Bulbs & Lighting', slug: 'bulbs_lighting' },
+                { label: 'Switches & Sockets', slug: 'switches_sockets' },
+                { label: 'Solar Solutions', slug: 'solar_solutions' },
+                { label: 'Water Pumps', slug: 'water_pumps' },
               ].map(item => (
                 <li key={item.slug}>
                   <Link to={`/shop?category=${item.slug}`} className="hover:text-white transition-colors">{item.label}</Link>

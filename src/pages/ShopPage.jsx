@@ -6,11 +6,12 @@ import ProductCard from '../components/ProductCard'
 import Seo from '../components/Seo'
 
 const CATS = [
-  { key: 'all', label: 'All Products' },
-  { key: 'standard', label: 'Wall Heaters' },
-  { key: 'pump', label: 'With Pump' },
-  { key: 'showerhead', label: 'Shower Heads' },
-  { key: 'accessory', label: 'Accessories' },
+  { key: 'all',              label: 'All Products' },
+  { key: 'water_heaters',    label: 'Water Heaters' },
+  { key: 'bulbs_lighting',   label: 'Bulbs & Lighting' },
+  { key: 'switches_sockets', label: 'Switches & Sockets' },
+  { key: 'solar_solutions',  label: 'Solar Solutions' },
+  { key: 'water_pumps',      label: 'Water Pumps' },
 ]
 
 const SORT_OPTIONS = [
@@ -39,11 +40,15 @@ export default function ShopPage() {
 
   const load = useCallback(async () => {
     setLoading(true)
-    try {
-      let data = await getProducts({
-        category: category === 'all' ? null : category,
-        search: activeSearch,
-      })
+      try {
+      let data = category === 'water_heaters'
+        ? (await getProducts({ search: activeSearch })).filter(p =>
+            ['standard', 'pump', 'showerhead', 'accessory'].includes(p.cat)
+          )
+        : await getProducts({
+            category: category === 'all' ? null : category,
+            search: activeSearch,
+          })
       if (sort === 'price-asc')  data = [...data].sort((a, b) => a.price - b.price)
       if (sort === 'price-desc') data = [...data].sort((a, b) => b.price - a.price)
       setProducts(data)
@@ -75,11 +80,11 @@ export default function ShopPage() {
   const seoTitle = activeSearch
     ? `${catLabel} for "${activeSearch}"`
     : catLabel === 'All Products'
-      ? 'Shop Electric Showers, Pumps & Wall Heaters'
+      ? 'Shop Water Heaters, Pumps, Solar & Electrical Solutions'
       : `${catLabel} Shop`
   const seoDescription = activeSearch
-    ? `Browse ${catLabel.toLowerCase()} matching "${activeSearch}" at TruePower Kenya. Compare prices and find the right hot water solution for your home.`
-    : `Shop ${catLabel.toLowerCase()} at TruePower Kenya. Compare electric showers, wall heaters, shower heads, and booster pumps built for Kenyan homes.`
+    ? `Browse ${catLabel.toLowerCase()} matching "${activeSearch}" at TruePower Kenya. Compare products and find the right solution for your home.`
+    : `Shop ${catLabel.toLowerCase()} at TruePower Kenya. Compare products across water heaters, pumps, solar and electrical categories built for Kenyan homes.`
   const canonicalPath = `/shop${params.toString() ? `?${params.toString()}` : ''}`
 
   return (

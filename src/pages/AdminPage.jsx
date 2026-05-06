@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Plus, Trash2, Edit2, Save, X, Upload, LogOut, Settings, Package, Star, Image, Users, GripVertical } from 'lucide-react'
+import { Plus, Trash2, Edit2, Save, X, Upload, LogOut, Settings, Package, Star, Image, Users, GripVertical, Sparkles } from 'lucide-react'
 import {
   getProducts, upsertProduct, deleteProduct,
   getSettings, saveSettings, saveProductOrder,
@@ -12,15 +12,22 @@ import PageContentEditor from '../components/PageContentEditor'
 import { useAuth } from '../context/AuthContext'
 import Seo from '../components/Seo'
 
-// Your DB has: standard, pump, showerhead, accessory
+// Water Heaters group + new categories
 const CATS = [
-  { value: 'standard', label: 'Wall Heaters' },
-  { value: 'pump', label: 'With Pump' },
-  { value: 'showerhead', label: 'Shower Heads' },
-  { value: 'accessory', label: 'Accessories' },
+  { value: 'standard',         label: 'Wall Heaters',       group: 'Water Heaters' },
+  { value: 'pump',             label: 'With Pump',          group: 'Water Heaters' },
+  { value: 'showerhead',       label: 'Shower Heads',       group: 'Water Heaters' },
+  { value: 'accessory',        label: 'Accessories',        group: 'Water Heaters' },
+  { value: 'bulbs_lighting',   label: 'Bulbs & Lighting',   group: 'Electrical' },
+  { value: 'switches_sockets', label: 'Switches & Sockets', group: 'Electrical' },
+  { value: 'solar_solutions',  label: 'Solar Solutions',    group: 'Solar' },
+  { value: 'water_pumps',      label: 'Water Pumps',        group: 'Water' },
 ]
+// derive category groups from CATS
+const GROUPS = Array.from(new Set(CATS.map(c => c.group)))
 const TABS = [
   { key: 'products', label: 'Products', icon: <Package size={16} /> },
+  { key: 'services', label: 'Services', icon: <Sparkles size={16} /> },
   { key: 'testimonials', label: 'Testimonials', icon: <Star size={16} /> },
   { key: 'gallery', label: 'Gallery', icon: <Image size={16} /> },
   { key: 'pageContent', label: 'Pages', icon: <Settings size={16} /> },
@@ -28,11 +35,32 @@ const TABS = [
   { key: 'admins', label: 'Admins', icon: <Users size={16} /> },
 ]
 
+const ANIMATION_STYLES = [
+  { value: 'float', label: 'Floating Motion - gentle up/down' },
+  { value: 'pulse', label: 'Soft Pulse - subtle breathing effect' },
+  { value: 'glow', label: 'Glow Effect - light shadow on hover' },
+  { value: 'slide-up', label: 'Slide Up - lifts on hover' },
+  { value: 'scale', label: 'Scale - grows slightly on hover' },
+  { value: 'rotate', label: 'Subtle Rotation - turns on hover' },
+  { value: 'shimmer', label: 'Shimmer Border - light sweep effect' },
+]
+
+const ICON_OPTIONS = [
+  { value: 'Zap', label: '⚡ Zap - Lightning (Water Heater)' },
+  { value: 'Droplets', label: '💧 Droplets - Water (Pumps)' },
+  { value: 'Sun', label: '☀️ Sun - Solar' },
+  { value: 'ToggleRight', label: '🔘 ToggleRight - Electrical' },
+  { value: 'Wrench', label: '🔧 Wrench - Repairs' },
+  { value: 'PhoneCall', label: '📞 PhoneCall - Consultation' },
+  { value: 'Sparkles', label: '✨ Sparkles - Premium' },
+]
+
 const EMPTY_PRODUCT = {
   name: '',
   model: '',
   cat: 'standard',
   catLabel: 'Wall Heaters',
+  group: 'Water Heaters',
   price: '',
   desc: '',
   badge: '',
@@ -93,6 +121,15 @@ export default function AdminPage() {
 
   // Page content CMS
   const [pageContent, setPageContent] = useState({ about: null, portfolio: null })
+  // Services
+  const [services, setServices] = useState([])
+  const [editingService, setEditingService] = useState(null)
+  const [serviceSaving, setServiceSaving] = useState(false)
+  const [serviceImageFile, setServiceImageFile] = useState(null)
+  const [serviceImagePreview, setServiceImagePreview] = useState('')
+  const serviceFileRef = useRef()
+  const [draggedServiceId, setDraggedServiceId] = useState(null)
+  const [dragOverServiceId, setDragOverServiceId] = useState(null)
   const [admins, setAdmins] = useState([])
   const [adminsLoading, setAdminsLoading] = useState(false)
   const [newAdminEmail, setNewAdminEmail] = useState('')
@@ -110,6 +147,7 @@ export default function AdminPage() {
   useEffect(() => {
     if (!isAdmin) return
     loadProducts()
+    loadServices()
     loadAdmins()
     getTestimonials().then(setTestimonials).catch(() => {})
     getGalleryImages().then(setGalleryImages).catch(() => {})
@@ -118,6 +156,16 @@ export default function AdminPage() {
   }, [isAdmin])
 
   const loadProducts = () => getProducts().then(setProducts).catch(() => {})
+  const loadServices = async () => {
+    try {
+      const { data, error } = await supabase.from('services').select('*').order('order_index', { ascending: true })
+      if (error) throw error
+      setServices(data || [])
+    } catch (e) {
+      console.error('loadServices error:', e)
+      setServices([])
+    }
+  }
   const loadAdmins = async () => {
     setAdminsLoading(true)
     try {
@@ -164,7 +212,11 @@ export default function AdminPage() {
 
   // ── Product CRUD ──────────────────────────────────────────
   const startNew = () => setEditing({ ...EMPTY_PRODUCT })
-  const startEdit = (p) => setEditing({ ...p, features: p.features || [], specs: p.specs || {}, images: p.images || [] })
+  const startEdit = (p) => {
+    const found = CATS.find(c => c.value === p.cat)
+    const group = found?.group || 'Water Heaters'
+    setEditing({ ...p, group, features: p.features || [], specs: p.specs || {}, images: p.images || [] })
+  }
 
   const handleSave = async () => {
     if (!editing.name || !editing.price) return alert('Name and price are required.')
@@ -228,6 +280,141 @@ export default function AdminPage() {
       setEditing(prev => ({ ...prev, images: [...(prev.images || []), url] }))
     } catch (e) { alert(e.message) }
     finally { setSaving(false) }
+  }
+
+  // ── Services CRUD ──────────────────────────────────────────
+  const startNewService = () => {
+    setEditingService({
+      id: null,
+      title: '',
+      description: '',
+      icon_name: 'Zap',
+      features: [],
+      image_url: null,
+      animation_style: 'float',
+      order_index: services.length || 0,
+      is_active: true,
+      badge_text: '',
+      cta_text: 'Learn More'
+    })
+    setServiceImagePreview('')
+    setServiceImageFile(null)
+  }
+
+  const startEditService = (s) => {
+    setEditingService({ ...s, features: s.features || [] })
+    setServiceImagePreview(s.image_url || '')
+    setServiceImageFile(null)
+  }
+
+  const handleServiceImageSelect = (e) => {
+    const file = e.target.files && e.target.files[0]
+    if (!file) return
+    setServiceImageFile(file)
+    setServiceImagePreview(URL.createObjectURL(file))
+  }
+
+  const uploadServiceImage = async () => {
+    if (!serviceImageFile) return null
+    const fileExt = serviceImageFile.name.split('.').pop()
+    const fileName = `${Date.now()}.${fileExt}`
+    const filePath = `${fileName}`
+    const { error: uploadError } = await supabase.storage.from('services').upload(filePath, serviceImageFile)
+    if (uploadError) throw uploadError
+    const { data } = await supabase.storage.from('services').getPublicUrl(filePath)
+    return data?.publicUrl || null
+  }
+
+  const saveService = async () => {
+    if (!editingService?.title) return alert('Service title is required')
+    setServiceSaving(true)
+    try {
+      let imageUrl = editingService.image_url
+      if (serviceImageFile) {
+        imageUrl = await uploadServiceImage()
+      }
+
+      const serviceData = {
+        title: editingService.title,
+        description: editingService.description,
+        icon_name: editingService.icon_name,
+        features: editingService.features || [],
+        image_url: imageUrl,
+        animation_style: editingService.animation_style,
+        order_index: editingService.order_index,
+        is_active: editingService.is_active,
+        badge_text: editingService.badge_text || null,
+        cta_text: editingService.cta_text || 'Learn More'
+      }
+
+      if (editingService.id) {
+        const { error } = await supabase.from('services').update(serviceData).eq('id', editingService.id)
+        if (error) throw error
+      } else {
+        const { error } = await supabase.from('services').insert(serviceData)
+        if (error) throw error
+      }
+
+      setEditingService(null)
+      await loadServices()
+    } catch (e) {
+      alert('Error saving service: ' + (e.message || e))
+    } finally {
+      setServiceSaving(false)
+    }
+  }
+
+  const deleteService = async (id) => {
+    if (!confirm('Delete this service?')) return
+    const { error } = await supabase.from('services').delete().eq('id', id)
+    if (!error) await loadServices()
+  }
+
+  const persistServiceOrder = async (nextServices) => {
+    setServices(nextServices)
+    setOrderSaving(true)
+    setOrderMessage('Saving order...')
+    try {
+      for (let i = 0; i < nextServices.length; i++) {
+        const s = nextServices[i]
+        const { error } = await supabase.from('services').update({ order_index: i }).eq('id', s.id)
+        if (error) throw error
+      }
+      setOrderMessage('Order saved')
+    } catch (error) {
+      console.error('Failed to save service order:', error)
+      setOrderMessage('Could not save order')
+      loadServices()
+    } finally {
+      setOrderSaving(false)
+      window.setTimeout(() => {
+        setOrderMessage(current => (current === 'Order saved' ? '' : current))
+      }, 1800)
+    }
+  }
+
+  const handleServiceDrop = async (targetId) => {
+    if (!draggedServiceId || draggedServiceId === targetId) {
+      setDraggedServiceId(null)
+      setDragOverServiceId(null)
+      return
+    }
+
+    const nextServices = moveProduct(services, draggedServiceId, targetId)
+    setDraggedServiceId(null)
+    setDragOverServiceId(null)
+    await persistServiceOrder(nextServices)
+  }
+
+  const addServiceFeature = () => {
+    const input = document.getElementById('new-feature-input')
+    if (!input || !input.value.trim()) return
+    setEditingService(prev => ({ ...prev, features: [...(prev.features || []), input.value.trim()] }))
+    input.value = ''
+  }
+
+  const removeServiceFeature = (idx) => {
+    setEditingService(prev => ({ ...prev, features: prev.features.filter((_, i) => i !== idx) }))
   }
 
   const removeImage = (i) => setEditing(prev => ({ ...prev, images: prev.images.filter((_, idx) => idx !== i) }))
@@ -368,9 +555,28 @@ export default function AdminPage() {
                     <input className="input" value={editing.model} onChange={e => setEditing(p => ({ ...p, model: e.target.value }))} placeholder="HM-3000" />
                   </div>
                   <div>
-                    <label className="label">Category *</label>
-                    <select className="input" value={editing.cat} onChange={e => setEditing(p => ({ ...p, cat: e.target.value, catLabel: CATS.find(c => c.value === e.target.value)?.label }))}>
-                      {CATS.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                    <label className="label">Category Group</label>
+                    <select
+                      className="input"
+                      value={editing.group}
+                      onChange={e => {
+                        const group = e.target.value
+                        // pick first cat in this group as default
+                        const first = CATS.find(c => c.group === group)
+                        setEditing(p => ({ ...p, group, cat: first?.value || p.cat, catLabel: first?.label || p.catLabel }))
+                      }}
+                    >
+                      {GROUPS.map(g => <option key={g} value={g}>{g}</option>)}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label">Subcategory *</label>
+                    <select
+                      className="input"
+                      value={editing.cat}
+                      onChange={e => setEditing(p => ({ ...p, cat: e.target.value, catLabel: CATS.find(c => c.value === e.target.value)?.label }))}
+                    >
+                      {CATS.filter(c => c.group === editing.group).map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                     </select>
                   </div>
                   <div>
@@ -502,6 +708,167 @@ export default function AdminPage() {
                 <div className="text-center py-16 text-sub">
                   <Package size={40} className="mx-auto mb-3 opacity-30" />
                   <p>No products yet. Add your first one!</p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ── SERVICES TAB ── */}
+        {tab === 'services' && (
+          <div>
+            <div className="flex justify-between items-center mb-6">
+              <div>
+                <p className="text-sub text-sm">{services.length} services</p>
+                <p className="text-faint text-xs mt-1">Manage service cards shown on the Services page</p>
+              </div>
+              <button onClick={startNewService} className="btn-primary text-sm px-4 py-2.5">
+                <Plus size={16} /> Add Service
+              </button>
+            </div>
+
+            {/* Service Edit Form */}
+            {editingService && (
+              <div className="card p-6 mb-6 border-brand-500/20">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="font-display font-bold text-lg">{editingService.id ? 'Edit Service' : 'New Service'}</h3>
+                  <button onClick={() => setEditingService(null)} className="text-sub hover:text-ink"><X size={18} /></button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div className="md:col-span-2">
+                    <label className="label">Service Title *</label>
+                    <input className="input" value={editingService.title} onChange={e => setEditingService(p => ({ ...p, title: e.target.value }))} placeholder="e.g. Water Heater Installation" />
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="label">Description</label>
+                    <textarea className="input h-24 resize-none" value={editingService.description} onChange={e => setEditingService(p => ({ ...p, description: e.target.value }))} placeholder="Short service description..." />
+                  </div>
+
+                  <div>
+                    <label className="label">Icon</label>
+                    <select className="input" value={editingService.icon_name} onChange={e => setEditingService(p => ({ ...p, icon_name: e.target.value }))}>
+                      {ICON_OPTIONS.map(icon => (<option key={icon.value} value={icon.value}>{icon.label}</option>))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="label">Animation Style</label>
+                    <select className="input" value={editingService.animation_style} onChange={e => setEditingService(p => ({ ...p, animation_style: e.target.value }))}>
+                      {ANIMATION_STYLES.map(style => (<option key={style.value} value={style.value}>{style.label}</option>))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="label">Badge Text (optional)</label>
+                    <input className="input" value={editingService.badge_text || ''} onChange={e => setEditingService(p => ({ ...p, badge_text: e.target.value }))} placeholder="Popular, Best Seller, etc." />
+                  </div>
+
+                  <div>
+                    <label className="label">CTA Button Text</label>
+                    <input className="input" value={editingService.cta_text || 'Learn More'} onChange={e => setEditingService(p => ({ ...p, cta_text: e.target.value }))} placeholder="Learn More" />
+                  </div>
+
+                  <div>
+                    <label className="label">Order Index (lower = higher position)</label>
+                    <input type="number" className="input" value={editingService.order_index} onChange={e => setEditingService(p => ({ ...p, order_index: parseInt(e.target.value) || 0 }))} placeholder="0, 1, 2..." />
+                  </div>
+
+                  <div className="flex items-center gap-3 mt-2">
+                    <label className="label flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" checked={editingService.is_active} onChange={e => setEditingService(p => ({ ...p, is_active: e.target.checked }))} className="w-4 h-4" />
+                      Active (show on website)
+                    </label>
+                  </div>
+
+                  {/* Service Image Upload */}
+                  <div className="md:col-span-2">
+                    <label className="label">Service Image (600x400px recommended)</label>
+                    <div className="flex gap-4 items-start">
+                      {serviceImagePreview ? (
+                        <div className="relative">
+                          <img src={serviceImagePreview} alt="Preview" className="w-32 h-32 object-cover rounded-xl border border-border" />
+                          <button onClick={() => { setServiceImagePreview(''); setServiceImageFile(null); setEditingService(p => ({ ...p, image_url: null })) }} className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600"><X size={12} /></button>
+                        </div>
+                      ) : (
+                        <button onClick={() => serviceFileRef.current?.click()} className="w-32 h-32 rounded-xl border-2 border-dashed border-border hover:border-brand-500 flex flex-col items-center justify-center gap-1 text-sub hover:text-brand-500 transition-colors">
+                          <Upload size={20} />
+                          <span className="text-xs">Upload image</span>
+                        </button>
+                      )}
+                      <input ref={serviceFileRef} type="file" accept="image/*" className="hidden" onChange={handleServiceImageSelect} />
+                      <p className="text-faint text-xs max-w-xs">Images will be displayed at the top of service cards with your chosen animation effect.</p>
+                    </div>
+                  </div>
+
+                  {/* Features List */}
+                  <div className="md:col-span-2">
+                    <label className="label">Key Features (shown as checklist)</label>
+                    <div className="flex gap-2 mb-2">
+                      <input id="new-feature-input" className="input flex-1" placeholder="e.g. Professional installation" onKeyDown={e => e.key === 'Enter' && addServiceFeature()} />
+                      <button onClick={addServiceFeature} className="btn-outline px-4 py-2.5 text-sm">Add Feature</button>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {(editingService.features || []).map((f, i) => (
+                        <span key={i} className="flex items-center gap-1.5 bg-muted border border-border rounded-lg px-3 py-1 text-sm">{f}
+                          <button onClick={() => removeServiceFeature(i)} className="text-sub hover:text-red-400"><X size={12} /></button>
+                        </span>
+                      ))}
+                    </div>
+                    {(!editingService.features || editingService.features.length === 0) && (<p className="text-faint text-xs mt-2">Add features to showcase what makes this service great</p>)}
+                  </div>
+                </div>
+
+                <div className="flex gap-3 mt-4">
+                  <button onClick={saveService} disabled={serviceSaving} className="btn-primary"><Save size={16} /> {serviceSaving ? 'Saving...' : 'Save Service'}</button>
+                  <button onClick={() => setEditingService(null)} className="btn-outline">Cancel</button>
+                </div>
+              </div>
+            )}
+
+            {/* Service List */}
+            <div className="grid grid-cols-1 gap-3">
+              {services.map(s => (
+                <div
+                  key={s.id}
+                  draggable
+                  onDragStart={() => setDraggedServiceId(s.id)}
+                  onDragEnd={() => { setDraggedServiceId(null); setDragOverServiceId(null) }}
+                  onDragOver={(e) => { e.preventDefault(); if (dragOverServiceId !== s.id) setDragOverServiceId(s.id) }}
+                  onDrop={(e) => { e.preventDefault(); handleServiceDrop(s.id) }}
+                  className={`card p-4 flex items-center gap-4 hover:shadow-md transition-shadow ${draggedServiceId === s.id ? 'opacity-60 ring-2 ring-brand-200' : ''} ${dragOverServiceId === s.id ? 'ring-2 ring-brand-400 shadow-product-hover' : ''}`}
+                >
+                  {s.image_url ? (
+                    <img src={s.image_url} alt={s.title} className="w-16 h-16 rounded-xl object-cover" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-brand-100 to-brand-200 flex items-center justify-center text-2xl">{
+                      s.icon_name === 'Zap' ? '⚡' : s.icon_name === 'Sun' ? '☀️' : s.icon_name === 'Droplets' ? '💧' : s.icon_name === 'ToggleRight' ? '🔘' : s.icon_name === 'Wrench' ? '🔧' : s.icon_name === 'PhoneCall' ? '📞' : '✨'
+                    }</div>
+                  )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-display font-semibold text-sm">{s.title}</p>
+                      {s.badge_text && (<span className="text-xs bg-brand-100 text-brand-700 px-2 py-0.5 rounded-full">{s.badge_text}</span>)}
+                      {!s.is_active && (<span className="text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Inactive</span>)}
+                      <span className="text-xs text-sub">Order: {s.order_index}</span>
+                    </div>
+                    <p className="text-sub text-xs mt-1">Animation: {ANIMATION_STYLES.find(a => a.value === s.animation_style)?.label.split(' - ')[0] || s.animation_style}{s.features && s.features.length > 0 ? ` · ${s.features.length} features` : ''}{s.image_url ? ' · Has image' : ''}</p>
+                    {s.description && (<p className="text-faint text-xs mt-1 line-clamp-1">{s.description}</p>)}
+                  </div>
+                  <div className="flex gap-2">
+                    <button type="button" draggable onDragStart={() => setDraggedServiceId(s.id)} className="shrink-0 rounded-xl border border-border bg-muted p-2 text-sub hover:text-brand-500" title="Drag to reorder">
+                      <GripVertical size={16} />
+                    </button>
+                    <button onClick={() => startEditService(s)} className="p-2 text-sub hover:text-brand-500 transition-colors"><Edit2 size={16} /></button>
+                    <button onClick={() => deleteService(s.id)} className="p-2 text-sub hover:text-red-400 transition-colors"><Trash2 size={16} /></button>
+                  </div>
+                </div>
+              ))}
+              {services.length === 0 && !editingService && (
+                <div className="text-center py-16 text-sub">
+                  <Sparkles size={40} className="mx-auto mb-3 opacity-30" />
+                  <p>No services yet. Click "Add Service" to create your first service card!</p>
                 </div>
               )}
             </div>

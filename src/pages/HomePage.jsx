@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { ShoppingBag } from 'lucide-react'
 import { getProducts, getSettings } from '../lib/supabase'
 import ProductCard from '../components/ProductCard'
 import Seo, { SITE_URL, DEFAULT_IMAGE } from '../components/Seo'
@@ -35,7 +34,7 @@ export default function HomePage() {
     name: 'TruePower Kenya',
     url: SITE_URL,
     image: DEFAULT_IMAGE,
-    description: 'Electric showers, wall heaters, booster pumps, and hot water systems for Kenyan homes.',
+    description: 'Water heaters, pumps, solar solutions, lighting and electrical gear for Kenyan homes.',
     areaServed: 'Kenya',
     address: {
       '@type': 'PostalAddress',
@@ -45,43 +44,20 @@ export default function HomePage() {
     sameAs: [`https://wa.me/${whatsappNum}`],
   }
 
+  
+
   return (
     <main className="pt-[68px] min-h-screen bg-white">
       <Seo
-        title="Electric Showers & Hot Water Solutions"
-        description="Buy electric showers, wall heaters, shower heads, and booster pumps in Kenya. TruePower helps with salty water, borehole water, and low-pressure homes."
+        title="Water Heaters, Solar & Electrical Solutions"
+        description="Shop water heaters, pumps, solar solutions, lighting and electrical gear for Kenyan homes. Get expert recommendations for borehole water and low-pressure setups."
         path="/"
         jsonLd={homeJsonLd}
       />
-      <section className="border-b border-border">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-brand-500 text-xs font-display font-bold uppercase tracking-[0.24em] mb-3">
-                TruePower Store
-              </p>
-              <h1 className="font-display font-extrabold text-4xl sm:text-5xl text-ink leading-tight">
-                Smart hot water systems
-              </h1>
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/shop" className="btn-primary inline-flex items-center gap-2">
-                <ShoppingBag size={18} /> View All Products
-              </Link>
-              <a
-                href={`https://wa.me/${whatsappNum}`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn-outline"
-              >
-                Chat on WhatsApp
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero and category tiles removed per request */}
 
-      <section className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-10">
+      <section className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-6">
+        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
         {loading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
             {Array.from({ length: 12 }).map((_, index) => (
@@ -92,8 +68,8 @@ export default function HomePage() {
           <>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between mb-8">
               <div>
-                <p className="text-sub text-sm">Showing {products.length} item{products.length === 1 ? '' : 's'}</p>
-                <h2 className="font-display font-bold text-2xl text-ink">Featured products</h2>
+                  <p className="text-sub text-sm uppercase tracking-wider text-xs font-semibold">All Products</p>
+                  <h2 className="font-display font-bold text-2xl text-ink">Featured products</h2>
               </div>
               <Link to="/shop" className="text-sm font-semibold text-brand-500 hover:text-brand-600">
                 View full shop
@@ -106,6 +82,7 @@ export default function HomePage() {
             </div>
           </>
         )}
+        </div>
       </section>
 
       <section className="border-t border-border py-10">

@@ -7,6 +7,10 @@ const CAT_LABELS = {
   'pump': 'With Pump',
   'showerhead': 'Shower Head',
   'accessory': 'Accessory',
+  'bulbs_lighting': 'Bulbs & Lighting',
+  'switches_sockets': 'Switches & Sockets',
+  'solar_solutions': 'Solar Solution',
+  'water_pumps': 'Water Pump',
 }
 
 export default function ProductCard({ product }) {
