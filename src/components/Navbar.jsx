@@ -20,6 +20,7 @@ export default function Navbar() {
   const { user, isAdmin, signOut = async () => {} } = auth ?? {}
   const navigate = useNavigate()
   const location = useLocation()
+  const initials = user ? ((user.user_metadata?.full_name || user.email || '').split(' ').map(s => s[0]).slice(0,2).join('')).toUpperCase() : ''
 
   const handleLogout = async () => {
     try {
@@ -195,8 +196,18 @@ export default function Navbar() {
 
             {/* Right icons */}
             <div className="flex items-center gap-0.5 shrink-0">
-              {/* Desktop Login button placed next to wishlist/cart */}
-              {!user && (
+              {/* Desktop profile / Login button placed next to wishlist/cart */}
+              {user ? (
+                <Link to="/account" className="hidden md:inline-flex items-center ml-2">
+                  {user.user_metadata?.avatar_url ? (
+                    <img src={user.user_metadata.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-ink">
+                      {initials || 'U'}
+                    </div>
+                  )}
+                </Link>
+              ) : (
                 <NavLink to="/admin/login" className="hidden md:inline-flex btn-primary ml-2">
                   <User size={16} />
                   <span className="ml-1">Login</span>
