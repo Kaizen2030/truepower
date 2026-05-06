@@ -150,15 +150,7 @@ export default function Navbar() {
                     Logout
                   </button>
                 </>
-              ) : (
-                <NavLink to="/admin/login" className={({ isActive }) =>
-                  `font-body text-sm font-medium px-3 py-2 rounded-lg transition-all duration-200 ${
-                    isActive ? 'text-brand-500 bg-brand-50' : 'text-sub hover:text-ink hover:bg-muted'
-                  }`
-                }>
-                  Login
-                </NavLink>
-              )}
+              ) : null}
             </div>
 
             {/* Search bar — center/right like hiii-style */}
@@ -203,6 +195,12 @@ export default function Navbar() {
 
             {/* Right icons */}
             <div className="flex items-center gap-0.5 shrink-0">
+              {/* Desktop Login button placed next to wishlist/cart */}
+              {!user && (
+                <NavLink to="/admin/login" className="hidden md:inline-flex btn-primary ml-2">
+                  Login
+                </NavLink>
+              )}
               <Link
                 to="/wishlist"
                 className="p-2.5 text-sub hover:text-ink hover:bg-muted rounded-lg transition-all relative"
