@@ -11,6 +11,8 @@ import WishlistPage from './pages/WishlistPage'
 import AboutPage      from './pages/AboutPage'
 import ServicesPage   from './pages/ServicesPage'
 import PortfolioPage  from './pages/PortfolioPage'
+import AccountPage    from './pages/AccountPage'
+import OrdersPage     from './pages/OrdersPage'
 import AdminPage      from './pages/AdminPage'
 import LoginPage      from './pages/LoginPage'
 import { useCart } from './context/CartContext'
@@ -50,6 +52,8 @@ function AppInner() {
         <Route path="/wishlist"      element={<WishlistPage />} />
         <Route path="/about"         element={<AboutPage />}    />
         <Route path="/services"      element={<ServicesPage />} />
+        <Route path="/account"       element={<AccountPage />} />
+        <Route path="/orders"        element={<OrdersPage />} />
         <Route path="/admin"         element={<AdminRoute><AdminPage /></AdminRoute>} />
         <Route path="/admin/login"   element={<LoginPage />}    />
       </Routes>

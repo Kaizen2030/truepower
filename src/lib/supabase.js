@@ -230,6 +230,39 @@ export async function getAllPageContent() {
   return data || []
 }
 
+// ── Profiles & Orders ───────────────────────────────────────────────────────
+export async function getProfile(userId) {
+  if (!userId) return null
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('id', userId)
+    .maybeSingle()
+  if (error) throw error
+  return data || null
+}
+
+export async function upsertProfile(profile) {
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert({ ...profile, updated_at: new Date() }, { onConflict: 'id' })
+    .select()
+    .maybeSingle()
+  if (error) throw error
+  return data
+}
+
+export async function getOrdersByUser(userId) {
+  if (!userId) return []
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data || []
+}
+
 // ── Admin management helpers ─────────────────────────────────────────────────
 export async function getAdmins() {
   const { data, error } = await supabase
