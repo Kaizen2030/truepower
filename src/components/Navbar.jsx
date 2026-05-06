@@ -29,25 +29,6 @@ export default function Navbar() {
   const annRef = useRef(null)
   const navRef = useRef(null)
 
-  useEffect(() => {
-    function updateBodyPadding() {
-      try {
-        const annH = annRef.current ? annRef.current.offsetHeight : 0
-        const navH = navRef.current ? navRef.current.offsetHeight : 0
-        const total = annH + navH
-        document.body.style.paddingTop = `${total}px`
-      } catch (e) {
-        // ignore
-      }
-    }
-    updateBodyPadding()
-    window.addEventListener('resize', updateBodyPadding)
-    return () => {
-      window.removeEventListener('resize', updateBodyPadding)
-      document.body.style.paddingTop = ''
-    }
-  }, [])
-
   const handleLogout = async () => {
     try {
       await signOut()

@@ -17,7 +17,7 @@ export default function OrdersPage() {
   if (loading) return <div className="pt-[68px] min-h-screen flex items-center justify-center">Loading…</div>
 
   return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <Seo title="My Orders" description="Your order history" path="/orders" />
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="font-display font-extrabold text-2xl mb-4">Orders</h1>

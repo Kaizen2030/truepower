@@ -26,7 +26,7 @@ export default function OrderDetail() {
   try { items = typeof order.items === 'string' ? JSON.parse(order.items) : (order.items || []) } catch { items = order.items || [] }
 
   return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <Seo title={`Order #${order.id}`} description={`Details for order ${order.id}`} path={`/orders/${order.id}`} />
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="font-display font-extrabold text-2xl mb-4">Order #{order.id}</h1>
