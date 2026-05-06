@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useAuth } from '../context/AuthContext'
 import Seo from '../components/Seo'
-import { getProfile, upsertProfile } from '../lib/supabase'
+import { getProfile, upsertProfile, uploadImage } from '../lib/supabase'
 
 export default function AccountPage() {
   const auth = useAuth()
@@ -9,6 +9,9 @@ export default function AccountPage() {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [savingAvatar, setSavingAvatar] = useState(false)
+  const [avatarPreview, setAvatarPreview] = useState(null)
+  const fileRef = useRef(null)
 
   useEffect(() => {
     if (!user) return setLoading(false)
@@ -28,6 +31,29 @@ export default function AccountPage() {
     }
   }
 
+  const handleAvatarSelect = (e) => {
+    const f = e.target.files?.[0]
+    if (!f) return
+    setAvatarPreview(URL.createObjectURL(f))
+    fileRef.current = f
+  }
+
+  const uploadAvatar = async () => {
+    if (!fileRef.current || !user) return
+    setSavingAvatar(true)
+    try {
+      const publicUrl = await uploadImage(fileRef.current, 'avatars')
+      await upsertProfile({ id: user.id, avatar_url: publicUrl })
+      setProfile(p => ({ ...(p||{}), avatar_url: publicUrl }))
+      fileRef.current = null
+      setAvatarPreview(null)
+    } catch (err) {
+      console.error('Avatar upload failed', err)
+    } finally {
+      setSavingAvatar(false)
+    }
+  }
+
   if (loading) return <div className="pt-[68px] min-h-screen flex items-center justify-center">Loading…</div>
 
   return (
@@ -36,6 +62,22 @@ export default function AccountPage() {
       <div className="max-w-3xl mx-auto p-6">
         <h1 className="font-display font-extrabold text-2xl mb-4">Account</h1>
         <div className="bg-muted p-6 rounded-lg">
+          <div className="mb-4 flex items-center gap-4">
+            <div>
+              {profile?.avatar_url || avatarPreview ? (
+                <img src={avatarPreview || profile?.avatar_url} alt="avatar" className="w-20 h-20 rounded-full object-cover" />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-ink">{(profile?.full_name || user?.email || 'U').slice(0,2).toUpperCase()}</div>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm text-sub mb-1">Change avatar</label>
+              <div className="flex items-center gap-2">
+                <input type="file" accept="image/*" onChange={handleAvatarSelect} className="text-sm" />
+                <button onClick={uploadAvatar} disabled={!fileRef.current || savingAvatar} className="btn-outline text-sm">{savingAvatar ? 'Uploading…' : 'Upload'}</button>
+              </div>
+            </div>
+          </div>
           <div className="mb-4">
             <label className="block text-sm text-sub mb-1">Name</label>
             <input value={profile?.full_name || ''} onChange={e => setProfile({...profile, full_name: e.target.value})} className="w-full p-2 border border-border rounded" />

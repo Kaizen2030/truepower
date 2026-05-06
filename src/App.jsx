@@ -13,6 +13,7 @@ import ServicesPage   from './pages/ServicesPage'
 import PortfolioPage  from './pages/PortfolioPage'
 import AccountPage    from './pages/AccountPage'
 import OrdersPage     from './pages/OrdersPage'
+import OrderDetail    from './pages/OrderDetail'
 import AdminPage      from './pages/AdminPage'
 import LoginPage      from './pages/LoginPage'
 import { useCart } from './context/CartContext'
@@ -54,6 +55,7 @@ function AppInner() {
         <Route path="/services"      element={<ServicesPage />} />
         <Route path="/account"       element={<AccountPage />} />
         <Route path="/orders"        element={<OrdersPage />} />
+        <Route path="/orders/:id"    element={<OrderDetail />} />
         <Route path="/admin"         element={<AdminRoute><AdminPage /></AdminRoute>} />
         <Route path="/admin/login"   element={<LoginPage />}    />
       </Routes>

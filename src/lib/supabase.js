@@ -263,6 +263,17 @@ export async function getOrdersByUser(userId) {
   return data || []
 }
 
+export async function getOrderById(orderId) {
+  if (!orderId) return null
+  const { data, error } = await supabase
+    .from('orders')
+    .select('*')
+    .eq('id', orderId)
+    .maybeSingle()
+  if (error) throw error
+  return data || null
+}
+
 // ── Admin management helpers ─────────────────────────────────────────────────
 export async function getAdmins() {
   const { data, error } = await supabase
