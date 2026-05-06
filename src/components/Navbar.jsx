@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
-import { Heart, Search, Menu, X, ShoppingBag } from 'lucide-react'
+import { Heart, Search, Menu, X, ShoppingBag, User } from 'lucide-react'
 import { getProducts } from '../lib/supabase'
 import { useCart } from '../context/CartContext'
 import { useAuth } from '../context/AuthContext'
@@ -198,7 +198,8 @@ export default function Navbar() {
               {/* Desktop Login button placed next to wishlist/cart */}
               {!user && (
                 <NavLink to="/admin/login" className="hidden md:inline-flex btn-primary ml-2">
-                  Login
+                  <User size={16} />
+                  <span className="ml-1">Login</span>
                 </NavLink>
               )}
               <Link
