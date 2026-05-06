@@ -26,6 +26,27 @@ export default function Navbar() {
   const accountBtnRef = useRef(null)
   const accountMenuRef = useRef(null)
   const [menuPos, setMenuPos] = useState(null)
+  const annRef = useRef(null)
+  const navRef = useRef(null)
+
+  useEffect(() => {
+    function updateBodyPadding() {
+      try {
+        const annH = annRef.current ? annRef.current.offsetHeight : 0
+        const navH = navRef.current ? navRef.current.offsetHeight : 0
+        const total = annH + navH
+        document.body.style.paddingTop = `${total}px`
+      } catch (e) {
+        // ignore
+      }
+    }
+    updateBodyPadding()
+    window.addEventListener('resize', updateBodyPadding)
+    return () => {
+      window.removeEventListener('resize', updateBodyPadding)
+      document.body.style.paddingTop = ''
+    }
+  }, [])
 
   const handleLogout = async () => {
     try {
@@ -109,10 +130,10 @@ export default function Navbar() {
   return (
     <>
       {/* Announcement bar */}
-      <div className="fixed top-0 left-0 right-0 z-[101] bg-blue-600 text-white text-xs font-display font-semibold text-center py-2 px-4">
+      <div ref={annRef} className="fixed top-0 left-0 right-0 z-[101] bg-blue-600 text-white text-xs font-display font-semibold text-center py-2 px-4">
         📞 +254 701 039 256 &nbsp;·&nbsp; Nyamakima, Nairobi CBD &nbsp;·&nbsp; Mon–Sat 8am–6pm
       </div>
-      <nav className={`fixed top-7 left-0 right-0 z-[100] transition-all duration-300 ${
+      <nav ref={navRef} className={`fixed top-7 left-0 right-0 z-[100] transition-all duration-300 ${
         scrolled
           ? 'bg-white/95 backdrop-blur-md border-b border-border shadow-sm'
           : 'bg-white border-b border-border'
