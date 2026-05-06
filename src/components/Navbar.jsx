@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Heart, Search, Menu, X, ShoppingBag, User } from 'lucide-react'
 import { getProducts } from '../lib/supabase'
@@ -21,6 +21,8 @@ export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation()
   const initials = user ? ((user.user_metadata?.full_name || user.email || '').split(' ').map(s => s[0]).slice(0,2).join('')).toUpperCase() : ''
+  const [accountMenuOpen, setAccountMenuOpen] = useState(false)
+  const accountRef = useRef(null)
 
   const handleLogout = async () => {
     try {
@@ -41,7 +43,17 @@ export default function Navbar() {
 
   useEffect(() => {
     setOpen(false)
+    setAccountMenuOpen(false)
   }, [location])
+
+  useEffect(() => {
+    function onDocClick(e) {
+      if (!accountRef.current) return
+      if (!accountRef.current.contains(e.target)) setAccountMenuOpen(false)
+    }
+    if (accountMenuOpen) document.addEventListener('click', onDocClick)
+    return () => document.removeEventListener('click', onDocClick)
+  }, [accountMenuOpen])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -198,15 +210,26 @@ export default function Navbar() {
             <div className="flex items-center gap-0.5 shrink-0">
               {/* Desktop profile / Login button placed next to wishlist/cart */}
               {user ? (
-                <Link to="/account" className="hidden md:inline-flex items-center ml-2">
-                  {user.user_metadata?.avatar_url ? (
-                    <img src={user.user_metadata.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
-                  ) : (
-                    <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-ink">
-                      {initials || 'U'}
+                <div className="hidden md:inline-flex items-center ml-2 relative" ref={accountRef}>
+                  <button type="button" onClick={() => setAccountMenuOpen(s => !s)} className="flex items-center focus:outline-none">
+                    {user.user_metadata?.avatar_url ? (
+                      <img src={user.user_metadata.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-ink">
+                        {initials || 'U'}
+                      </div>
+                    )}
+                  </button>
+                  {accountMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-44 bg-white border border-border rounded-lg shadow-lg z-40">
+                      <div className="flex flex-col py-1">
+                        <Link to="/account" onClick={() => setAccountMenuOpen(false)} className="px-4 py-2 text-sm text-ink hover:bg-muted">Profile</Link>
+                        <Link to="/orders" onClick={() => setAccountMenuOpen(false)} className="px-4 py-2 text-sm text-ink hover:bg-muted">Orders</Link>
+                        <button onClick={() => { setAccountMenuOpen(false); handleLogout() }} className="text-left px-4 py-2 text-sm text-sub hover:bg-muted">Logout</button>
+                      </div>
                     </div>
                   )}
-                </Link>
+                </div>
               ) : (
                 <NavLink to="/admin/login" className="hidden md:inline-flex btn-primary ml-2">
                   <User size={16} />
@@ -301,7 +324,7 @@ export default function Navbar() {
                 <NavLink
                   to="/admin/login"
                   onClick={() => setOpen(false)}
-                  className="font-display font-semibold text-base px-4 py-3 rounded-xl text-sub"
+                  className="btn-primary w-full justify-center"
                 >
                   Login
                 </NavLink>
