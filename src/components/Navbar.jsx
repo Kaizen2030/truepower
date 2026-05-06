@@ -102,7 +102,7 @@ export default function Navbar() {
           : 'bg-white border-b border-border'
       }`}>
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="flex items-center gap-6 h-16 lg:h-[68px]">
+          <div className="flex items-center justify-between gap-6 h-16 lg:h-[68px]">
 
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group shrink-0">
