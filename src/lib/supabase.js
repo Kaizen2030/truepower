@@ -93,6 +93,8 @@ export async function upsertProduct(product) {
     original_price: product.original_price,
     updated_at: new Date()
   }
+
+  console.log('UPSERT cat value:', dbProduct.cat, '| product.cat:', product.cat, '| product.category:', product.category)
   
   const { data, error } = await supabase
     .from('products')

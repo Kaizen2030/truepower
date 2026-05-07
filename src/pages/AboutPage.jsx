@@ -60,7 +60,7 @@ export default function AboutPage() {
 
   if (loading) {
     return (
-      <main className="pt-[68px] min-h-screen bg-white">
+      <main className="pt-[120px] min-h-screen bg-white">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-20 text-center">
           <div className="animate-pulse text-2xl text-sub">Loading...</div>
         </div>

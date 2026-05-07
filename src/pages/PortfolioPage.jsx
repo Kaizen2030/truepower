@@ -115,7 +115,7 @@ export default function PortfolioPage() {
   }
 
   return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <Seo
         title="Portfolio & Installations"
         description="See TruePower Kenya installations, product finishes, and customer reviews for electric showers, wall heaters, and hot water systems."

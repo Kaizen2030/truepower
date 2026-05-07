@@ -47,7 +47,7 @@ export default function HomePage() {
   
 
   return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <Seo
         title="Water Heaters, Solar & Electrical Solutions"
         description="Shop water heaters, pumps, solar solutions, lighting and electrical gear for Kenyan homes. Get expert recommendations for borehole water and low-pressure setups."

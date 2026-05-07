@@ -13,10 +13,10 @@ export default function OrderDetail() {
     getOrderById(id).then(o => { setOrder(o); setLoading(false) }).catch(() => setLoading(false))
   }, [id])
 
-  if (loading) return <div className="pt-[68px] min-h-screen flex items-center justify-center">Loading…</div>
+  if (loading) return <div className="pt-[120px] min-h-screen flex items-center justify-center">Loading…</div>
 
   if (!order) return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <div className="max-w-3xl mx-auto p-6">Order not found. <Link to="/orders" className="text-brand-500">Back to orders</Link></div>
     </main>
   )

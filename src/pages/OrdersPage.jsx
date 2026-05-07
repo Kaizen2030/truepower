@@ -14,7 +14,7 @@ export default function OrdersPage() {
     getOrdersByUser(user.id).then(list => { setOrders(list || []); setLoading(false) }).catch(() => setLoading(false))
   }, [user])
 
-  if (loading) return <div className="pt-[68px] min-h-screen flex items-center justify-center">Loading…</div>
+  if (loading) return <div className="pt-[120px] min-h-screen flex items-center justify-center">Loading…</div>
 
   return (
     <main className="pt-[120px] min-h-screen bg-white">

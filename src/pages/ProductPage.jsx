@@ -54,7 +54,7 @@ export default function ProductPage() {
   )
 
   if (!product) return (
-    <main className="pt-[68px] min-h-screen bg-white flex items-center justify-center">
+    <main className="pt-[120px] min-h-screen bg-white flex items-center justify-center">
       <div className="text-center">
         <p className="text-6xl mb-4">😕</p>
         <h2 className="font-display font-bold text-2xl text-ink mb-2">Product not found</h2>

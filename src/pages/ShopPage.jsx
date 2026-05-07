@@ -88,7 +88,7 @@ export default function ShopPage() {
   const canonicalPath = `/shop${params.toString() ? `?${params.toString()}` : ''}`
 
   return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <Seo
         title={seoTitle}
         description={seoDescription}

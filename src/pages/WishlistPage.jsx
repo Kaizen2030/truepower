@@ -7,7 +7,7 @@ export default function WishlistPage() {
   const { wishlist, toggleWishlist } = useCart()
 
   return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <div className="border-b border-border bg-muted">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-10">
           <div className="flex items-center gap-2 mb-1">

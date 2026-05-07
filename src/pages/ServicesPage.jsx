@@ -43,7 +43,7 @@ const SERVICES = [
 
 export default function ServicesPage() {
   return (
-    <main className="pt-[68px] min-h-screen bg-white">
+    <main className="pt-[120px] min-h-screen bg-white">
       <Seo
         title="Our Services"
         description="TruePower Kenya offers water heater installation, solar solutions, electrical fittings, water pump setup, and repairs across Nairobi."
