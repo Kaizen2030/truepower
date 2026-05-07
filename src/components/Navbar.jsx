@@ -17,10 +17,10 @@ export default function Navbar() {
   let suggTimer = null
   const { wishlistCount, cartCount, setCartOpen } = useCart()
   const auth = useAuth()
-  const { user, isAdmin, signOut = async () => {} } = auth ?? {}
+  const { user, isAdmin, signOut = async () => {}, profile } = auth ?? {}
   const navigate = useNavigate()
   const location = useLocation()
-  const initials = user ? ((user.user_metadata?.full_name || user.email || '').split(' ').map(s => s[0]).slice(0,2).join('')).toUpperCase() : ''
+  const initials = user ? ((profile?.full_name || user.user_metadata?.full_name || user.email || '').split(' ').map(s => s[0]).slice(0,2).join('')).toUpperCase() : ''
   const [accountMenuOpen, setAccountMenuOpen] = useState(false)
   const accountRef = useRef(null)
   const accountBtnRef = useRef(null)
@@ -225,8 +225,8 @@ export default function Navbar() {
                       }
                       setAccountMenuOpen(s => !s)
                     }} className="flex items-center focus:outline-none">
-                      {user.user_metadata?.avatar_url ? (
-                        <img src={user.user_metadata.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
+                      {profile?.avatar_url ? (
+                        <img src={profile.avatar_url} alt="avatar" className="w-8 h-8 rounded-full object-cover" />
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-sm font-semibold text-ink">
                           {initials || 'U'}
@@ -378,4 +378,3 @@ export default function Navbar() {
     </>
   )
 }
-
