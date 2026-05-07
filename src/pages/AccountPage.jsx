@@ -10,8 +10,9 @@ export default function AccountPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [savingAvatar, setSavingAvatar] = useState(false)
+  const [avatarFile, setAvatarFile] = useState(null)
   const [avatarPreview, setAvatarPreview] = useState(null)
-  const fileRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (!user) return setLoading(false)
@@ -35,18 +36,19 @@ export default function AccountPage() {
     const f = e.target.files?.[0]
     if (!f) return
     setAvatarPreview(URL.createObjectURL(f))
-    fileRef.current = f
+    setAvatarFile(f)
   }
 
   const uploadAvatar = async () => {
-    if (!fileRef.current || !user) return
+    if (!avatarFile || !user) return
     setSavingAvatar(true)
     try {
-      const publicUrl = await uploadImage(fileRef.current, 'avatars')
+      const publicUrl = await uploadImage(avatarFile, 'avatars')
       await upsertProfile({ id: user.id, avatar_url: publicUrl })
       setProfile(p => ({ ...(p||{}), avatar_url: publicUrl }))
-      fileRef.current = null
+      setAvatarFile(null)
       setAvatarPreview(null)
+      if (fileInputRef.current) fileInputRef.current.value = ''
     } catch (err) {
       console.error('Avatar upload failed', err)
     } finally {
@@ -73,8 +75,8 @@ export default function AccountPage() {
             <div>
               <label className="block text-sm text-sub mb-1">Change avatar</label>
               <div className="flex items-center gap-2">
-                <input type="file" accept="image/*" onChange={handleAvatarSelect} className="text-sm" />
-                <button onClick={uploadAvatar} disabled={!fileRef.current || savingAvatar} className="btn-outline text-sm">{savingAvatar ? 'Uploading…' : 'Upload'}</button>
+                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleAvatarSelect} className="text-sm" />
+                <button onClick={uploadAvatar} disabled={!avatarFile || savingAvatar} className="btn-outline text-sm">{savingAvatar ? 'Uploading…' : 'Upload'}</button>
               </div>
             </div>
           </div>
