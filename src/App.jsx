@@ -11,6 +11,8 @@ import WishlistPage from './pages/WishlistPage'
 import AboutPage      from './pages/AboutPage'
 import ServicesPage   from './pages/ServicesPage'
 import PortfolioPage  from './pages/PortfolioPage'
+import BlogPage       from './pages/BlogPage'
+import BlogPostPage   from './pages/BlogPostPage'
 import AccountPage    from './pages/AccountPage'
 import OrdersPage     from './pages/OrdersPage'
 import OrderDetail    from './pages/OrderDetail'
@@ -53,10 +55,13 @@ function AppInner() {
         <Route path="/wishlist"      element={<WishlistPage />} />
         <Route path="/about"         element={<AboutPage />}    />
         <Route path="/services"      element={<ServicesPage />} />
+        <Route path="/blog"          element={<BlogPage />} />
+        <Route path="/blog/:slug"    element={<BlogPostPage />} />
         <Route path="/account"       element={<AccountPage />} />
         <Route path="/orders"        element={<OrdersPage />} />
         <Route path="/orders/:id"    element={<OrderDetail />} />
         <Route path="/admin"         element={<AdminRoute><AdminPage /></AdminRoute>} />
+        <Route path="/admin/blogs"   element={<AdminRoute><AdminPage /></AdminRoute>} />
         <Route path="/admin/login"   element={<LoginPage />}    />
       </Routes>
       <Footer />

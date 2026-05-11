@@ -97,6 +97,7 @@ export default function Navbar() {
     { to: '/shop', label: 'Shop' },
     { to: '/portfolio', label: 'Portfolio' },
     { to: '/services', label: 'Services' },
+    { to: '/blog', label: 'Blog' },
     { to: '/about', label: 'About' },
   ]
 
