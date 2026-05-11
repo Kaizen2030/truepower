@@ -56,18 +56,18 @@ function ServiceImageCarousel({ images, title }) {
 
   if (!imgCount) {
     return (
-      <div className="relative w-full h-64 sm:h-72 lg:h-80 xl:h-[26rem] rounded-2xl overflow-hidden bg-gradient-to-br from-brand-100 to-brand-200 flex items-center justify-center">
-        <Sparkles size={48} className="text-brand-300" />
+      <div className="relative w-full h-36 sm:h-56 lg:h-80 xl:h-[26rem] rounded-xl sm:rounded-2xl overflow-hidden bg-gradient-to-br from-brand-100 to-brand-200 flex items-center justify-center">
+        <Sparkles size={36} className="text-brand-300 sm:h-12 sm:w-12" />
         <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-          <p className="text-white font-medium">Images coming soon</p>
+          <p className="text-center text-xs font-medium text-white sm:text-sm">Images coming soon</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="relative rounded-2xl overflow-hidden shadow-xl bg-gray-900">
-      <div className="relative w-full h-64 sm:h-72 lg:h-80 xl:h-[26rem]">
+    <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-xl bg-gray-900">
+      <div className="relative w-full h-36 sm:h-56 lg:h-80 xl:h-[26rem]">
         {images.map((img, idx) => (
           <div
             key={idx}
@@ -87,12 +87,12 @@ function ServiceImageCarousel({ images, title }) {
             <img
               src={img.url}
               alt={img.caption || title}
-              className="relative w-full h-full object-contain p-3 sm:p-4 lg:p-5 z-10"
+              className="relative w-full h-full object-contain p-2 sm:p-4 lg:p-5 z-10"
               onError={(e) => { e.target.src = 'https://placehold.co/800x800?text=TruePower' }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-black/10 z-10" />
             {img.caption && (
-              <p className="absolute bottom-6 left-4 right-4 text-white text-sm font-medium drop-shadow z-20">
+              <p className="absolute bottom-3 left-3 right-3 text-[11px] font-medium text-white drop-shadow z-20 sm:bottom-6 sm:left-4 sm:right-4 sm:text-sm">
                 {img.caption}
               </p>
             )}
@@ -101,14 +101,14 @@ function ServiceImageCarousel({ images, title }) {
       </div>
 
       {imgCount > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+        <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 flex gap-1 z-20 sm:bottom-4 sm:gap-1.5">
           {images.map((_, idx) => (
             <div
               key={idx}
               className="rounded-full transition-all duration-500"
               style={{
-                width: idx === currentIndex ? 20 : 6,
-                height: 6,
+                width: idx === currentIndex ? 16 : 5,
+                height: 5,
                 background: idx === currentIndex ? 'white' : 'rgba(255,255,255,0.4)',
               }}
             />
@@ -125,43 +125,49 @@ function ServiceCard({ service, index }) {
 
   return (
     <div
-      className="group rounded-3xl bg-white border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+      className="group rounded-2xl sm:rounded-3xl bg-white border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
       style={{ animation: `fadeUp 0.6s ease-out ${animationDelay}ms forwards`, opacity: 0 }}
     >
       <ServiceImageCarousel images={service.images?.length ? service.images : service.image_url ? [{ url: service.image_url, caption: '' }] : []} title={service.title} />
 
-      <div className="p-6 lg:p-7">
-        <div className="flex items-start justify-between mb-4">
+      <div className="p-3 sm:p-5 lg:p-7">
+        <div className="mb-3 flex items-start justify-between gap-2 sm:mb-4">
           <div>
-            <h3 className="font-display font-bold text-xl lg:text-2xl text-ink mb-2 group-hover:text-brand-500 transition-colors duration-300">
+            <h3 className="mb-1 font-display text-base font-bold leading-tight text-ink transition-colors duration-300 group-hover:text-brand-500 sm:mb-2 sm:text-xl lg:text-2xl">
               {service.title}
             </h3>
-            <div className="flex items-center gap-2 text-sm text-sub">
+            <div className="hidden items-center gap-2 text-sm text-sub sm:flex">
               <Clock size={14} />
               <span>Quick response</span>
               <span className="w-1 h-1 rounded-full bg-sub" />
               <Star size={14} className="text-yellow-400" />
               <span>4.9/5 rating</span>
             </div>
+            <div className="sm:hidden">
+              <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2 py-1 text-[10px] font-medium text-sub">
+                <Clock size={11} />
+                Quick quote
+              </span>
+            </div>
           </div>
-          <div className="w-12 h-12 rounded-2xl bg-brand-50 flex items-center justify-center group-hover:bg-brand-500 transition-all duration-300 group-hover:scale-110">
-            <DynamicIcon name={service.icon_name} size={22} className="text-brand-500 group-hover:text-white transition-colors" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 transition-all duration-300 group-hover:scale-110 group-hover:bg-brand-500 sm:h-12 sm:w-12 sm:rounded-2xl">
+            <DynamicIcon name={service.icon_name} size={16} className="text-brand-500 transition-colors group-hover:text-white sm:h-[22px] sm:w-[22px]" />
           </div>
         </div>
 
-        <p className="text-sub leading-relaxed mb-5">{service.description}</p>
+        <p className="mb-3 line-clamp-3 text-xs leading-relaxed text-sub sm:mb-5 sm:text-sm lg:text-base">{service.description}</p>
 
         {service.badge_text && (
-          <div className="mb-4 inline-block bg-brand-50 border border-brand-200 rounded-full px-3 py-1">
-            <span className="text-brand-600 text-xs font-semibold">{service.badge_text}</span>
+          <div className="mb-3 inline-block rounded-full border border-brand-200 bg-brand-50 px-2.5 py-1 sm:mb-4 sm:px-3">
+            <span className="text-[10px] font-semibold text-brand-600 sm:text-xs">{service.badge_text}</span>
           </div>
         )}
 
         {service.features?.length > 0 && (
           <div className={`space-y-2 overflow-hidden transition-all duration-500 ${isExpanded ? 'max-h-96' : 'max-h-24'}`}>
             {service.features.slice(0, isExpanded ? undefined : 3).map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-2 text-sm text-ink">
-                <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
+              <div key={idx} className="hidden items-center gap-2 text-sm text-ink sm:flex">
+                <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-100">
                   <Check size={10} className="text-emerald-600" />
                 </div>
                 <span>{feature}</span>
@@ -174,25 +180,25 @@ function ServiceCard({ service, index }) {
           <button
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-brand-500 text-sm font-semibold mt-3 hover:text-brand-600 transition-colors flex items-center gap-1"
+            className="mt-3 hidden items-center gap-1 text-sm font-semibold text-brand-500 transition-colors hover:text-brand-600 sm:flex"
           >
             {isExpanded ? 'Show less' : `Show ${service.features.length - 3} more features`}
             <ArrowRight size={14} className={`transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
           </button>
         )}
 
-        <div className="mt-6 pt-5 border-t border-border flex gap-3">
+        <div className="mt-4 flex flex-col gap-2 border-t border-border pt-3 sm:mt-6 sm:flex-row sm:gap-3 sm:pt-5">
           <a
             href={`https://wa.me/254701039256?text=${encodeURIComponent(`Hi! I'm interested in your ${service.title} service. Can you share more details?`)}`}
             target="_blank"
             rel="noreferrer"
-            className="flex-1 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-display font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 hover:scale-105 flex items-center justify-center gap-2 text-sm shadow-md"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 px-3 py-2 text-[11px] font-semibold text-white shadow-md transition-all duration-300 hover:scale-105 hover:from-brand-600 hover:to-brand-700 sm:rounded-xl sm:px-5 sm:py-2.5 sm:text-sm"
           >
-            <MessageCircle size={16} /> Get Quote
+            <MessageCircle size={14} className="sm:h-4 sm:w-4" /> Get Quote
           </a>
           <Link
             to="/shop"
-            className="flex-1 border border-border hover:border-brand-300 text-ink hover:text-brand-600 font-display font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 text-sm"
+            className="hidden flex-1 items-center justify-center gap-2 rounded-xl border border-border px-5 py-2.5 text-sm font-semibold text-ink transition-all duration-300 hover:border-brand-300 hover:text-brand-600 sm:flex"
           >
             Products <ArrowRight size={14} />
           </Link>
@@ -267,17 +273,17 @@ export default function ServicesPage() {
           <div className="absolute bottom-20 -right-20 w-96 h-96 rounded-full bg-white/10 blur-3xl animate-pulse" />
         </div>
 
-        <div className="relative w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-20">
+        <div className="relative w-full mx-auto px-4 py-16 sm:px-6 sm:py-20 lg:px-10 xl:px-12">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
               <Sparkles size={16} className="text-yellow-300" />
               <span className="text-white/90 text-sm font-medium">Expert Services in Nairobi</span>
             </div>
-            <h1 className="font-display font-extrabold text-5xl sm:text-6xl lg:text-7xl text-white mb-6 leading-tight">
+            <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-white mb-6 leading-tight">
               Professional <br />
               <span className="text-yellow-300">Installation & Repair</span>
             </h1>
-            <p className="text-white/90 text-lg lg:text-xl mb-8 max-w-xl leading-relaxed">
+            <p className="text-white/90 text-base sm:text-lg lg:text-xl mb-8 max-w-xl leading-relaxed">
               From electric fence and CCTV to water heaters, solar systems, inverters, and appliance repair - Nairobi's most trusted service team.
             </p>
             <div className="flex flex-wrap gap-4">
@@ -318,13 +324,13 @@ export default function ServicesPage() {
 
       <section className="py-8 bg-muted/30 border-b border-border sticky top-[68px] z-30 backdrop-blur-md bg-white/95">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="flex flex-wrap gap-3 justify-center">
+          <div className="flex gap-3 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center">
             {filters.map((filter) => (
               <button
                 key={filter.key}
                 type="button"
                 onClick={() => setActiveFilter(filter.key)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-display font-semibold text-sm transition-all duration-300 ${
+                className={`flex shrink-0 items-center gap-2 px-4 py-2.5 rounded-full font-display font-semibold text-sm transition-all duration-300 sm:px-5 ${
                   activeFilter === filter.key
                     ? 'bg-brand-500 text-white shadow-lg scale-105'
                     : 'bg-white border border-border text-sub hover:border-brand-300 hover:text-brand-500 hover:scale-105'
@@ -341,9 +347,9 @@ export default function ServicesPage() {
       <section className="py-16 lg:py-20 bg-white">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-2 lg:gap-8">
               {[1, 2, 3, 4].map(i => (
-                <div key={i} className="rounded-3xl bg-muted animate-pulse h-[500px]" />
+                <div key={i} className="h-[18rem] rounded-2xl bg-muted animate-pulse sm:h-[24rem] lg:h-[500px] lg:rounded-3xl" />
               ))}
             </div>
           ) : filteredServices.length === 0 ? (
@@ -355,7 +361,7 @@ export default function ServicesPage() {
               <p className="text-sub">New services are being added. Check back soon!</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-10">
+            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-2 xl:gap-10">
               {filteredServices.map((service, idx) => (
                 <ServiceCard key={service.id} service={service} index={idx} />
               ))}

@@ -41,14 +41,14 @@ export default function BlogPage() {
     <main className="min-h-screen bg-white pt-24">
       <Seo title="Blog" description="Latest blog updates, guides, and case studies from TruePower Kenya." path="/blog" />
 
-      <div className="mx-auto w-full max-w-[1500px] px-4 py-12 sm:px-6 lg:px-10 xl:px-12">
-        <section className="grid gap-6 border-b border-border pb-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-end">
+      <div className="mx-auto w-full max-w-[1500px] px-4 py-8 sm:px-6 sm:py-12 lg:px-10 xl:px-12">
+        <section className="grid gap-5 border-b border-border pb-6 sm:gap-6 sm:pb-8 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-end">
           <div>
             <p className="text-sm uppercase tracking-[0.32em] text-brand-600">From the blog</p>
-            <h1 className="mt-3 font-display text-4xl font-bold leading-tight text-ink sm:text-5xl lg:text-6xl">
+            <h1 className="mt-3 font-display text-3xl font-bold leading-tight text-ink sm:text-5xl lg:text-6xl">
               TruePower Journal
             </h1>
-            <p className="mt-4 max-w-3xl text-base leading-relaxed text-sub sm:text-lg">
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-sub sm:mt-4 sm:text-lg">
               Installation guides, product advice & solar water heating insights
             </p>
           </div>
@@ -63,12 +63,12 @@ export default function BlogPage() {
           </div>
         </section>
 
-        <section className="mt-6">
-          <div className="flex flex-wrap gap-2">
+        <section className="mt-5 sm:mt-6">
+          <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap">
             <button
               type="button"
               onClick={() => handleCategoryClick('')}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+              className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
                 !activeCategory ? 'bg-brand-600 text-white shadow-md' : 'bg-muted text-sub hover:bg-brand-100 hover:text-brand-700'
               }`}
             >
@@ -79,7 +79,7 @@ export default function BlogPage() {
                 key={category}
                 type="button"
                 onClick={() => handleCategoryClick(category)}
-                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                className={`shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition ${
                   activeCategory === category ? 'bg-brand-600 text-white shadow-md' : 'bg-muted text-sub hover:bg-brand-100 hover:text-brand-700'
                 }`}
               >
@@ -90,14 +90,14 @@ export default function BlogPage() {
         </section>
 
         {loading ? (
-          <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-7 grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
             {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div key={item} className={`animate-pulse rounded-[1.9rem] bg-slate-100 ${item === 1 ? 'h-[30rem] md:col-span-2' : 'h-[21.25rem]'}`} />
+              <div key={item} className={`animate-pulse rounded-[1.5rem] bg-slate-100 sm:rounded-[1.9rem] ${item === 1 ? 'col-span-2 h-[16rem] sm:h-[20rem] md:h-[30rem]' : 'h-[14rem] sm:h-[21.25rem]'}`} />
             ))}
           </div>
         ) : filteredPosts.length > 0 ? (
-          <section className="mt-8">
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          <section className="mt-7 sm:mt-8">
+            <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3">
               {featuredPost && <BlogCard post={featuredPost} featured />}
               {remainingPosts.map(post => (
                 <BlogCard key={post.id} post={post} />
