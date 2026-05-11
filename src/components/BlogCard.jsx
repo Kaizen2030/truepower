@@ -44,27 +44,27 @@ export default function BlogCard({ post, featured = false }) {
 
         <div className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-6">
           {excerpt && featured && (
-            <p className="mb-2 hidden max-w-2xl text-sm leading-relaxed text-white/78 line-clamp-2 sm:block">
+            <p className="mb-2 hidden max-w-2xl text-sm leading-relaxed text-white/80 drop-shadow-md line-clamp-2 sm:block">
               {excerpt}
             </p>
           )}
-          <h2 className={`max-w-3xl font-display font-bold leading-tight text-white ${featured ? 'text-lg sm:text-3xl lg:text-[2rem] line-clamp-3' : 'text-[15px] sm:text-xl line-clamp-3'}`}>
+          <h2 className={`max-w-3xl font-display font-bold leading-tight text-white drop-shadow-md ${featured ? 'text-lg sm:text-3xl lg:text-[2rem] line-clamp-3' : 'text-[15px] sm:text-xl line-clamp-3'}`}>
             {post.title}
           </h2>
 
           <div className="mt-3 flex items-end justify-between gap-3 sm:mt-4 sm:gap-4">
-            <div className="flex flex-col gap-1 text-[11px] text-white/72 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:text-xs">
-              <span className="flex items-center gap-1">
+            <div className="flex flex-col gap-1 rounded-2xl bg-slate-950/35 px-3 py-2 text-[11px] text-white/90 backdrop-blur-sm sm:flex-row sm:flex-wrap sm:items-center sm:gap-3 sm:text-xs">
+              <span className="flex items-center gap-1 drop-shadow-md">
                 <CalendarDays size={13} />
                 {publishedDate || 'Latest update'}
               </span>
-              <span className="flex items-center gap-1">
+              <span className="flex items-center gap-1 drop-shadow-md">
                 <Clock3 size={13} />
                 {readTime} min read
               </span>
             </div>
 
-            <span className="inline-flex items-center gap-1 text-xs font-semibold text-white sm:gap-2 sm:text-sm">
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-white drop-shadow-md sm:gap-2 sm:text-sm">
               Read
               <ArrowRight size={15} className="transition-transform duration-300 group-hover:translate-x-1 sm:h-4 sm:w-4" />
             </span>
