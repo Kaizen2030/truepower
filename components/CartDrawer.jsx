@@ -72,7 +72,7 @@ export default function CartDrawer({ whatsappNum = "254701039256" }) {
   return (
     <div className="fixed inset-0 z-[200]">
       {/* Backdrop */}
-      <div class="absolute inset-0 bg-ink/20 backdrop-blur-sm"></div>
+      <div className="absolute inset-0 bg-ink/20 backdrop-blur-sm"></div>
 
       {/* Drawer */}
       <div

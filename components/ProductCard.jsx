@@ -38,24 +38,25 @@ export default function ProductCard({
   return (
     <div className="card group flex flex-col w-full">
       {/* Image */}
-      <Link
-        href={`/product/${product.id}`}
-        onClick={handleSelectItem}
-        className="block relative overflow-hidden bg-muted"
-        style={{ aspectRatio: "3 / 4" }}
-      >
-        {img ? (
-          <img
-            src={img}
-            alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-brand-50">
-            <Zap size={40} className="text-brand-200" />
-          </div>
-        )}
+      <div className="relative overflow-hidden bg-muted" style={{ aspectRatio: "3 / 4" }}>
+        <Link
+          href={`/product/${product.id}`}
+          onClick={handleSelectItem}
+          className="block h-full w-full"
+        >
+          {img ? (
+            <img
+              src={img}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-500"
+              loading="lazy"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-brand-50">
+              <Zap size={40} className="text-brand-200" />
+            </div>
+          )}
+        </Link>
 
         {/* Primary badge: top-left, visible on all sizes (keeps 'bestseller', 'new', 'sale' visible) */}
         {product.badge && (
@@ -65,7 +66,6 @@ export default function ProductCard({
         )}
 
         {/* Category label: top-right (to the left of wishlist), shown on md+ to avoid covering mobile images */}
-
         <Link
           href={`/shop?subcategory=${product.cat}`}
           className="absolute top-3 right-12 hidden md:inline-block bg-white/80 backdrop-blur-sm text-sub text-[10px] font-display font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
@@ -75,10 +75,7 @@ export default function ProductCard({
 
         {/* Wishlist */}
         <button
-          onClick={(e) => {
-            e.preventDefault();
-            toggleWishlist(product);
-          }}
+          onClick={() => toggleWishlist(product)}
           className={`absolute top-3 right-3 w-8 h-8 rounded-full backdrop-blur-sm flex items-center justify-center transition-all duration-200 shadow-sm ${
             wishlisted
               ? "bg-brand-500 text-white"
@@ -87,7 +84,7 @@ export default function ProductCard({
         >
           <Heart size={13} fill={wishlisted ? "currentColor" : "none"} />
         </button>
-      </Link>
+      </div>
 
       {/* Category badge for small screens: placed below image (primary badge already overlays image) */}
       <div className="p-4 pt-3 md:hidden flex gap-2 items-center flex-wrap">
