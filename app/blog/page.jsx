@@ -15,6 +15,8 @@ export const metadata = createSeo({
   path: "/blog",
 });
 
+export const dynamic = "force-dynamic";
+
 // 🔥 SERVER COMPONENT (SEO CONTENT LOADS HERE)
 export default async function PageContent({ searchParams }) {
   const search = (await searchParams).search || "";

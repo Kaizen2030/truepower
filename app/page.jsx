@@ -11,6 +11,8 @@ export const metadata = createSeo({
   path: "/",
 });
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const [{ data: products }, settings] = await Promise.all([
     getProducts({ limit: 16 }),

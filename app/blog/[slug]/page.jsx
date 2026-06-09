@@ -8,6 +8,8 @@ import { ArrowLeft, CalendarDays, Clock3, Tag } from "lucide-react";
 import Link from "next/link";
 import BlogCard from "@/components/BlogCard";
 
+export const dynamic = "force-dynamic";
+
 // 🔥 SEO metadata
 export async function generateMetadata({ params }) {
   const { slug } = await params;

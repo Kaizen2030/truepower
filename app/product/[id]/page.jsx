@@ -4,6 +4,9 @@ import ProductContent from "@/ui/ProductContent";
 import { Suspense } from "react";
 import Loading from "@/components/Loading";
 import Link from "next/link";
+
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({ params }) {
   const { id } = await params;
   const product = await getProduct(id);

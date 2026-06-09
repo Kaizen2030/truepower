@@ -11,6 +11,8 @@ export const metadata = createSeo({
   path: "/shop",
 });
 
+export const dynamic = "force-dynamic";
+
 // ✅ SERVER COMPONENT
 export default async function ShopPage({ searchParams }) {
   return (
