@@ -7,18 +7,38 @@ const CartContext = createContext(null)
 
 export function CartProvider({ children }) {
   // ── Cart ──
-  const [cart, setCart] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('tp_cart') || '[]') } catch { return [] }
-  })
+  const [cart, setCart] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
 
   // ── Wishlist ──
-  const [wishlist, setWishlist] = useState(() => {
-    try { return JSON.parse(localStorage.getItem('tp_wishlist') || '[]') } catch { return [] }
-  })
+  const [wishlist, setWishlist] = useState([])
+  const [hydrated, setHydrated] = useState(false)
 
-  useEffect(() => { localStorage.setItem('tp_cart', JSON.stringify(cart)) }, [cart])
-  useEffect(() => { localStorage.setItem('tp_wishlist', JSON.stringify(wishlist)) }, [wishlist])
+  useEffect(() => {
+    try {
+      setCart(JSON.parse(localStorage.getItem('tp_cart') || '[]'))
+    } catch {
+      setCart([])
+    }
+
+    try {
+      setWishlist(JSON.parse(localStorage.getItem('tp_wishlist') || '[]'))
+    } catch {
+      setWishlist([])
+    }
+
+    setHydrated(true)
+  }, [])
+
+  useEffect(() => {
+    if (!hydrated) return
+    localStorage.setItem('tp_cart', JSON.stringify(cart))
+  }, [cart, hydrated])
+
+  useEffect(() => {
+    if (!hydrated) return
+    localStorage.setItem('tp_wishlist', JSON.stringify(wishlist))
+  }, [wishlist, hydrated])
 
   // ── Cart actions ──
   const addToCart = useCallback((product, qty = 1, analyticsParams = {}) => {
