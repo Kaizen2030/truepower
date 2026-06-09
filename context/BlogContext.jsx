@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { hasSupabaseConfig } from "@/lib/supabase";
 import { getPublishedBlogs } from "@/lib/blogs.js";
 
 const BlogContext = createContext(null);
@@ -12,8 +13,12 @@ export function BlogProvider({ children }) {
   const refreshBlogs = async () => {
     setLoading(true);
     try {
+      if (!hasSupabaseConfig()) {
+        setPosts([]);
+        return;
+      }
       const data = await getPublishedBlogs();
-      setPosts(data);
+      setPosts(data.posts || []);
     } catch (err) {
       console.error("Failed to load blogs:", err);
       setPosts([]);

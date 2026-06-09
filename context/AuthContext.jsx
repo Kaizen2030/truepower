@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { hasSupabaseConfig, supabase } from '../lib/supabase'
 
 const AuthContext = createContext(null)
 
@@ -12,7 +12,7 @@ export function AuthProvider({ children }) {
   const [profile, setProfile] = useState(null)
 
   const checkAdmin = async (u) => {
-    if (!u) { setIsAdmin(false); return }
+    if (!u || !hasSupabaseConfig()) { setIsAdmin(false); return }
     const { data } = await supabase
       .from('profiles')
       .select('role')
@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
   }
 
   const refreshProfile = async (u = user) => {
-    if (!u) {
+    if (!u || !hasSupabaseConfig()) {
       setProfile(null)
       return null
     }
@@ -39,6 +39,15 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     let mounted = true
+
+    if (!hasSupabaseConfig()) {
+      setUser(null)
+      setIsAdmin(false)
+      setProfile(null)
+      setLoading(false)
+      return () => { mounted = false }
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!mounted) return
       const u = session?.user ?? null
@@ -59,6 +68,12 @@ export function AuthProvider({ children }) {
   }, [])
 
   const signOut = async () => {
+    if (!hasSupabaseConfig()) {
+      setUser(null)
+      setIsAdmin(false)
+      setProfile(null)
+      return
+    }
     await supabase.auth.signOut()
     setUser(null)
     setIsAdmin(false)
