@@ -118,7 +118,7 @@ export default function Navbar() {
                             accountBtnRef.current.getBoundingClientRect();
                           setMenuPos({
                             top: Math.round(r.bottom + 8),
-                            left: Math.round(r.right - 100),
+                            left: Math.round(r.right - 160),
                           });
                         }
                         setAccountMenuOpen((s) => !s);
@@ -145,7 +145,7 @@ export default function Navbar() {
                         position: "fixed",
                         top: menuPos.top,
                         left: menuPos.left,
-                        width: 100,
+                        width: 160,
                       }}
                       className="bg-white border border-border rounded-lg shadow-lg z-[9999]"
                     >
@@ -164,6 +164,15 @@ export default function Navbar() {
                         >
                           Orders
                         </Link>
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setAccountMenuOpen(false)}
+                            className="px-4 py-2 text-sm text-ink hover:bg-muted"
+                          >
+                            Admin Dashboard
+                          </Link>
+                        )}
                         <button
                           onClick={() => {
                             setAccountMenuOpen(false);
@@ -249,6 +258,15 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                onClick={() => setOpen(false)}
+                className="px-3 pb-3 font-extrabold text-blue-600"
+              >
+                Admin Dashboard
+              </Link>
+            )}
           </div>
         </div>
       </nav>

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { signIn, signUp, resetPassword, isAdminUser } from "@/lib/supabase";
@@ -16,6 +16,12 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [resetMode, setResetMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
+  const [resetSuccess, setResetSuccess] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setResetSuccess(params.get("reset") === "success");
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,7 +30,10 @@ export default function LoginPage() {
 
     try {
       if (resetMode) {
-        const { error } = await resetPassword(email);
+        const { error } = await resetPassword(
+          email,
+          `${window.location.origin}/reset-password`,
+        );
         if (error) throw error;
         setResetSent(true);
         setLoading(false);
@@ -72,7 +81,10 @@ export default function LoginPage() {
               We sent a password reset link to <strong>{email}</strong>
             </p>
             <button
-              onClick={() => setResetMode(false)}
+              onClick={() => {
+                setResetSent(false);
+                setResetMode(false);
+              }}
               className="btn-primary w-full py-3"
             >
               Back to login
@@ -103,6 +115,12 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit} className="card p-8 flex flex-col gap-5">
+          {resetSuccess && (
+            <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+              Password updated. Sign in with your new password below.
+            </p>
+          )}
+
           {!resetMode && !isLogin && (
             <div>
               <label className="label">Full Name</label>
