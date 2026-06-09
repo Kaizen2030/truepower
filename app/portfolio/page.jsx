@@ -34,6 +34,8 @@ export const metadata = createSeo({
   path: "/services",
 });
 
+export const dynamic = "force-dynamic";
+
 const PortfolioIconMap = {
   Star,
   MessageCircle,

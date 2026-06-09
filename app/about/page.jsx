@@ -44,6 +44,8 @@ export const metadata = {
   path: "/about",
 };
 
+export const dynamic = "force-dynamic";
+
 function DynamicIcon({ name, size = 24, className = "" }) {
   const IconComponent = IconMap[name] || Zap;
   return <IconComponent size={size} className={className} />;

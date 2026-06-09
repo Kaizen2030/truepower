@@ -31,6 +31,8 @@ export const metadata = createSeo({
   path: "/portfolio",
 });
 
+export const dynamic = "force-dynamic";
+
 export default async function ServicesPage() {
   const { data: services, error } = await supabase
     .from("services")

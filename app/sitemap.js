@@ -1,6 +1,8 @@
 import { MetadataRoute } from 'next'
 import { supabase } from '@/lib/supabase'
 
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap() {
     const baseUrl = 'https://truepower.co.ke'
     const pageSize = 20
