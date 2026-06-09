@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { hasSupabaseConfig, supabase } from "@/lib/supabase";
 import ServicesClient from "../../components/ServicesClient";
 import Link from "next/link";
 
@@ -34,14 +34,18 @@ export const metadata = createSeo({
 export const dynamic = "force-dynamic";
 
 export default async function ServicesPage() {
-  const { data: services, error } = await supabase
-    .from("services")
-    .select("*")
-    .eq("is_active", true)
-    .order("order_index", { ascending: true });
+  let services = [];
+  if (hasSupabaseConfig()) {
+    const { data, error } = await supabase
+      .from("services")
+      .select("*")
+      .eq("is_active", true)
+      .order("order_index", { ascending: true });
 
-  if (error) {
-    console.error(error);
+    if (error) {
+      console.error(error);
+    }
+    services = data || [];
   }
   const stats = [
     { value: "500+", label: "Projects Completed", icon: Award },
@@ -112,7 +116,7 @@ export default async function ServicesPage() {
           </div>
         </div>
       </section>
-      <ServicesClient services={services || []} />
+      <ServicesClient services={services} />
     </main>
   );
 }

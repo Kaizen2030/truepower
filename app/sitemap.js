@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import { supabase } from '@/lib/supabase'
+import { hasSupabaseConfig, supabase } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
 
@@ -8,6 +8,17 @@ export default async function sitemap() {
     const pageSize = 20
 
     // 👉 Fetch all data in parallel (same as yours, just fixed)
+    if (!hasSupabaseConfig()) {
+        return [
+            { url: baseUrl, lastModified: new Date(), priority: 1, changeFrequency: 'daily', },
+            { url: `${baseUrl}/shop`, lastModified: new Date(), priority: 0.9, changeFrequency: 'daily' },
+            { url: `${baseUrl}/blog`, lastModified: new Date(), priority: 0.9, changeFrequency: 'daily' },
+            { url: `${baseUrl}/portfolio`, lastModified: new Date(), priority: 0.9, changeFrequency: 'daily' },
+            { url: `${baseUrl}/services`, lastModified: new Date(), priority: 0.9, changeFrequency: 'daily' },
+            { url: `${baseUrl}/about`, lastModified: new Date(), priority: 0.9, changeFrequency: 'daily' },
+        ]
+    }
+
     const [productsRes, blogsRes] = await Promise.all([
         supabase.from('products').select('id'),
         supabase.from('blog_posts').select('slug').eq('status', 'Published'),
