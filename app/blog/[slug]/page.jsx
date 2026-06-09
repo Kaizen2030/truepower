@@ -2,9 +2,8 @@ import { notFound } from "next/navigation";
 
 import {
   getBlogPostBySlug,
-  getPublishedBlogs,
   getRelatedPosts,
-} from "@/lib/supabase.js";
+} from "@/lib/blogs.js";
 import { ArrowLeft, CalendarDays, Clock3, Tag } from "lucide-react";
 import Link from "next/link";
 import BlogCard from "@/components/BlogCard";

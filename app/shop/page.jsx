@@ -13,5 +13,9 @@ export const metadata = createSeo({
 
 // ✅ SERVER COMPONENT
 export default async function ShopPage({ searchParams }) {
-  return <ShopContent searchParams={searchParams} />;
+  return (
+    <Suspense fallback={<Loading />}>
+      <ShopContent searchParams={searchParams} />
+    </Suspense>
+  );
 }

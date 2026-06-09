@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import dynamic from "next/dynamic";
 import {
   Plus,
   Trash2,
@@ -18,8 +19,7 @@ import {
   Sparkles,
   BookOpen,
 } from "lucide-react";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+import "react-quill-new/dist/quill.snow.css";
 import {
   getProducts,
   upsertProduct,
@@ -41,6 +41,8 @@ import {
 import PageContentEditor from "@/components/PageContentEditor";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
+
+const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 // Water Heaters group + new categories
 const CATS = [

@@ -14,7 +14,7 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 
 import TruePowerLogo from "./TruePowerLogo";
 import SearchProducts from "./SearchProducts";
@@ -91,7 +91,9 @@ export default function Navbar() {
             {/* SEARCH (UPGRADED ONLY) */}
 
             <div className="grow md:block hidden">
-              <SearchProducts />
+              <Suspense fallback={<div className="h-10" />}>
+                <SearchProducts />
+              </Suspense>
             </div>
 
             {/* RIGHT ICONS (UNCHANGED) */}
@@ -208,7 +210,9 @@ export default function Navbar() {
         </div>
         {/* SEARCH (UPGRADED ONLY) */}
         <div className="px-4 pt-3 sm:px-6 lg:px-10 xl:px-1 md:hidden block">
-          <SearchProducts />
+          <Suspense fallback={<div className="h-10" />}>
+            <SearchProducts />
+          </Suspense>
         </div>
 
         {/* Announcement bar (UNCHANGED) */}

@@ -27,6 +27,12 @@ export default async function PageContent({ searchParams }) {
   });
   const categories = await getBlogCategories();
   return (
-    <BlogPosts posts={posts} pagination={pagination} categories={categories} />
+    <Suspense fallback={<Loading />}>
+      <BlogPosts
+        posts={posts}
+        pagination={pagination}
+        categories={categories}
+      />
+    </Suspense>
   );
 }
