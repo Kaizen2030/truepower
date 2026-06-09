@@ -206,7 +206,7 @@ export default function AdminPage() {
 
   // ── Auth guards ───────────────────────────────────────────
   useEffect(() => {
-    if (!authLoading && !user) route.push("/admin/login");
+    if (!authLoading && !user) route.push("/login");
   }, [authLoading, user, route]);
 
   useEffect(() => {
@@ -849,7 +849,7 @@ export default function AdminPage() {
     } catch (error) {
       console.error("Admin logout failed:", error);
     } finally {
-      route.push("/admin/login");
+      route.push("/login");
     }
   };
 
