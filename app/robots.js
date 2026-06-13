@@ -1,8 +1,21 @@
-import { MetadataRoute } from 'next'
+import { SITE_URL } from "@/components/Seo";
 
 export default function robots() {
-    return {
-        rules: [{ userAgent: '*', allow: '/' }],
-        sitemap: 'https://truepower.co.ke/sitemap.xml',
-    }
+  return {
+    rules: [
+      {
+        userAgent: "*",
+        allow: "/",
+        disallow: [
+          "/admin",
+          "/login",
+          "/profile",
+          "/orders",
+          "/reset-password",
+          "/api",
+        ],
+      },
+    ],
+    sitemap: `${SITE_URL}/sitemap.xml`,
+  };
 }

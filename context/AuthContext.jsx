@@ -6,8 +6,9 @@ import { hasSupabaseConfig, supabase } from '../lib/supabase'
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
+  const isConfigured = hasSupabaseConfig()
   const [user, setUser]       = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(isConfigured)
   const [isAdmin, setIsAdmin] = useState(false)
   const [profile, setProfile] = useState(null)
 
@@ -40,11 +41,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     let mounted = true
 
-    if (!hasSupabaseConfig()) {
-      setUser(null)
-      setIsAdmin(false)
-      setProfile(null)
-      setLoading(false)
+    if (!isConfigured) {
       return () => { mounted = false }
     }
 
@@ -65,7 +62,7 @@ export function AuthProvider({ children }) {
     })
 
     return () => { mounted = false; subscription.unsubscribe() }
-  }, [])
+  }, [isConfigured])
 
   const signOut = async () => {
     if (!hasSupabaseConfig()) {

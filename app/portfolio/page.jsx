@@ -23,15 +23,15 @@ import {
   getTestimonials,
   getPageContent,
 } from "@/lib/supabase";
-import { createSeo, SITE_URL, DEFAULT_IMAGE } from "@/components/Seo";
+import { createSeo } from "@/components/Seo";
 import ProjectGallery from "@/components/ProjectGallery";
 
 // ✅ SEO
 export const metadata = createSeo({
-  title: "Professional Services | Water Heaters, Solar & Electrical",
+  title: "Portfolio & Installations",
   description:
-    "TruePower Kenya - electric fence, CCTV, gate automation, inverters, solar, water heaters, fridge repair, washing machine repair and more across Nairobi.",
-  path: "/services",
+    "Browse TruePower Kenya projects, customer testimonials, and proof of installation quality across Nairobi and beyond.",
+  path: "/portfolio",
 });
 
 export const dynamic = "force-dynamic";
@@ -166,8 +166,8 @@ export default async function PortfolioPage() {
           <div className="text-center mb-12">
             <div className="badge mb-4">⚡ How It Works</div>
             <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-ink mb-4">
-              From "I Need Hot Water" to <br />
-              <span className="text-brand-500">"This is Perfect"</span>
+              From &quot;I Need Hot Water&quot; to <br />
+              <span className="text-brand-500">&quot;This is Perfect&quot;</span>
             </h2>
             <p className="text-sub max-w-xl mx-auto">
               3 simple steps. No confusion. No wrong purchases.
@@ -180,7 +180,7 @@ export default async function PortfolioPage() {
                 step: "01",
                 icon: <MessageCircle size={32} />,
                 title: "Tell Us Your Situation",
-                desc: "“I have borehole water and low pressure in my apartment” — that is all we need to start.",
+                desc: "“I have borehole water and low pressure in my apartment — that is all we need to start.",
                 color: "from-blue-500 to-blue-600",
               },
               {
@@ -269,7 +269,7 @@ export default async function PortfolioPage() {
                   </div>
                   <Quote size={24} className="text-brand-200 mb-3" />
                   <p className="text-ink mb-4 leading-relaxed italic">
-                    "{t.text}"
+                    &quot;{t.text}&quot;
                   </p>
                   <div className="flex items-center gap-3 pt-3 border-t border-border">
                     <div className="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-brand-600 font-display font-bold">
@@ -369,3 +369,4 @@ export default async function PortfolioPage() {
     </main>
   );
 }
+

@@ -47,7 +47,7 @@ export default async function ShopContent({ searchParams }) {
   });
 
   const catLabel = search
-    ? `Search Results"`
+    ? "Search Results"
     : CAT_LABELS[category] ||
       CAT_LABELS[subCategory] ||
       CATS.find((c) => c.key === category)?.label ||
@@ -71,7 +71,7 @@ export default async function ShopContent({ searchParams }) {
           <p className="text-sm text-gray-500">
             {pagination.totalItems} product
             {pagination.totalItems !== 1 ? "s" : ""}
-            {search && <> for "{search}"</>}
+            {search && <> for &quot;{search}&quot;</>}
           </p>
         </div>
         <div>

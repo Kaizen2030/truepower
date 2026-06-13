@@ -8,6 +8,7 @@ export default function PageContentEditor({ pageContent, onSaved }) {
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState({})
   const fileRefs = useRef({})
+  const nextItemId = useRef(0)
 
   const pageName = pageContent.page_slug === 'about' ? '📖 About Page' : '🎬 Portfolio Page'
   const sections = pageContent.sections || []
@@ -50,7 +51,7 @@ export default function PageContentEditor({ pageContent, onSaved }) {
 
   const handleArrayAdd = (arrayKey, template) => {
     const newItem = typeof template === 'object' && template !== null
-      ? { ...template, id: Date.now() }
+      ? { ...template, id: nextItemId.current += 1 }
       : template
     setFormData(prev => ({
       ...prev,
@@ -312,7 +313,7 @@ export default function PageContentEditor({ pageContent, onSaved }) {
     <div>
       <div className="mb-4">
         <h3 className="font-display font-bold text-xl mb-2">{pageName}</h3>
-        <p className="text-sub text-sm">Click "Edit" on any section to change its content.</p>
+        <p className="text-sub text-sm">Click &quot;Edit&quot; on any section to change its content.</p>
       </div>
 
       <div className="space-y-3">

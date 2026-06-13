@@ -42,7 +42,7 @@ export default function BlogPosts({ posts, categories, pagination }) {
           <p className="text-sm text-gray-500">
             {pagination.totalItems} article
             {pagination.totalItems !== 1 ? "s" : ""}
-            {searchTerm && <> for "{searchTerm}"</>}
+            {searchTerm && <> for &quot;{searchTerm}&quot;</>}
           </p>
         </div>
 

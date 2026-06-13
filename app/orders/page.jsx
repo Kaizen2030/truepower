@@ -10,17 +10,25 @@ export default function OrdersPage() {
   }, []);
   const auth = useAuth();
   const { user } = auth ?? {};
-  const [orders, setOrders] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [orders, setOrders] = useState([]);
+  const [loadedForUser, setLoadedForUser] = useState(null);
+  const loading = Boolean(auth?.loading) || (user && loadedForUser !== user.id);
 
   useEffect(() => {
-    if (!user) return setLoading(false);
+    if (!user) return;
+    let cancelled = false;
     getOrdersByUser(user.id)
       .then((list) => {
+        if (cancelled) return;
         setOrders(list || []);
-        setLoading(false);
+        setLoadedForUser(user.id);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {
+        if (!cancelled) setLoadedForUser(user.id);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   if (loading)

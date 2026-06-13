@@ -10,13 +10,11 @@ import {
   Sun,
   Store,
   Star,
-  ThumbsUp,
   Truck,
   Users,
   Award,
   Clock,
   MessageCircle,
-  Wrench,
 } from "lucide-react";
 import { getPageContent } from "@/lib/supabase";
 
@@ -37,12 +35,14 @@ const IconMap = {
 };
 import { Suspense } from "react";
 import Loading from "@/components/Loading";
-export const metadata = {
+import { createSeo } from "@/components/Seo";
+
+export const metadata = createSeo({
   title: "About TruePower Kenya",
   description:
-    "Learn about TruePower Kenya — our water heaters, pumps, solar and electrical solutions, Nyamakima showroom, and how we help homes with borehole water and low pressure.",
+    "Learn about TruePower Kenya, our Nyamakima showroom, and how we help Kenyan homes with water heaters, pumps, solar and electrical solutions.",
   path: "/about",
-};
+});
 
 export const dynamic = "force-dynamic";
 
@@ -181,11 +181,11 @@ async function PageContent() {
                     <p>
                       Most water heaters on the market are designed for European
                       water quality and pressure standards. They fail fast in
-                      Nairobi's borehole-heavy, variable-pressure environment.
+                      Nairobi&apos;s borehole-heavy, variable-pressure environment.
                     </p>
                     <p>
                       We visit factories, test products, and only stock units
-                      we'd put in our own homes. Our Nyamakima showroom means
+                      we&apos;d put in our own homes. Our Nyamakima showroom means
                       you can see and touch every product before buying.
                     </p>
                     <p>
@@ -339,7 +339,7 @@ async function PageContent() {
                       "Nyamakima, Nairobi CBD"}
                   </p>
                   <p className="text-white/60 text-xs mt-2">
-                    Drop by anytime — we're ready to help
+                    Drop by anytime — we&apos;re ready to help
                   </p>
                 </div>
               </div>
@@ -351,7 +351,7 @@ async function PageContent() {
       <section className="py-16 lg:py-20 bg-gradient-to-r from-brand-600 to-brand-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 text-center">
           <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-white mb-4">
-            {cta.title || "Ready to order? We're on WhatsApp."}
+            {cta.title || "Ready to order? We&apos;re on WhatsApp."}
           </h2>
           <p className="text-brand-100 text-lg mb-8">
             {cta.subtitle ||
@@ -371,3 +371,6 @@ async function PageContent() {
     </main>
   );
 }
+
+
+

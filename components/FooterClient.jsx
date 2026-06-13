@@ -1,13 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 export default function FooterClient() {
-  const [year, setYear] = useState(null);
-
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
+  const year = new Date().getFullYear();
 
   return (
     <div className="border-t border-white/10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">

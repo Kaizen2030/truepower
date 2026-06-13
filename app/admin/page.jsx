@@ -135,6 +135,7 @@ export default function AdminPage() {
   const route = useRouter();
   const pathname = usePathname();
   const [tab, setTab] = useState("products");
+  const currentTab = pathname === "/admin/blogs" ? "blog" : tab;
 
   // Products
   const [products, setProducts] = useState([]);
@@ -210,10 +211,6 @@ export default function AdminPage() {
   }, [authLoading, user, route]);
 
   useEffect(() => {
-    if (pathname === "/admin/blogs") setTab("blog");
-  }, [pathname]);
-
-  useEffect(() => {
     if (!isAdmin) return;
     loadProducts();
     loadServices();
@@ -232,12 +229,11 @@ export default function AdminPage() {
   }, [isAdmin]);
 
   // ── Loaders ───────────────────────────────────────────────
-  const loadProducts = () =>
-    getProducts()
-      .then(setProducts)
-      .catch(() => {});
+  function loadProducts() {
+    return getProducts().then(setProducts).catch(() => {});
+  }
 
-  const loadServices = async () => {
+  async function loadServices() {
     try {
       const { data, error } = await supabase
         .from("services")
@@ -249,9 +245,9 @@ export default function AdminPage() {
       console.error("loadServices error:", e);
       setServices([]);
     }
-  };
+  }
 
-  const loadAdmins = async () => {
+  async function loadAdmins() {
     setAdminsLoading(true);
     try {
       const { data, error } = await supabase.rpc("get_admin_users");
@@ -263,9 +259,9 @@ export default function AdminPage() {
     } finally {
       setAdminsLoading(false);
     }
-  };
+  }
 
-  const loadBlogs = async () => {
+  async function loadBlogs() {
     try {
       let { data, error } = await supabase
         .from("blog_posts")
@@ -289,9 +285,9 @@ export default function AdminPage() {
       console.error("loadBlogs error:", e);
       setBlogs([]);
     }
-  };
+  }
 
-  const loadPageContent = async () => {
+  async function loadPageContent() {
     const rows = await getAllPageContent();
     const grouped = rows.reduce((acc, row) => {
       if (!acc[row.page_slug]) acc[row.page_slug] = {};
@@ -851,7 +847,7 @@ export default function AdminPage() {
     } finally {
       route.push("/login");
     }
-  };
+  }
 
   // ── Loading / access states ───────────────────────────────
   if (authLoading) {
@@ -911,7 +907,7 @@ export default function AdminPage() {
                 key={t.key}
                 onClick={() => setTab(t.key)}
                 className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 font-display font-semibold text-sm transition-colors border-b-2 -mb-[2px] ${
-                  tab === t.key
+                  currentTab === t.key
                     ? "border-brand-500 text-brand-500"
                     : "border-transparent text-sub hover:text-ink"
                 }`}
@@ -925,7 +921,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             PRODUCTS TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "products" && (
+        {currentTab === "products" && (
           <div>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
               <div>
@@ -1280,7 +1276,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             SERVICES TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "services" && (
+        {currentTab === "services" && (
           <div>
             <div className="flex justify-between items-center mb-6">
               <div>
@@ -1712,7 +1708,7 @@ export default function AdminPage() {
                 <div className="text-center py-16 text-sub">
                   <Sparkles size={40} className="mx-auto mb-3 opacity-30" />
                   <p>
-                    No services yet. Click "Add Service" to create your first
+                    No services yet. Click &quot;Add Service&quot; to create your first
                     service card!
                   </p>
                 </div>
@@ -1724,7 +1720,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             BLOG TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "blog" && (
+        {currentTab === "blog" && (
           <div>
             <div className="flex justify-between items-center mb-6">
               <div>
@@ -2102,7 +2098,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             TESTIMONIALS TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "testimonials" && (
+        {currentTab === "testimonials" && (
           <div>
             <h3 className="font-display font-bold text-lg mb-6">
               Add Testimonial
@@ -2157,7 +2153,7 @@ export default function AdminPage() {
                         · {t.location}
                       </span>
                     </p>
-                    <p className="text-sub text-sm mt-1 italic">"{t.text}"</p>
+                    <p className="text-sub text-sm mt-1 italic">&quot;{t.text}&quot;</p>
                   </div>
                   <button
                     onClick={() =>
@@ -2178,7 +2174,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             GALLERY TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "gallery" && (
+        {currentTab === "gallery" && (
           <div>
             <h3 className="font-display font-bold text-lg mb-6">
               Add Gallery Image
@@ -2366,7 +2362,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             PAGE CONTENT TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "pageContent" &&
+        {currentTab === "pageContent" &&
           (() => {
             const schemas = getPageSectionSchemas();
             const makeSections = (page) =>
@@ -2404,7 +2400,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             SETTINGS TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "settings" && (
+        {currentTab === "settings" && (
           <div className="max-w-xl">
             <div className="flex flex-col gap-4">
               <div>
@@ -2482,7 +2478,7 @@ export default function AdminPage() {
         {/* ══════════════════════════════════════════════════════
             ADMINS TAB
         ══════════════════════════════════════════════════════ */}
-        {tab === "admins" && (
+        {currentTab === "admins" && (
           <div>
             <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-6">
               <div>

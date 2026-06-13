@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Search } from "lucide-react";
 import BlogCard from "@/components/BlogCard";
@@ -9,14 +9,9 @@ export default function BlogClient({ initialPosts, initialCategories }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [posts] = useState(initialPosts);
-  const [categories] = useState(initialCategories);
-  const [activeCategory, setActiveCategory] = useState("");
-
-  // sync URL
-  useEffect(() => {
-    setActiveCategory(searchParams.get("category") || "");
-  }, [searchParams]);
+  const posts = initialPosts;
+  const categories = initialCategories;
+  const activeCategory = searchParams.get("category") || "";
 
   // filter (client only for UX)
   const filteredPosts = useMemo(() => {
@@ -29,8 +24,6 @@ export default function BlogClient({ initialPosts, initialCategories }) {
 
   const handleCategoryClick = (category) => {
     const next = activeCategory === category ? "" : category;
-
-    setActiveCategory(next);
 
     router.push(next ? `/blog?category=${encodeURIComponent(next)}` : "/blog");
   };

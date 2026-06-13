@@ -1,22 +1,19 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { hasSupabaseConfig } from "@/lib/supabase";
 import { getPublishedBlogs } from "@/lib/blogs.js";
 
 const BlogContext = createContext(null);
 
 export function BlogProvider({ children }) {
+  const isConfigured = hasSupabaseConfig();
   const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(isConfigured);
 
-  const refreshBlogs = async () => {
-    setLoading(true);
+  const refreshBlogs = useCallback(async () => {
     try {
-      if (!hasSupabaseConfig()) {
-        setPosts([]);
-        return;
-      }
+      if (!isConfigured) return;
       const data = await getPublishedBlogs();
       setPosts(data.posts || []);
     } catch (err) {
@@ -25,7 +22,7 @@ export function BlogProvider({ children }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [isConfigured]);
 
   const getRelatedBlogPosts = (current, limit = 3) => {
     if (!current) return [];
@@ -52,8 +49,32 @@ export function BlogProvider({ children }) {
   const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
 
   useEffect(() => {
-    refreshBlogs();
-  }, []);
+    if (!isConfigured) return undefined;
+
+    let cancelled = false;
+
+    const loadBlogs = async () => {
+      try {
+        const data = await getPublishedBlogs();
+        if (cancelled) return;
+        setPosts(data.posts || []);
+      } catch (err) {
+        if (cancelled) return;
+        console.error("Failed to load blogs:", err);
+        setPosts([]);
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadBlogs();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isConfigured]);
 
   return (
     <BlogContext.Provider

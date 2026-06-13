@@ -2,7 +2,7 @@ import { hasSupabaseConfig, supabase } from "@/lib/supabase";
 import ServicesClient from "../../components/ServicesClient";
 import Link from "next/link";
 
-import { createSeo, SITE_URL, DEFAULT_IMAGE } from "@/components/Seo";
+import { createSeo } from "@/components/Seo";
 import ProjectGallery from "@/components/ProjectGallery";
 import {
   ArrowRight,
@@ -25,10 +25,10 @@ import {
 
 // ✅ SEO
 export const metadata = createSeo({
-  title: "Portfolio & Installations",
+  title: "Services",
   description:
-    "See TruePower Kenya installations, product finishes, and customer reviews for electric showers, wall heaters, and hot water systems.",
-  path: "/portfolio",
+    "Expert installation and repair services for water heaters, solar systems, inverters, CCTV, electric fences, and more across Nairobi.",
+  path: "/services",
 });
 
 export const dynamic = "force-dynamic";
@@ -76,7 +76,7 @@ export default async function ServicesPage() {
             </h1>
             <p className="text-white/90 text-base sm:text-lg lg:text-xl mb-8 max-w-xl leading-relaxed">
               From electric fence and CCTV to water heaters, solar systems,
-              inverters, and appliance repair - Nairobi's most trusted service
+              inverters, and appliance repair - Nairobi&apos;s most trusted service
               team.
             </p>
             <div className="flex flex-wrap gap-4">

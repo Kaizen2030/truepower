@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -20,7 +20,7 @@ export default function SearchProducts() {
   const [catSuggestions, setCatSuggestions] = useState([]);
   const [suggLoading, setSuggLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  let suggTimer = null;
+  const suggTimer = useRef(null);
   const handleSearch = (e) => {
     e.preventDefault();
     router.push(`/shop?search=${encodeURIComponent(query.trim())}`);
@@ -31,7 +31,7 @@ export default function SearchProducts() {
   // 🔥 ONLY CHANGE: SERVER-SIDE SEARCH
 
   const fetchSuggestions = (q) => {
-    if (suggTimer) clearTimeout(suggTimer);
+    if (suggTimer.current) clearTimeout(suggTimer.current);
 
     if (!q || q.length < 2) {
       setSuggestions([]);
@@ -42,7 +42,7 @@ export default function SearchProducts() {
 
     setSuggLoading(true);
 
-    suggTimer = setTimeout(async () => {
+    suggTimer.current = setTimeout(async () => {
       try {
         const res = await fetch(`/api/products?search=${q}`);
         const prods = await res.json();
@@ -60,6 +60,13 @@ export default function SearchProducts() {
       setSuggLoading(false);
     }, 220);
   };
+
+  useEffect(
+    () => () => {
+      if (suggTimer.current) clearTimeout(suggTimer.current);
+    },
+    [],
+  );
   return (
     <form onSubmit={handleSearch} className="relative">
       <Search

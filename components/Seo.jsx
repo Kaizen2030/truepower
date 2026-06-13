@@ -18,6 +18,9 @@ export function createSeo({
   return {
     title: fullTitle,
     description,
+    alternates: {
+      canonical: url,
+    },
     robots: noindex ? "noindex,nofollow" : "index,follow",
     openGraph: {
       title: fullTitle,

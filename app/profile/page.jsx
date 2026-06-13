@@ -1,22 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { upsertProfile, uploadImage } from "@/lib/supabase";
 
-export default function ProfilePage() {
-  useEffect(() => {
-    document.title = "My Account";
-  }, []);
-  const auth = useAuth();
-  const {
-    user,
-    loading: authLoading,
-    profile: authProfile,
-    setProfile: setAuthProfile,
-  } = auth ?? {};
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
+function ProfileEditor({ user, initialProfile = {}, setAuthProfile }) {
+  const [profile, setProfile] = useState(initialProfile);
   const [saving, setSaving] = useState(false);
   const [savingAvatar, setSavingAvatar] = useState(false);
   const [avatarFile, setAvatarFile] = useState(null);
@@ -26,17 +16,6 @@ export default function ProfilePage() {
   const fileInputRef = useRef(null);
   const saveMsgTimerRef = useRef(null);
   const avatarMsgTimerRef = useRef(null);
-
-  useEffect(() => {
-    if (authLoading) return;
-    if (!user) {
-      setProfile({});
-      setLoading(false);
-      return;
-    }
-    setProfile(authProfile || {});
-    setLoading(false);
-  }, [authLoading, user, authProfile]);
 
   useEffect(
     () => () => {
@@ -119,13 +98,6 @@ export default function ProfilePage() {
       setSavingAvatar(false);
     }
   };
-
-  if (loading)
-    return (
-      <div className="pt-[120px] min-h-screen flex items-center justify-center">
-        Loading...
-      </div>
-    );
 
   return (
     <main className="pt-[120px] min-h-screen bg-white">
@@ -214,5 +186,50 @@ export default function ProfilePage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ProfilePage() {
+  const auth = useAuth();
+  const {
+    user,
+    loading: authLoading,
+    profile: authProfile,
+    setProfile: setAuthProfile,
+  } = auth ?? {};
+
+  if (authLoading) {
+    return (
+      <div className="pt-[120px] min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <main className="pt-[120px] min-h-screen bg-white">
+        <div className="max-w-3xl mx-auto p-6">
+          <h1 className="font-display font-extrabold text-2xl mb-4">Account</h1>
+          <div className="bg-muted p-6 rounded-lg">
+            <p className="text-sub mb-4">
+              Please sign in to view and edit your account.
+            </p>
+            <Link href="/login" className="btn-primary">
+              Go to login
+            </Link>
+          </div>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <ProfileEditor
+      key={user.id}
+      user={user}
+      initialProfile={authProfile || {}}
+      setAuthProfile={setAuthProfile}
+    />
   );
 }

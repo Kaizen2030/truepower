@@ -5,10 +5,10 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Pagination({ currentPage = 1, totalPages }) {
-  if (totalPages <= 1) return null;
-  // get the currepath  but remove page query parameter if it exists using next.js pathname and searchParams
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  if (totalPages <= 1) return null;
 
   // Clone params so we can modify
   const params = new URLSearchParams(searchParams.toString());
@@ -17,10 +17,6 @@ export default function Pagination({ currentPage = 1, totalPages }) {
   params.delete("page");
 
   // Build final URL
-  const cleanUrl = params.toString()
-    ? `${pathname}?${params.toString()}`
-    : pathname;
-
   const createPageLink = (number) => {
     // add page query parameter to basePath
 

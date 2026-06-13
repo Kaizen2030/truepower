@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 import { signIn, signUp, resetPassword, isAdminUser } from "@/lib/supabase";
@@ -16,12 +16,11 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [resetMode, setResetMode] = useState(false);
   const [resetSent, setResetSent] = useState(false);
-  const [resetSuccess, setResetSuccess] = useState(false);
-
-  useEffect(() => {
+  const [resetSuccess] = useState(() => {
+    if (typeof window === "undefined") return false;
     const params = new URLSearchParams(window.location.search);
-    setResetSuccess(params.get("reset") === "success");
-  }, []);
+    return params.get("reset") === "success";
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -52,7 +51,7 @@ export default function LoginPage() {
         return;
       }
 
-      const { data, error: signUpError } = await signUp(email, password, name);
+      const { error: signUpError } = await signUp(email, password, name);
       if (signUpError) throw signUpError;
       setIsLogin(true);
       setPassword("");

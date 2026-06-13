@@ -7,6 +7,7 @@ import {
 import { ArrowLeft, CalendarDays, Clock3, Tag } from "lucide-react";
 import Link from "next/link";
 import BlogCard from "@/components/BlogCard";
+import { createSeo, DEFAULT_IMAGE } from "@/components/Seo";
 
 export const dynamic = "force-dynamic";
 
@@ -16,22 +17,21 @@ export async function generateMetadata({ params }) {
   const post = await getBlogPostBySlug(slug);
 
   if (!post) {
-    return {
+    return createSeo({
       title: "Article not found",
       description: "Blog post not found",
-    };
+      path: `/blog/${slug}`,
+      noindex: true,
+    });
   }
 
-  return {
+  return createSeo({
     title: post.title,
-    description: post.excerpt || post.summary,
-    openGraph: {
-      title: post.title,
-      description: post.excerpt,
-      images: post.featured_image_url ? [post.featured_image_url] : [],
-      type: "article",
-    },
-  };
+    description: post.excerpt || post.summary || `Read ${post.title} on TruePower Kenya.`,
+    path: `/blog/${slug}`,
+    image: post.featured_image_url || DEFAULT_IMAGE,
+    type: "article",
+  });
 }
 
 export default async function BlogPostPage({ params }) {

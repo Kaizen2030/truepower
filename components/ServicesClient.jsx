@@ -97,7 +97,7 @@ export default function ServicesClient({ services }) {
               <span className="text-brand-500">Speaks for Itself</span>
             </h2>
             <p className="text-sub max-w-2xl mx-auto">
-              We don't just sell products - we deliver complete solutions backed
+              We don&apos;t just sell products - we deliver complete solutions backed
               by years of expertise.
             </p>
           </div>
@@ -152,8 +152,8 @@ export default function ServicesClient({ services }) {
           <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-white mb-4">
             Ready to get started?
           </h2>
-          <p className="text-brand-100 text-lg mb-8">
-            WhatsApp us your requirements - we'll recommend the right solution
+            <p className="text-brand-100 text-lg mb-8">
+            WhatsApp us your requirements - we&apos;ll recommend the right solution
             within minutes.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">

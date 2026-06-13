@@ -235,7 +235,7 @@ export default function CartDrawer({ whatsappNum = "254701039256" }) {
                 Order via WhatsApp
               </a>
               <p className="text-center text-xs text-sub">
-                You'll be taken to WhatsApp to confirm your order with us.
+                You&apos;ll be taken to WhatsApp to confirm your order with us.
               </p>
             </div>
           </>
