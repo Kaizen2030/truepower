@@ -30,6 +30,7 @@ import {
   getTestimonials,
 } from "@/lib/supabase";
 import { getPublishedBlogs } from "@/lib/blogs";
+import { getProducts } from "@/lib/products";
 
 export const metadata = createSeo({
   title: "About TruePower Kenya",
@@ -153,11 +154,12 @@ const DEFAULT_HERO = {
 };
 
 export default async function AboutPage() {
-  const [content, testimonials, galleryImages, blogData] = await Promise.all([
+  const [content, testimonials, galleryImages, blogData, productData] = await Promise.all([
     getPageContent("about"),
     getTestimonials(),
     getGalleryImages(),
     getPublishedBlogs({ pageSize: 3 }),
+    getProducts({ pageSize: 4, limit: 4, sort: "newest" }),
   ]);
 
   const pageData = content?.main ?? content ?? {};
@@ -170,6 +172,18 @@ export default async function AboutPage() {
   const cta = pageData?.cta || {};
   const blogPosts = blogData?.posts || [];
   const galleryPreview = (galleryImages || []).slice(0, 4);
+  const productPreview = (productData?.data || [])
+    .filter((product) => product.image_url || product.images?.[0])
+    .slice(0, 4)
+    .map((product) => ({
+      id: product.id,
+      image_url: product.image_url || product.images?.[0],
+      title: product.name,
+      description: product.model || product.catLabel || product.category || "Product",
+    }));
+  const heroVisuals = [...galleryPreview, ...productPreview]
+    .filter((item) => item?.image_url)
+    .slice(0, 4);
 
   const storyParagraphs = story.paragraphs?.length
     ? story.paragraphs
@@ -261,6 +275,32 @@ export default async function AboutPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
+              {heroVisuals[0] ? (
+                <div className="sm:col-span-2 relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
+                  <div className="relative aspect-[16/10]">
+                    <Image
+                      src={heroVisuals[0].image_url}
+                      alt={heroVisuals[0].title || "TruePower product"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                    <div className="absolute left-4 right-4 bottom-4">
+                      <p className="text-[11px] uppercase tracking-[0.28em] text-white/80">
+                        Real product photo
+                      </p>
+                      <p className="mt-2 max-w-lg font-display text-2xl font-bold">
+                        {heroVisuals[0].title || "TruePower products in the wild"}
+                      </p>
+                      <p className="mt-1 text-sm text-white/75">
+                        {heroVisuals[0].description || "Shown from our catalog and gallery."}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ) : null}
+
               <div className="sm:col-span-2 rounded-[1.75rem] border border-white/15 bg-white/10 p-5 backdrop-blur-md shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -303,7 +343,6 @@ export default async function AboutPage() {
                   <p className="mt-1 text-sm text-white/75">{stat.label}</p>
                 </div>
               ))}
-
               <div className="rounded-[1.5rem] border border-white/12 bg-brand-500/20 p-4 backdrop-blur-md sm:col-span-2">
                 <div className="flex items-center justify-between gap-4">
                   <div>
