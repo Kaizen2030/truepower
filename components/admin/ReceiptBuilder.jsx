@@ -171,7 +171,66 @@ export default function ReceiptBuilder() {
   const total = subtotal;
 
   function handlePrint() {
-    window.print();
+    const source = printRef.current;
+    if (!source) return;
+
+    const printWindow = window.open(
+      "",
+      "_blank",
+      "noopener,noreferrer,width=900,height=1200",
+    );
+
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    const styles = Array.from(
+      document.querySelectorAll('link[rel="stylesheet"], style'),
+    )
+      .map((node) => node.outerHTML)
+      .join("\n");
+
+    printWindow.document.open();
+    printWindow.document.write(`<!doctype html>
+      <html lang="en">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <title>Receipt ${receiptNumber || ""}</title>
+          ${styles}
+          <style>
+            html, body {
+              margin: 0;
+              padding: 0;
+              background: #fff;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            body {
+              overflow: hidden;
+            }
+          </style>
+        </head>
+        <body>
+          ${source.outerHTML}
+        </body>
+      </html>`);
+    printWindow.document.close();
+
+    const triggerPrint = () => {
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }, 250);
+    };
+
+    if (printWindow.document.readyState === "complete") {
+      triggerPrint();
+    } else {
+      printWindow.onload = triggerPrint;
+    }
   }
 
   async function handleSave() {
