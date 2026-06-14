@@ -18,6 +18,8 @@ import {
   GripVertical,
   Sparkles,
   BookOpen,
+  Eye,
+  Printer,
 } from "lucide-react";
 import "react-quill-new/dist/quill.snow.css";
 import {
@@ -39,6 +41,8 @@ import {
   supabase,
 } from "@/lib/supabase";
 import PageContentEditor from "@/components/PageContentEditor";
+import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
+import ReceiptBuilder from "@/components/admin/ReceiptBuilder";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
 
@@ -60,7 +64,7 @@ const CATS = [
   { value: "water_pumps", label: "Water Pumps", group: "Water" },
 ];
 const GROUPS = Array.from(new Set(CATS.map((c) => c.group)));
-const TABS = [
+const CORE_TABS = [
   { key: "products", label: "Products", icon: <Package size={16} /> },
   { key: "services", label: "Services", icon: <Sparkles size={16} /> },
   { key: "blog", label: "Blog", icon: <BookOpen size={16} /> },
@@ -68,8 +72,15 @@ const TABS = [
   { key: "gallery", label: "Gallery", icon: <Image size={16} /> },
   { key: "pageContent", label: "Pages", icon: <Settings size={16} /> },
   { key: "settings", label: "Settings", icon: <Settings size={16} /> },
+];
+
+const ADMIN_TABS = [
+  { key: "analytics", label: "Analytics", icon: <Eye size={16} /> },
+  { key: "receipt", label: "Receipt Builder", icon: <Printer size={16} /> },
   { key: "admins", label: "Admins", icon: <Users size={16} /> },
 ];
+
+const TABS = [...CORE_TABS, ...ADMIN_TABS];
 
 const ANIMATION_STYLES = [
   { value: "float", label: "Floating Motion - gentle up/down" },
@@ -135,7 +146,11 @@ export default function AdminPage() {
   const route = useRouter();
   const pathname = usePathname();
   const [tab, setTab] = useState("products");
-  const currentTab = pathname === "/admin/blogs" ? "blog" : tab;
+  const visibleTabs = isAdmin ? TABS : CORE_TABS;
+  const selectedTab = pathname === "/admin/blogs" ? "blog" : tab;
+  const currentTab = visibleTabs.some((item) => item.key === selectedTab)
+    ? selectedTab
+    : visibleTabs[0]?.key || "products";
 
   // Products
   const [products, setProducts] = useState([]);
@@ -886,23 +901,43 @@ export default function AdminPage() {
     <main className="pt-16 min-h-screen">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
         {/* Header */}
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-8">
+        <div className="flex flex-col gap-4 sm:gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
             <h1 className="font-display font-bold text-2xl">Admin Dashboard</h1>
             <p className="text-sub text-sm">{user?.email}</p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="btn-ghost inline-flex items-center gap-2 text-sub hover:text-red-400"
-          >
-            <LogOut size={16} /> Sign out
-          </button>
+          <div className="flex flex-wrap gap-2 items-center">
+            {isAdmin && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setTab("analytics")}
+                  className="btn-outline text-sm px-4 py-2"
+                >
+                  Analytics
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTab("receipt")}
+                  className="btn-outline text-sm px-4 py-2"
+                >
+                  Receipt Builder
+                </button>
+              </>
+            )}
+            <button
+              onClick={handleLogout}
+              className="btn-ghost inline-flex items-center gap-2 text-sub hover:text-red-400"
+            >
+              <LogOut size={16} /> Sign out
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
         <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 border-b border-border mb-8">
           <div className="flex gap-2 min-w-max">
-            {TABS.map((t) => (
+            {visibleTabs.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
@@ -2472,6 +2507,18 @@ export default function AdminPage() {
                 <Save size={16} /> Save Settings
               </button>
             </div>
+          </div>
+        )}
+
+        {currentTab === "analytics" && (
+          <div className="space-y-8">
+            <AnalyticsDashboard />
+          </div>
+        )}
+
+        {currentTab === "receipt" && (
+          <div className="space-y-8">
+            <ReceiptBuilder />
           </div>
         )}
 
