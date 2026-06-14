@@ -562,23 +562,23 @@ export default function ReceiptBuilder() {
           </div>
 
           {receiptNotes && (
-            <div className="mt-6 pt-4 border-t border-border">
+            <div className="receipt-notes mt-6 pt-4 border-t border-border print:mt-3 print:pt-3">
               <p className="label mb-2">Terms & Conditions</p>
-              <p className="text-sub text-sm whitespace-pre-line leading-6">
+              <p className="text-sub text-sm whitespace-pre-line leading-6 print:text-[11px] print:leading-4">
                 {receiptNotes}
               </p>
             </div>
           )}
 
-          <div className="mt-7 pt-4 border-t-2 border-ink/10 text-center">
-            <p className="font-display font-semibold text-sm text-ink">
+          <div className="receipt-footer mt-7 pt-4 border-t-2 border-ink/10 text-center print:mt-3 print:pt-3">
+            <p className="font-display font-semibold text-sm text-ink print:text-[13px]">
               Thank you for shopping with us.
             </p>
-            <p className="text-faint text-xs mt-1 leading-5 break-words">
+            <p className="text-faint text-xs mt-1 leading-5 break-words print:text-[11px] print:leading-4">
               Need help with delivery, installation, or after-sales support? Call or WhatsApp us on{" "}
               <span className="font-semibold text-ink sm:whitespace-nowrap">{business.phone}</span>.
             </p>
-            <p className="text-faint text-[11px] mt-1">
+            <p className="text-faint text-[11px] mt-1 print:text-[10px] print:mt-0.5">
               <span className="break-all">{business.website}</span>
               <span className="mx-2">|</span>
               Maridadi Plaza, Shop C10
@@ -591,7 +591,7 @@ export default function ReceiptBuilder() {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 6mm;
+            margin: 4mm;
           }
 
           body * {
@@ -607,7 +607,7 @@ export default function ReceiptBuilder() {
             left: 0;
             width: 100%;
             max-width: none;
-            zoom: 0.82;
+            zoom: 0.74;
             overflow: hidden;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -634,6 +634,16 @@ export default function ReceiptBuilder() {
           .receipt-sheet {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+          }
+
+          .receipt-notes,
+          .receipt-footer {
+            margin-top: 0.75rem !important;
+            padding-top: 0.75rem !important;
+          }
+
+          .receipt-footer p {
+            line-height: 1.25 !important;
           }
         }
       `}</style>
