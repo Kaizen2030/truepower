@@ -17,41 +17,44 @@ function isIosSafari() {
 
 export default function InstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [showAndroid, setShowAndroid] = useState(false);
+  const [showBanner, setShowBanner] = useState(false);
   const [showIos, setShowIos] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const dismissed = window.localStorage.getItem(DISMISS_KEY);
-    const isStandalone =
+    const standalone =
       window.matchMedia("(display-mode: standalone)").matches ||
       window.navigator.standalone === true;
+    const ios = isIosSafari();
 
-    if (dismissed || isStandalone) return;
+    if (dismissed || standalone) return;
 
     const onBeforeInstallPrompt = (event) => {
       event.preventDefault();
       setDeferredPrompt(event);
-      setShowAndroid(true);
     };
 
     window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
 
     let iosTimer = null;
-    if (isIosSafari()) {
+    if (ios) {
       iosTimer = window.setTimeout(() => setShowIos(true), 1800);
     }
+
+    const bannerTimer = window.setTimeout(() => setShowBanner(true), 900);
 
     return () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
       if (iosTimer) window.clearTimeout(iosTimer);
+      window.clearTimeout(bannerTimer);
     };
   }, []);
 
   function dismiss() {
     window.localStorage.setItem(DISMISS_KEY, "1");
-    setShowAndroid(false);
+    setShowBanner(false);
     setShowIos(false);
   }
 
@@ -65,7 +68,7 @@ export default function InstallPrompt() {
     }
   }
 
-  if (!showAndroid && !showIos) return null;
+  if (!showBanner && !showIos && !deferredPrompt) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[22rem] z-[999]">
@@ -81,7 +84,7 @@ export default function InstallPrompt() {
           <p className="font-display font-bold text-sm text-ink">
             Install TruePower
           </p>
-          {showAndroid ? (
+          {deferredPrompt ? (
             <>
               <p className="text-sub text-xs mt-0.5 mb-3">
                 Add the site to your home screen and open it like an app.
@@ -94,13 +97,29 @@ export default function InstallPrompt() {
                 <Download size={14} /> Install
               </button>
             </>
-          ) : (
+          ) : showIos ? (
             <>
               <p className="text-sub text-xs mt-0.5">
                 Tap <Share2 size={12} className="inline -mt-0.5" /> Share, then
                 choose <span className="font-semibold">Add to Home Screen</span>.
               </p>
             </>
+          ) : showBanner ? (
+            <>
+              <p className="text-sub text-xs mt-0.5">
+                Open your browser menu and choose{" "}
+                <span className="font-semibold">Install app</span> or{" "}
+                <span className="font-semibold">Add to Home screen</span>.
+              </p>
+              <p className="mt-2 text-[11px] leading-5 text-faint">
+                Some private or incognito browsers hide native install prompts,
+                so this banner is the fallback.
+              </p>
+            </>
+          ) : (
+            <p className="text-sub text-xs mt-0.5">
+              Loading install options...
+            </p>
           )}
         </div>
         <button
