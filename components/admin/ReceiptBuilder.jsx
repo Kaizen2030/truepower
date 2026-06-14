@@ -300,10 +300,10 @@ export default function ReceiptBuilder() {
                     className="w-full text-left py-2 flex items-center justify-between hover:bg-white/60 px-2 rounded-lg"
                   >
                     <span className="text-sm font-medium">
-                      #{r.receipt_number} {r.customer_name ? `– ${r.customer_name}` : ""}
+                      #{r.receipt_number} {r.customer_name ? `- ${r.customer_name}` : ""}
                     </span>
                     <span className="text-sm text-sub">
-                      KSh {formatMoney(r.total)} · {r.created_at?.slice(0, 10)}
+                      KSh {formatMoney(r.total)} | {r.created_at?.slice(0, 10)}
                     </span>
                   </button>
                 ))}
@@ -465,53 +465,44 @@ export default function ReceiptBuilder() {
           id="receipt-print-area"
           className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-8 sm:p-10 print:border-0 print:shadow-none print:rounded-none print:p-0"
         >
-          <div className="flex items-start justify-between gap-6 pb-6 border-b-2 border-ink print:pb-4">
+          <div className="flex items-start justify-between gap-5 pb-5 border-b-2 border-ink print:pb-4">
             <div className="flex items-start gap-4">
-              <div className="rounded-2xl bg-brand-50 p-2 shadow-sm print:bg-white print:p-0 print:shadow-none">
+              <div className="w-1.5 h-24 rounded-full bg-brand-500/15 print:bg-brand-500" />
+              <div className="rounded-3xl bg-brand-50 p-4 shadow-sm print:bg-white print:p-0 print:shadow-none">
                 <Image
                   src={business.logo}
-                  alt=""
-                  className="h-16 w-16 sm:h-20 sm:w-20 object-contain"
-                  width={80}
-                  height={80}
+                  alt="TruePower Solutions logo"
+                  className="h-32 w-32 sm:h-36 sm:w-36 object-contain"
+                  width={144}
+                  height={144}
                 />
-              </div>
-              <div className="pt-1">
-                <p className="text-[11px] uppercase tracking-[0.22em] text-brand-500 font-semibold mb-1">
-                  Official Receipt
-                </p>
-                <p className="font-display font-bold text-2xl leading-tight">
-                  {business.name}
-                </p>
-                <p className="text-sub text-sm mt-1 max-w-xs">
-                  {business.address}
-                </p>
-                <p className="text-sub text-sm">{business.phone}</p>
-                {business.website && (
-                  <p className="text-sub text-sm break-all">{business.website}</p>
-                )}
               </div>
             </div>
             <div className="text-right shrink-0 pt-1">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-brand-500 font-semibold mb-1">
+                Official Receipt
+              </p>
               <h1 className="font-display font-bold text-3xl tracking-tight uppercase mb-2">
                 Receipt
               </h1>
-              <p className="text-sm leading-6">
-                <span className="text-sub">No. </span>
-                <span className="font-semibold">{receiptNumber}</span>
-              </p>
-              <p className="text-sm leading-6">
-                <span className="text-sub">Date </span>
-                <span className="font-semibold">{receiptDate}</span>
-              </p>
-              <p className="text-xs text-sub mt-2 max-w-[11rem]">
+              <div className="inline-flex flex-col items-end rounded-2xl border border-brand-100 bg-brand-50/60 px-4 py-3">
+                <p className="text-sm leading-6">
+                  <span className="text-sub">No. </span>
+                  <span className="font-semibold">{receiptNumber}</span>
+                </p>
+                <p className="text-sm leading-6">
+                  <span className="text-sub">Date </span>
+                  <span className="font-semibold">{receiptDate}</span>
+                </p>
+              </div>
+              <p className="text-xs text-sub mt-2 max-w-[11rem] ml-auto">
                 {buildReceiptSubtitle()}
               </p>
             </div>
           </div>
 
           {(customerName || customerPhone) && (
-            <div className="py-4 border-b border-border">
+            <div className="py-3.5 border-b border-border">
               <p className="label mb-2">Billed To</p>
               <div className="grid gap-1">
                 {customerName && <p className="font-semibold text-base">{customerName}</p>}
@@ -571,12 +562,18 @@ export default function ReceiptBuilder() {
             </div>
           )}
 
-          <div className="mt-8 pt-4 border-t border-border text-center">
+          <div className="mt-7 pt-4 border-t-2 border-ink/10 text-center">
             <p className="font-display font-semibold text-sm text-ink">
               Thank you for shopping with us.
             </p>
-            <p className="text-faint text-xs mt-1">
-              We appreciate your support and look forward to serving you again.
+            <p className="text-faint text-xs mt-1 leading-5">
+              Need help with delivery, installation, or after-sales support? Call or WhatsApp us on{" "}
+              <span className="font-semibold text-ink whitespace-nowrap">{business.phone}</span>.
+            </p>
+            <p className="text-faint text-[11px] mt-1">
+              {business.website}
+              <span className="mx-2">|</span>
+              Maridadi Plaza, Shop C10
             </p>
           </div>
         </div>
@@ -602,8 +599,10 @@ export default function ReceiptBuilder() {
             left: 0;
             width: 100%;
             max-width: none;
-            zoom: 0.86;
+            zoom: 0.82;
             overflow: hidden;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
 
           .receipt-table th,
@@ -623,8 +622,14 @@ export default function ReceiptBuilder() {
             break-inside: avoid;
             page-break-inside: avoid;
           }
+
+          .receipt-sheet {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
         }
       `}</style>
     </div>
   );
 }
+
