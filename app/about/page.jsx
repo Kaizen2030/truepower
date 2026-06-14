@@ -1,22 +1,44 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Zap,
-  MapPin,
-  Phone,
   ArrowRight,
+  Award,
+  Building2,
   Check,
-  Shield,
+  Clock,
   Droplets,
-  Sun,
-  Store,
+  HeartHandshake,
+  MapPin,
+  MessageCircle,
+  Shield,
+  Sparkles,
   Star,
+  Store,
+  Sun,
+  ThumbsUp,
   Truck,
   Users,
-  Award,
-  Clock,
-  MessageCircle,
+  Wrench,
+  Zap,
 } from "lucide-react";
-import { getPageContent } from "@/lib/supabase";
+
+import { createSeo } from "@/components/Seo";
+import BlogCard from "@/components/BlogCard";
+import {
+  getGalleryImages,
+  getPageContent,
+  getTestimonials,
+} from "@/lib/supabase";
+import { getPublishedBlogs } from "@/lib/blogs";
+
+export const metadata = createSeo({
+  title: "About TruePower Kenya",
+  description:
+    "TruePower Kenya supplies water heaters, pumps, solar, and electrical solutions from our Nyamakima showroom in Nairobi.",
+  path: "/about",
+});
+
+export const dynamic = "force-dynamic";
 
 const IconMap = {
   Users,
@@ -32,115 +54,271 @@ const IconMap = {
   Truck,
   Check,
   Clock,
+  HeartHandshake,
+  Building2,
+  Wrench,
+  ThumbsUp,
+  Sparkles,
 };
-import { Suspense } from "react";
-import Loading from "@/components/Loading";
-import { createSeo } from "@/components/Seo";
-
-export const metadata = createSeo({
-  title: "About TruePower Kenya",
-  description:
-    "Learn about TruePower Kenya, our Nyamakima showroom, and how we help Kenyan homes with water heaters, pumps, solar and electrical solutions.",
-  path: "/about",
-});
-
-export const dynamic = "force-dynamic";
 
 function DynamicIcon({ name, size = 24, className = "" }) {
   const IconComponent = IconMap[name] || Zap;
   return <IconComponent size={size} className={className} />;
 }
-export default function AboutPage() {
-  return (
-    <Suspense fallback={<Loading></Loading>}>
-      <PageContent />
-    </Suspense>
-  );
-}
-async function PageContent() {
-  const content = await getPageContent("about");
-  const pageData = content?.main ?? content ?? {};
 
-  const hero = pageData?.hero || {};
-  const stats = pageData?.stats?.items || [
-    { value: "500+", label: "Customers Served", icon: "Users" },
-    { value: "4.9★", label: "Average Rating", icon: "Star" },
-    { value: "4", label: "Product Categories", icon: "Zap" },
-    { value: "CBD", label: "Nyamakima Showroom", icon: "MapPin" },
-  ];
+const DEFAULT_STATS = [
+  { value: "500+", label: "Customers served", icon: "Users" },
+  { value: "4.9", label: "Customer rating", icon: "Star" },
+  { value: "Same day", label: "Pickup support", icon: "Truck" },
+  { value: "Nyamakima", label: "CBD showroom", icon: "MapPin" },
+];
+
+const DEFAULT_SERVICES = [
+  {
+    icon: "Zap",
+    title: "Water Heaters",
+    description:
+      "Instant and storage heaters chosen for Kenyan homes, low pressure, and borehole water conditions.",
+    chips: ["Instant showers", "Storage tanks", "Low pressure ready"],
+  },
+  {
+    icon: "Sun",
+    title: "Solar Solutions",
+    description:
+      "Solar products that help lower power bills while keeping your home or business running reliably.",
+    chips: ["Panels", "Inverters", "Battery setups"],
+  },
+  {
+    icon: "Droplets",
+    title: "Water Pumps",
+    description:
+      "Booster and transfer pumps that keep water moving smoothly in homes, apartments, and compounds.",
+    chips: ["Booster pumps", "Submersible pumps", "Pressure tanks"],
+  },
+  {
+    icon: "Store",
+    title: "Showroom Sales",
+    description:
+      "Visit our Nyamakima showroom, compare options in person, and get advice before you buy.",
+    chips: ["Walk-in support", "Product demos", "Same day pickup"],
+  },
+  {
+    icon: "Wrench",
+    title: "Installation Support",
+    description:
+      "We guide installations and setup so the products you buy work the way they should from day one.",
+    chips: ["Site advice", "After-sales help", "Setup guidance"],
+  },
+  {
+    icon: "Building2",
+    title: "Electrical Supply",
+    description:
+      "Reliable electrical items for homes, offices, and projects, from switches to fittings and accessories.",
+    chips: ["Switches", "Sockets", "Lighting"],
+  },
+];
+
+const DEFAULT_VALUES = [
+  {
+    icon: "Award",
+    title: "Proven expertise",
+    description:
+      "We help customers pick the right product for the real conditions they have at home.",
+  },
+  {
+    icon: "Shield",
+    title: "Quality checked",
+    description:
+      "We focus on products we would trust to install in our own homes and projects.",
+  },
+  {
+    icon: "Clock",
+    title: "Fast response",
+    description:
+      "Questions on WhatsApp, quick follow-up, and practical support from the team.",
+  },
+  {
+    icon: "ThumbsUp",
+    title: "Built for Kenya",
+    description:
+      "Our advice and product selection is based on local water pressure, power, and installation realities.",
+  },
+];
+
+const DEFAULT_HERO = {
+  badge: "About TruePower",
+  title: "A trusted partner for water, solar, and electrical solutions.",
+  subtitle:
+    "We help Kenyan homes and businesses choose products that perform well in real life, not just on the box.",
+};
+
+export default async function AboutPage() {
+  const [content, testimonials, galleryImages, blogData] = await Promise.all([
+    getPageContent("about"),
+    getTestimonials(),
+    getGalleryImages(),
+    getPublishedBlogs({ pageSize: 3 }),
+  ]);
+
+  const pageData = content?.main ?? content ?? {};
+  const hero = pageData?.hero || DEFAULT_HERO;
+  const stats = pageData?.stats?.items || DEFAULT_STATS;
+  const services = pageData?.services?.items || DEFAULT_SERVICES;
+  const values = pageData?.values?.items || DEFAULT_VALUES;
   const story = pageData?.story || {};
   const showroom = pageData?.showroom || {};
   const cta = pageData?.cta || {};
+  const blogPosts = blogData?.posts || [];
+  const galleryPreview = (galleryImages || []).slice(0, 4);
+
+  const storyParagraphs = story.paragraphs?.length
+    ? story.paragraphs
+    : [
+        "We started because too many water heaters and pumps were being sold without considering Kenyan water pressure, borehole conditions, or installation reality.",
+        "We test what we stock, explain the differences clearly, and make sure customers can buy with confidence instead of guesswork.",
+        "Our Nyamakima showroom gives you a place to see products in person, ask questions, and get support after the sale.",
+      ];
+
+  const storyFeatures = story.features?.length
+    ? story.features
+    : [
+        "Borehole tested",
+        "Low pressure ready",
+        "Solar compatible",
+        "Nairobi delivery",
+        "Showroom support",
+        "After-sales help",
+      ];
+
+  const heroPills = [
+    showroom.address || "Nyamakima, Nairobi CBD",
+    showroom.phone || "+254 701 039 256",
+    "WhatsApp quotes",
+    "Installation guidance",
+  ];
 
   return (
-    <main className="min-h-screen bg-white">
-      <section className="relative bg-gradient-to-br from-brand-900 via-brand-800 to-brand-600 text-white overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 rounded-full bg-white/20 blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-48 h-48 rounded-full bg-white/20 blur-3xl" />
+    <main className="min-h-screen bg-white overflow-x-hidden">
+      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(27,79,216,0.26),_transparent_35%),linear-gradient(135deg,#081226_0%,#12328a_48%,#1b4fd8_100%)] text-white">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute -top-20 -left-16 h-56 w-56 rounded-full bg-white/20 blur-3xl" />
+          <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl" />
         </div>
 
-        <div className="relative w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-20 lg:py-28">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="relative mx-auto w-full px-4 py-20 sm:px-6 lg:px-10 lg:py-28 xl:px-12">
+          <div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]">
             <div>
-              <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
-                <span className="text-yellow-300 text-sm">
-                  {hero.badge || "🇰🇪 About TruePower"}
-                </span>
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
+                <Sparkles size={16} className="text-yellow-300" />
+                {hero.badge || "About TruePower"}
               </div>
-              <h1 className="font-display font-extrabold text-5xl lg:text-7xl mb-6 leading-tight">
-                {hero.title || "Hot water for every Kenyan home."}
+
+              <h1 className="mt-6 max-w-3xl font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+                {hero.title || "A trusted partner for water, solar, and electrical solutions."}
               </h1>
-              <p className="text-brand-100 text-lg lg:text-xl mb-8 max-w-xl leading-relaxed">
+
+              <p className="mt-5 max-w-2xl text-base leading-8 text-brand-100 sm:text-lg">
                 {hero.subtitle ||
-                  "Water heaters, solar and electrical solutions — selected for Kenyan homes, borehole water, and low-pressure plumbing."}
+                  "We help Kenyan homes and businesses choose products that perform well in real life, not just on the box."}
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="mt-8 flex flex-wrap gap-3">
                 <a
                   href="https://wa.me/254701039256"
                   target="_blank"
                   rel="noreferrer"
-                  className="bg-white text-brand-600 hover:bg-brand-50 px-6 py-3 rounded-full font-display font-bold flex items-center gap-2"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-display font-bold text-brand-700 transition-transform hover:scale-[1.02]"
                 >
-                  <MessageCircle size={18} /> Talk to the Team
+                  <MessageCircle size={18} />
+                  Talk on WhatsApp
                 </a>
                 <Link
                   href="/shop"
-                  className="bg-brand-500 hover:bg-brand-400 text-white px-6 py-3 rounded-full font-display font-bold flex items-center gap-2"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02]"
                 >
-                  View Products <ArrowRight size={16} />
+                  View Products
+                  <ArrowRight size={16} />
                 </Link>
+                <Link
+                  href="/portfolio"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-3 font-display font-bold text-white backdrop-blur-sm transition-transform hover:scale-[1.02]"
+                >
+                  See Our Work
+                  <ArrowRight size={16} />
+                </Link>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-2">
+                {heroPills.map((pill) => (
+                  <span
+                    key={pill}
+                    className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm"
+                  >
+                    {pill}
+                  </span>
+                ))}
               </div>
             </div>
 
-            <div className="hidden lg:block relative">
-              <div className="absolute inset-0 bg-gradient-to-tr from-brand-500 to-brand-300 rounded-3xl blur-2xl opacity-30" />
-              <div className="relative bg-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/20">
-                <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { icon: "Zap", text: "0+ Products", sub: "Ready to quote" },
-                    { icon: "Truck", text: "Same Day", sub: "Pickup support" },
-                    {
-                      icon: "Droplets",
-                      text: "Low Pressure",
-                      sub: "Solutions for difficult installs",
-                    },
-                  ].map((item) => (
-                    <div
-                      key={item.text}
-                      className="text-center p-4 bg-white/5 rounded-2xl"
-                    >
-                      <div className="text-brand-300 mb-2 flex justify-center">
-                        <DynamicIcon name={item.icon} size={28} />
-                      </div>
-                      <div className="font-display font-bold text-white">
-                        {item.text}
-                      </div>
-                      <div className="text-brand-200 text-xs">{item.sub}</div>
-                    </div>
-                  ))}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="sm:col-span-2 rounded-[1.75rem] border border-white/15 bg-white/10 p-5 backdrop-blur-md shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-100">
+                      Showroom
+                    </p>
+                    <p className="mt-2 text-2xl font-display font-bold">
+                      {showroom.title || "Nyamakima Showroom, Nairobi CBD"}
+                    </p>
+                  </div>
+                  <Store className="text-yellow-300" size={30} />
                 </div>
+                <p className="mt-4 max-w-xl text-sm leading-6 text-white/80">
+                  {showroom.address ||
+                    "Nyamakima, Nairobi Central Business District"}
+                </p>
+                <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/80">
+                  <span className="rounded-full bg-white/10 px-3 py-1">Walk in support</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1">Product advice</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1">Same day pickup</span>
+                </div>
+              </div>
+
+              {stats.slice(0, 3).map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-[1.5rem] border border-white/12 bg-white/10 p-4 backdrop-blur-md"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-brand-100">
+                      <DynamicIcon name={stat.icon} size={22} />
+                    </div>
+                    <div className="rounded-full bg-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-white/70">
+                      TruePower
+                    </div>
+                  </div>
+                  <p className="mt-4 font-display text-2xl font-bold text-white">
+                    {stat.value}
+                  </p>
+                  <p className="mt-1 text-sm text-white/75">{stat.label}</p>
+                </div>
+              ))}
+
+              <div className="rounded-[1.5rem] border border-white/12 bg-brand-500/20 p-4 backdrop-blur-md sm:col-span-2">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-100">
+                      Fast response
+                    </p>
+                    <p className="mt-2 font-display text-lg font-bold text-white">
+                      WhatsApp help, quotes, and support
+                    </p>
+                  </div>
+                  <Truck className="text-white/90" size={28} />
+                </div>
+                <p className="mt-2 text-sm leading-6 text-white/80">
+                  We help you choose, buy, and install with less confusion.
+                </p>
               </div>
             </div>
           </div>
@@ -148,229 +326,319 @@ async function PageContent() {
       </section>
 
       <section className="border-b border-border bg-white">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="mx-auto w-full px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center group">
-                <div className="text-brand-500 mb-2 flex justify-center group-hover:scale-110 transition-transform">
+              <div key={stat.label} className="rounded-2xl border border-border bg-muted p-4 text-center">
+                <div className="mb-2 flex justify-center text-brand-500">
                   <DynamicIcon name={stat.icon} size={24} />
                 </div>
-                <p className="font-display font-extrabold text-2xl text-ink">
+                <p className="font-display text-2xl font-extrabold text-ink">
                   {stat.value}
                 </p>
-                <p className="text-sub text-xs">{stat.label}</p>
+                <p className="mt-1 text-xs text-sub">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
+      <section className="bg-muted py-16 lg:py-20">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <div className="badge mb-4">What We Do</div>
+            <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              Complete support for water, power, and electrical needs.
+            </h2>
+            <p className="mt-4 text-sub">
+              From product selection to installation advice, we keep the process simple and practical.
+            </p>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {services.map((service) => (
+              <article
+                key={service.title}
+                className="group rounded-[1.75rem] border border-border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-card"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="rounded-2xl bg-brand-50 p-3 text-brand-500">
+                    <DynamicIcon name={service.icon} size={24} />
+                  </div>
+                  <span className="rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-brand-500">
+                    TruePower
+                  </span>
+                </div>
+                <h3 className="mt-5 text-xl font-display font-bold text-ink">
+                  {service.title}
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-sub">{service.description}</p>
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {service.chips.map((chip) => (
+                    <span
+                      key={chip}
+                      className="rounded-full border border-border bg-muted px-3 py-1 text-[11px] font-medium text-ink"
+                    >
+                      {chip}
+                    </span>
+                  ))}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="py-16 lg:py-20 bg-white">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
             <div>
               <div className="badge mb-4">Our Story</div>
-              <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-ink mb-6">
-                {story.title || "Built by Kenyans, for Kenyans"}
+              <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+                {story.title || "Built by Kenyans, for Kenyan conditions"}
               </h2>
-              <div className="flex flex-col gap-5 text-sub leading-relaxed">
-                {(story.paragraphs || []).length > 0 ? (
-                  story.paragraphs.map((p, i) => <p key={i}>{p}</p>)
-                ) : (
-                  <>
-                    <p>
-                      Most water heaters on the market are designed for European
-                      water quality and pressure standards. They fail fast in
-                      Nairobi&apos;s borehole-heavy, variable-pressure environment.
-                    </p>
-                    <p>
-                      We visit factories, test products, and only stock units
-                      we&apos;d put in our own homes. Our Nyamakima showroom means
-                      you can see and touch every product before buying.
-                    </p>
-                    <p>
-                      Every sale comes with real advice — we help you pick the
-                      right heater for your building, tank position, and water
-                      source.
-                    </p>
-                  </>
-                )}
+              <div className="mt-6 space-y-5 text-base leading-8 text-sub">
+                {storyParagraphs.map((paragraph, idx) => (
+                  <p key={idx}>{paragraph}</p>
+                ))}
               </div>
+
               <div className="mt-8 flex flex-wrap gap-3">
-                {(story.features || []).length > 0
-                  ? story.features.map((f) => (
-                      <span
-                        key={f}
-                        className="flex items-center gap-1.5 text-sm text-ink bg-muted border border-border px-4 py-2 rounded-full"
-                      >
-                        <Check size={13} className="text-brand-500" /> {f}
-                      </span>
-                    ))
-                  : [
-                      "Borehole Tested",
-                      "Low Pressure Approved",
-                      "Solar Compatible",
-                      "Nairobi Delivery",
-                      "1 Year Warranty",
-                      "Expert Support",
-                    ].map((f) => (
-                      <span
-                        key={f}
-                        className="flex items-center gap-1.5 text-sm text-ink bg-muted border border-border px-4 py-2 rounded-full"
-                      >
-                        <Check size={13} className="text-brand-500" /> {f}
-                      </span>
-                    ))}
+                {storyFeatures.map((feature) => (
+                  <span
+                    key={feature}
+                    className="inline-flex items-center gap-2 rounded-full border border-border bg-muted px-4 py-2 text-sm text-ink"
+                  >
+                    <Check size={13} className="text-brand-500" />
+                    {feature}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-8 rounded-[1.75rem] border border-border bg-[linear-gradient(135deg,#f8fbff,#eef4ff)] p-6">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Why customers choose us
+                </p>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  {values.map((value) => (
+                    <div
+                      key={value.title}
+                      className="rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="rounded-2xl bg-brand-50 p-2 text-brand-500">
+                          <DynamicIcon name={value.icon} size={18} />
+                        </div>
+                        <p className="font-display font-bold text-ink">{value.title}</p>
+                      </div>
+                      <p className="mt-3 text-sm leading-6 text-sub">{value.description}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              {stats.slice(0, 4).map((s, i) => (
-                <div
-                  key={i}
-                  className="bg-muted rounded-2xl p-5 border border-border text-center group hover:border-brand-200 transition-all"
-                >
-                  <div className="text-brand-500 mb-2 flex justify-center">
-                    <DynamicIcon name={s.icon} size={24} />
+            <div className="grid gap-3 sm:grid-cols-2">
+              {galleryPreview.length > 0 ? (
+                galleryPreview.map((image, index) => (
+                  <div
+                    key={image.id || index}
+                    className={`group relative overflow-hidden rounded-[1.75rem] border border-border bg-muted shadow-sm ${
+                      index === 0 ? "sm:col-span-2 aspect-[16/10]" : "aspect-[4/5]"
+                    }`}
+                  >
+                    <Image
+                      src={image.image_url}
+                      alt={image.title || "TruePower installation"}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                      <p className="font-display text-sm font-semibold">
+                        {image.title || "Installation"}
+                      </p>
+                      <p className="text-xs text-white/75">
+                        {image.description || image.category || "Project highlight"}
+                      </p>
+                    </div>
                   </div>
-                  <p className="font-display font-extrabold text-3xl text-ink mb-1">
-                    {s.value}
+                ))
+              ) : (
+                <>
+                  <div className="sm:col-span-2 rounded-[1.75rem] border border-border bg-gradient-to-br from-brand-700 to-brand-900 p-6 text-white">
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-100">
+                      Visual proof
+                    </p>
+                    <p className="mt-3 text-2xl font-display font-bold">
+                      Recent installations and showroom work
+                    </p>
+                    <p className="mt-3 text-sm leading-6 text-white/75">
+                      When no gallery images are available, we still keep this section ready to highlight real work.
+                    </p>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-border bg-muted p-5">
+                    <div className="flex h-full items-center justify-center text-brand-500">
+                      <CameraPlaceholder />
+                    </div>
+                  </div>
+                  <div className="rounded-[1.5rem] border border-border bg-muted p-5">
+                    <div className="flex h-full items-center justify-center text-brand-500">
+                      <CameraPlaceholder />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-16 lg:py-20">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <div className="badge mb-4">Customer Feedback</div>
+            <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              Real customers, real results.
+            </h2>
+            <p className="mt-4 text-sub">
+              What people say after buying, installing, and using our products.
+            </p>
+          </div>
+
+          {testimonials.length === 0 ? (
+            <div className="rounded-[1.75rem] border border-border bg-muted px-6 py-16 text-center">
+              <Star size={48} className="mx-auto text-faint" />
+              <p className="mt-4 text-sub">No testimonials yet. Check back soon.</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {testimonials.slice(0, 3).map((testimonial, index) => (
+                <article
+                  key={testimonial.id || index}
+                  className="rounded-[1.75rem] border border-border bg-white p-6 shadow-sm"
+                >
+                  <div className="flex gap-1 text-yellow-400">
+                    {[...Array(5)].map((_, starIndex) => (
+                      <Star
+                        key={starIndex}
+                        size={16}
+                        fill={
+                          starIndex < Number(testimonial.rating || 5)
+                            ? "currentColor"
+                            : "none"
+                        }
+                      />
+                    ))}
+                  </div>
+                  <p className="mt-4 text-base leading-7 text-ink italic">
+                    &quot;{testimonial.text}&quot;
                   </p>
-                  <p className="text-sub text-xs">{s.label}</p>
-                </div>
+                  <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 font-display font-bold text-brand-600">
+                      {(testimonial.name || "C").charAt(0)}
+                    </div>
+                    <div>
+                      <p className="font-display font-semibold text-ink">
+                        {testimonial.name}
+                      </p>
+                      <p className="text-xs text-sub">{testimonial.location || "Kenya"}</p>
+                    </div>
+                  </div>
+                </article>
               ))}
             </div>
-          </div>
+          )}
         </div>
       </section>
 
-      <section className="py-16 lg:py-20 bg-muted">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="bg-gradient-to-br from-white to-brand-50 rounded-3xl overflow-hidden border border-border">
-            <div className="grid grid-cols-1 lg:grid-cols-2">
-              <div className="p-8 lg:p-12">
-                <div className="badge mb-4">Visit Our Showroom</div>
-                <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-ink mb-4">
-                  {showroom.title || "Nyamakima Showroom, Nairobi CBD"}
-                </h2>
-                <div className="flex flex-col gap-4 mb-8">
-                  <div className="flex items-start gap-3">
-                    <MapPin
-                      size={20}
-                      className="text-brand-500 shrink-0 mt-0.5"
-                    />
-                    <div>
-                      <p className="font-display font-semibold text-ink">
-                        Location
-                      </p>
-                      <p className="text-sub text-sm">
-                        {showroom.address ||
-                          "Nyamakima, Nairobi Central Business District"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Phone
-                      size={20}
-                      className="text-brand-500 shrink-0 mt-0.5"
-                    />
-                    <div>
-                      <p className="font-display font-semibold text-ink">
-                        Contact
-                      </p>
-                      <p className="text-sub text-sm">
-                        {showroom.phone || "+254 701 039 256"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Clock
-                      size={20}
-                      className="text-brand-500 shrink-0 mt-0.5"
-                    />
-                    <div>
-                      <p className="font-display font-semibold text-ink">
-                        Opening Hours
-                      </p>
-                      <div className="text-sub text-sm space-y-1 mt-1">
-                        {(
-                          showroom.hours || [
-                            {
-                              day: "Monday – Friday",
-                              hours: "8:00 AM – 6:00 PM",
-                            },
-                            { day: "Saturday", hours: "9:00 AM – 5:00 PM" },
-                            { day: "Sunday", hours: "Closed" },
-                          ]
-                        ).map((h, idx) => (
-                          <p key={idx}>
-                            {h.day}: {h.hours}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                  <a
-                    href="https://wa.me/254701039256"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="btn-primary flex items-center gap-2"
-                  >
-                    <MessageCircle size={18} /> WhatsApp Us
-                  </a>
-                  <Link
-                    href="/shop"
-                    className="btn-outline flex items-center gap-2"
-                  >
-                    Browse Online <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </div>
-              <div className="relative bg-brand-800 min-h-[300px] lg:min-h-full flex items-center justify-center">
-                <div className="text-center p-8">
-                  <div className="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <MapPin size={40} className="text-brand-300" />
-                  </div>
-                  <p className="text-white/80 text-sm">
-                    📍{" "}
-                    {showroom.address?.split(",")[0] ||
-                      "Nyamakima, Nairobi CBD"}
-                  </p>
-                  <p className="text-white/60 text-xs mt-2">
-                    Drop by anytime — we&apos;re ready to help
-                  </p>
-                </div>
-              </div>
+      <section className="bg-muted py-16 lg:py-20">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <div className="badge mb-4">From the Blog</div>
+            <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              Helpful reads for better buying decisions.
+            </h2>
+            <p className="mt-4 text-sub">
+              We share product advice, installation tips, and project updates on the blog.
+            </p>
+          </div>
+
+          {blogPosts.length === 0 ? (
+            <div className="rounded-[1.75rem] border border-border bg-white px-6 py-16 text-center">
+              <p className="text-sub">No blog posts published yet.</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-3">
+              {blogPosts.slice(0, 3).map((post) => (
+                <BlogCard key={post.id} post={post} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="bg-[linear-gradient(135deg,#12328a_0%,#1b4fd8_100%)] py-16 text-white">
+        <div className="mx-auto grid w-full gap-8 px-4 sm:px-6 lg:px-10 xl:px-12 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <div className="badge border-white/20 bg-white/10 text-white">Visit or chat with us</div>
+            <h2 className="mt-4 max-w-2xl font-display text-3xl font-extrabold sm:text-4xl">
+              {cta.title || "Ready to choose the right solution for your home?"}
+            </h2>
+            <p className="mt-4 max-w-2xl text-brand-100">
+              {cta.subtitle ||
+                "Chat with us, ask questions, get a quote quickly, and arrange pickup or delivery in Nairobi."}
+            </p>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-white/15 bg-white/10 p-6 backdrop-blur-md">
+            <div className="space-y-3 text-sm text-white/85">
+              <p className="flex items-center gap-2">
+                <MapPin size={16} className="text-yellow-300" />
+                {showroom.address || "Nyamakima, Nairobi CBD"}
+              </p>
+              <p className="flex items-center gap-2">
+                <MessageCircle size={16} className="text-yellow-300" />
+                {showroom.phone || "+254 701 039 256"}
+              </p>
+              <p className="flex items-center gap-2">
+                <Clock size={16} className="text-yellow-300" />
+                Monday to Saturday, 8:00 AM - 6:00 PM
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={cta.button_link || "https://wa.me/254701039256"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-display font-bold text-brand-700 transition-transform hover:scale-[1.02]"
+              >
+                <MessageCircle size={18} />
+                {cta.button_text || "Chat Now on WhatsApp"}
+              </a>
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-5 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02]"
+              >
+                Browse Products
+                <ArrowRight size={16} />
+              </Link>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section className="py-16 lg:py-20 bg-gradient-to-r from-brand-600 to-brand-800">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-12 text-center">
-          <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-white mb-4">
-            {cta.title || "Ready to order? We&apos;re on WhatsApp."}
-          </h2>
-          <p className="text-brand-100 text-lg mb-8">
-            {cta.subtitle ||
-              "Chat with us, ask questions, get a quote fast, and arrange pickup or delivery in Nairobi."}
-          </p>
-          <a
-            href={cta.button_link || "https://wa.me/254701039256"}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-3 bg-[#25D366] hover:bg-[#1fb85b] text-white font-display font-bold px-8 py-4 rounded-2xl transition-all hover:scale-105 text-lg shadow-lg"
-          >
-            <MessageCircle size={24} />{" "}
-            {cta.button_text || "Chat Now on WhatsApp"}
-          </a>
         </div>
       </section>
     </main>
   );
 }
 
-
-
+function CameraPlaceholder() {
+  return (
+    <div className="text-center">
+      <Store size={42} className="mx-auto mb-3 text-brand-400" />
+      <p className="font-display font-semibold text-ink">Showcase ready</p>
+      <p className="mt-1 text-sm text-sub">Add gallery photos from the admin dashboard</p>
+    </div>
+  );
+}
