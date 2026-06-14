@@ -210,28 +210,29 @@ export default async function AboutPage() {
     "WhatsApp quotes",
     "Installation guidance",
   ];
+  const ctaBackdrop = heroVisuals[1] || heroVisuals[0];
 
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
-      <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(27,79,216,0.26),_transparent_35%),linear-gradient(135deg,#081226_0%,#12328a_48%,#1b4fd8_100%)] text-white">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute -top-20 -left-16 h-56 w-56 rounded-full bg-white/20 blur-3xl" />
-          <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-cyan-300/20 blur-3xl" />
+      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#faf7f1_0%,#f8fbff_45%,#eef4ff_100%)] text-ink">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-20 -left-16 h-56 w-56 rounded-full bg-brand-100/60 blur-3xl" />
+          <div className="absolute bottom-0 right-0 h-72 w-72 rounded-full bg-amber-100/60 blur-3xl" />
         </div>
 
-        <div className="relative mx-auto w-full px-4 py-20 sm:px-6 lg:px-10 lg:py-28 xl:px-12">
-          <div className="grid items-center gap-12 lg:grid-cols-[1.08fr_0.92fr]">
+        <div className="relative mx-auto w-full px-4 py-16 sm:px-6 lg:px-10 lg:py-24 xl:px-12">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
             <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-                <Sparkles size={16} className="text-yellow-300" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white/80 px-4 py-1.5 text-sm font-medium text-ink shadow-sm backdrop-blur-sm">
+                <Sparkles size={16} className="text-brand-500" />
                 {hero.badge || "About TruePower"}
               </div>
 
-              <h1 className="mt-6 max-w-3xl font-display text-4xl font-extrabold leading-tight sm:text-5xl lg:text-6xl">
+              <h1 className="mt-6 max-w-3xl font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
                 {hero.title || "A trusted partner for water, solar, and electrical solutions."}
               </h1>
 
-              <p className="mt-5 max-w-2xl text-base leading-8 text-brand-100 sm:text-lg">
+              <p className="mt-5 max-w-2xl text-base leading-8 text-sub sm:text-lg">
                 {hero.subtitle ||
                   "We help Kenyan homes and businesses choose products that perform well in real life, not just on the box."}
               </p>
@@ -241,21 +242,21 @@ export default async function AboutPage() {
                   href="https://wa.me/254701039256"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-display font-bold text-brand-700 transition-transform hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02] shadow-sm"
                 >
                   <MessageCircle size={18} />
                   Talk on WhatsApp
                 </a>
                 <Link
                   href="/shop"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-display font-bold text-ink transition-transform hover:scale-[1.02] shadow-sm border border-border"
                 >
                   View Products
                   <ArrowRight size={16} />
                 </Link>
                 <Link
                   href="/portfolio"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-3 font-display font-bold text-white backdrop-blur-sm transition-transform hover:scale-[1.02]"
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-6 py-3 font-display font-bold text-ink backdrop-blur-sm transition-transform hover:scale-[1.02] shadow-sm"
                 >
                   See Our Work
                   <ArrowRight size={16} />
@@ -266,7 +267,7 @@ export default async function AboutPage() {
                 {heroPills.map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/90 backdrop-blur-sm"
+                    className="rounded-full border border-border bg-white/80 px-3 py-1.5 text-xs font-medium text-sub backdrop-blur-sm"
                   >
                     {pill}
                   </span>
@@ -274,88 +275,104 @@ export default async function AboutPage() {
               </div>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-2">
-              {heroVisuals[0] ? (
-                <div className="sm:col-span-2 relative overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/10 shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
-                  <div className="relative aspect-[16/10]">
+            <div className="grid grid-cols-2 gap-3">
+              {heroVisuals.length > 0 ? (
+                heroVisuals.map((image, index) => (
+                  <div
+                    key={image.id || index}
+                    className={`relative overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/80 shadow-sm ${
+                      index === 0
+                        ? "col-span-2 aspect-[16/9]"
+                        : index === 3
+                          ? "col-span-2 aspect-[12/5]"
+                          : "aspect-[4/5]"
+                    }`}
+                  >
                     <Image
-                      src={heroVisuals[0].image_url}
-                      alt={heroVisuals[0].title || "TruePower product"}
+                      src={image.image_url}
+                      alt={image.title || "TruePower installation"}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
                     <div className="absolute left-4 right-4 bottom-4">
-                      <p className="text-[11px] uppercase tracking-[0.28em] text-white/80">
-                        Real product photo
+                      <p className="text-[10px] uppercase tracking-[0.26em] text-white/80">
+                        {index === 0 ? "Real product photo" : "Showroom / project"}
                       </p>
-                      <p className="mt-2 max-w-lg font-display text-2xl font-bold">
-                        {heroVisuals[0].title || "TruePower products in the wild"}
+                      <p className="mt-1.5 font-display text-lg font-bold text-white sm:text-2xl">
+                        {image.title || "TruePower"}
                       </p>
-                      <p className="mt-1 text-sm text-white/75">
-                        {heroVisuals[0].description || "Shown from our catalog and gallery."}
+                      <p className="mt-1 text-xs leading-5 text-white/75">
+                        {image.description || image.category || "Project highlight"}
                       </p>
                     </div>
                   </div>
+                ))
+              ) : (
+                <div className="col-span-2 rounded-[1.5rem] border border-border bg-white/80 p-6 text-center">
+                  <p className="font-display font-bold text-ink">Real photos loading</p>
+                  <p className="mt-2 text-sm text-sub">
+                    Add gallery or product images in the dashboard to fill this collage.
+                  </p>
                 </div>
-              ) : null}
+              )}
 
-              <div className="sm:col-span-2 rounded-[1.75rem] border border-white/15 bg-white/10 p-5 backdrop-blur-md shadow-[0_24px_80px_rgba(0,0,0,0.24)]">
+              <div className="col-span-2 rounded-[1.5rem] border border-border bg-white/90 p-4 shadow-sm">
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-100">
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
                       Showroom
                     </p>
-                    <p className="mt-2 text-2xl font-display font-bold">
+                    <p className="mt-2 text-xl font-display font-bold text-ink">
                       {showroom.title || "Nyamakima Showroom, Nairobi CBD"}
                     </p>
                   </div>
-                  <Store className="text-yellow-300" size={30} />
+                  <Store className="text-brand-500" size={30} />
                 </div>
-                <p className="mt-4 max-w-xl text-sm leading-6 text-white/80">
+                <p className="mt-4 max-w-xl text-sm leading-6 text-sub">
                   {showroom.address ||
                     "Nyamakima, Nairobi Central Business District"}
                 </p>
-                <div className="mt-4 flex flex-wrap gap-2 text-xs text-white/80">
-                  <span className="rounded-full bg-white/10 px-3 py-1">Walk in support</span>
-                  <span className="rounded-full bg-white/10 px-3 py-1">Product advice</span>
-                  <span className="rounded-full bg-white/10 px-3 py-1">Same day pickup</span>
+                <div className="mt-4 flex flex-wrap gap-2 text-xs text-sub">
+                  <span className="rounded-full bg-brand-50 px-3 py-1">Walk in support</span>
+                  <span className="rounded-full bg-brand-50 px-3 py-1">Product advice</span>
+                  <span className="rounded-full bg-brand-50 px-3 py-1">Same day pickup</span>
                 </div>
               </div>
 
               {stats.slice(0, 3).map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-[1.5rem] border border-white/12 bg-white/10 p-4 backdrop-blur-md"
+                  className="rounded-[1.5rem] border border-border bg-white/90 p-4 shadow-sm"
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <div className="text-brand-100">
+                    <div className="text-brand-500">
                       <DynamicIcon name={stat.icon} size={22} />
                     </div>
-                    <div className="rounded-full bg-white/10 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-white/70">
+                    <div className="rounded-full bg-brand-50 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-brand-500">
                       TruePower
                     </div>
                   </div>
-                  <p className="mt-4 font-display text-2xl font-bold text-white">
+                  <p className="mt-4 font-display text-2xl font-bold text-ink">
                     {stat.value}
                   </p>
-                  <p className="mt-1 text-sm text-white/75">{stat.label}</p>
+                  <p className="mt-1 text-sm text-sub">{stat.label}</p>
                 </div>
               ))}
-              <div className="rounded-[1.5rem] border border-white/12 bg-brand-500/20 p-4 backdrop-blur-md sm:col-span-2">
+              <div className="col-span-2 rounded-[1.5rem] border border-border bg-[linear-gradient(135deg,#fff,#f7fbff)] p-4 shadow-sm">
                 <div className="flex items-center justify-between gap-4">
                   <div>
-                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-100">
+                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
                       Fast response
                     </p>
-                    <p className="mt-2 font-display text-lg font-bold text-white">
+                    <p className="mt-2 font-display text-lg font-bold text-ink">
                       WhatsApp help, quotes, and support
                     </p>
                   </div>
-                  <Truck className="text-white/90" size={28} />
+                  <Truck className="text-brand-500" size={28} />
                 </div>
-                <p className="mt-2 text-sm leading-6 text-white/80">
+                <p className="mt-2 text-sm leading-6 text-sub">
                   We help you choose, buy, and install with less confusion.
                 </p>
               </div>
@@ -394,11 +411,11 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {services.map((service) => (
               <article
                 key={service.title}
-                className="group rounded-[1.75rem] border border-border bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-card"
+                className="group rounded-[1.75rem] border border-border bg-white p-4 shadow-sm transition-all hover:-translate-y-1 hover:shadow-card sm:p-6"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="rounded-2xl bg-brand-50 p-3 text-brand-500">
@@ -408,15 +425,17 @@ export default async function AboutPage() {
                     TruePower
                   </span>
                 </div>
-                <h3 className="mt-5 text-xl font-display font-bold text-ink">
+                <h3 className="mt-5 text-base font-display font-bold text-ink sm:text-xl">
                   {service.title}
                 </h3>
-                <p className="mt-3 text-sm leading-6 text-sub">{service.description}</p>
+                <p className="mt-3 text-xs leading-5 text-sub sm:text-sm sm:leading-6">
+                  {service.description}
+                </p>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {service.chips.map((chip) => (
                     <span
                       key={chip}
-                      className="rounded-full border border-border bg-muted px-3 py-1 text-[11px] font-medium text-ink"
+                      className="rounded-full border border-border bg-muted px-2.5 py-1 text-[10px] font-medium text-ink sm:px-3 sm:text-[11px]"
                     >
                       {chip}
                     </span>
@@ -454,23 +473,25 @@ export default async function AboutPage() {
                 ))}
               </div>
 
-              <div className="mt-8 rounded-[1.75rem] border border-border bg-[linear-gradient(135deg,#f8fbff,#eef4ff)] p-6">
+              <div className="mt-8 rounded-[1.75rem] border border-border bg-[linear-gradient(135deg,#f8fbff,#eef4ff)] p-5 sm:p-6">
                 <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
                   Why customers choose us
                 </p>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-4">
                   {values.map((value) => (
                     <div
                       key={value.title}
-                      className="rounded-2xl border border-white/70 bg-white/85 p-4 shadow-sm"
+                      className="rounded-2xl border border-white/70 bg-white/85 p-3 sm:p-4 shadow-sm"
                     >
                       <div className="flex items-center gap-3">
                         <div className="rounded-2xl bg-brand-50 p-2 text-brand-500">
-                          <DynamicIcon name={value.icon} size={18} />
+                          <DynamicIcon name={value.icon} size={16} />
                         </div>
-                        <p className="font-display font-bold text-ink">{value.title}</p>
+                        <p className="font-display font-bold text-sm text-ink">{value.title}</p>
                       </div>
-                      <p className="mt-3 text-sm leading-6 text-sub">{value.description}</p>
+                      <p className="mt-3 text-xs leading-5 text-sub sm:text-sm sm:leading-6">
+                        {value.description}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -552,11 +573,11 @@ export default async function AboutPage() {
               <p className="mt-4 text-sub">No testimonials yet. Check back soon.</p>
             </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 grid-cols-2 md:grid-cols-2 xl:grid-cols-3">
               {testimonials.slice(0, 3).map((testimonial, index) => (
                 <article
                   key={testimonial.id || index}
-                  className="rounded-[1.75rem] border border-border bg-white p-6 shadow-sm"
+                  className="rounded-[1.75rem] border border-border bg-white p-4 sm:p-6 shadow-sm"
                 >
                   <div className="flex gap-1 text-yellow-400">
                     {[...Array(5)].map((_, starIndex) => (
@@ -571,7 +592,7 @@ export default async function AboutPage() {
                       />
                     ))}
                   </div>
-                  <p className="mt-4 text-base leading-7 text-ink italic">
+                  <p className="mt-4 text-sm sm:text-base leading-6 sm:leading-7 text-ink italic line-clamp-6">
                     &quot;{testimonial.text}&quot;
                   </p>
                   <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
@@ -609,7 +630,7 @@ export default async function AboutPage() {
               <p className="text-sub">No blog posts published yet.</p>
             </div>
           ) : (
-            <div className="grid gap-6 lg:grid-cols-3">
+            <div className="grid gap-4 grid-cols-2 lg:grid-cols-3">
               {blogPosts.slice(0, 3).map((post) => (
                 <BlogCard key={post.id} post={post} />
               ))}
@@ -618,31 +639,97 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-[linear-gradient(135deg,#12328a_0%,#1b4fd8_100%)] py-16 text-white">
-        <div className="mx-auto grid w-full gap-8 px-4 sm:px-6 lg:px-10 xl:px-12 lg:grid-cols-[1fr_auto] lg:items-center">
+      <section className="relative overflow-hidden bg-[linear-gradient(135deg,#f9f3ea_0%,#fffdf8_52%,#eef4ff_100%)] py-16 lg:py-20">
+        <div className="absolute inset-0 pointer-events-none">
+          {ctaBackdrop ? (
+            <div className="absolute inset-y-0 right-0 hidden w-1/2 lg:block">
+              <Image
+                src={ctaBackdrop.image_url}
+                alt={ctaBackdrop.title || "TruePower project"}
+                fill
+                className="object-cover opacity-25"
+                sizes="50vw"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(249,243,234,0.98),rgba(249,243,234,0.72),rgba(238,244,255,0.18))]" />
+            </div>
+          ) : null}
+        </div>
+
+        <div className="relative mx-auto grid w-full gap-8 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:px-10 xl:px-12">
           <div>
-            <div className="badge border-white/20 bg-white/10 text-white">Visit or chat with us</div>
-            <h2 className="mt-4 max-w-2xl font-display text-3xl font-extrabold sm:text-4xl">
+            <div className="badge border-border bg-white/90 text-ink shadow-sm">
+              Visit or chat with us
+            </div>
+            <h2 className="mt-4 max-w-2xl font-display text-3xl font-extrabold text-ink sm:text-4xl">
               {cta.title || "Ready to choose the right solution for your home?"}
             </h2>
-            <p className="mt-4 max-w-2xl text-brand-100">
+            <p className="mt-4 max-w-2xl text-sub">
               {cta.subtitle ||
                 "Chat with us, ask questions, get a quote quickly, and arrange pickup or delivery in Nairobi."}
             </p>
+
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Address
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">
+                  {showroom.address || "Nyamakima, Nairobi CBD"}
+                </p>
+              </div>
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Phone
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">
+                  {showroom.phone || "+254 701 039 256"}
+                </p>
+              </div>
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Hours
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">
+                  Monday to Saturday
+                </p>
+              </div>
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Support
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">
+                  Quotes, delivery, installation
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div className="rounded-[1.75rem] border border-white/15 bg-white/10 p-6 backdrop-blur-md">
-            <div className="space-y-3 text-sm text-white/85">
+          <div className="rounded-[1.75rem] border border-border bg-white/95 p-6 shadow-lg backdrop-blur-md">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  TruePower contact
+                </p>
+                <p className="mt-2 text-2xl font-display font-bold text-ink">
+                  Let us help you choose well
+                </p>
+              </div>
+              <div className="rounded-2xl bg-brand-50 p-3 text-brand-500">
+                <MessageCircle size={26} />
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3 text-sm text-sub">
               <p className="flex items-center gap-2">
-                <MapPin size={16} className="text-yellow-300" />
+                <MapPin size={16} className="text-brand-500" />
                 {showroom.address || "Nyamakima, Nairobi CBD"}
               </p>
               <p className="flex items-center gap-2">
-                <MessageCircle size={16} className="text-yellow-300" />
+                <MessageCircle size={16} className="text-brand-500" />
                 {showroom.phone || "+254 701 039 256"}
               </p>
               <p className="flex items-center gap-2">
-                <Clock size={16} className="text-yellow-300" />
+                <Clock size={16} className="text-brand-500" />
                 Monday to Saturday, 8:00 AM - 6:00 PM
               </p>
             </div>
@@ -652,14 +739,14 @@ export default async function AboutPage() {
                 href={cta.button_link || "https://wa.me/254701039256"}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 font-display font-bold text-brand-700 transition-transform hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02]"
               >
                 <MessageCircle size={18} />
                 {cta.button_text || "Chat Now on WhatsApp"}
               </a>
               <Link
                 href="/shop"
-                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-5 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 py-3 font-display font-bold text-ink transition-transform hover:scale-[1.02]"
               >
                 Browse Products
                 <ArrowRight size={16} />
