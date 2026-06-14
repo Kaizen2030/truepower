@@ -1,32 +1,27 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Star,
-  MessageCircle,
-  MapPin,
-  Users,
-  Sparkles,
-  Award,
-  Truck,
-  Shield,
-  Droplets,
-  Sun,
-  Store,
-  Camera,
-  Briefcase,
-  ThumbsUp,
   ArrowRight,
+  Award,
+  Briefcase,
+  Camera,
+  Droplets,
+  MapPin,
+  MessageCircle,
   Quote,
+  Shield,
+  Sparkles,
+  Star,
+  Store,
+  Sun,
+  Truck,
+  Users,
 } from "lucide-react";
 
-import {
-  getGalleryImages,
-  getTestimonials,
-  getPageContent,
-} from "@/lib/supabase";
+import { getGalleryImages, getTestimonials, getPageContent } from "@/lib/supabase";
 import { createSeo } from "@/components/Seo";
 import ProjectGallery from "@/components/ProjectGallery";
 
-// ✅ SEO
 export const metadata = createSeo({
   title: "Portfolio & Installations",
   description:
@@ -50,14 +45,11 @@ const PortfolioIconMap = {
   Store,
   Camera,
   Briefcase,
-  ThumbsUp,
-  ArrowRight,
-  Quote,
 };
 
-function DynamicPortfolioIcon({ name, size = 24 }) {
+function DynamicPortfolioIcon({ name, size = 24, className = "" }) {
   const IconComponent = PortfolioIconMap[name] || Sparkles;
-  return <IconComponent size={size} />;
+  return <IconComponent size={size} className={className} />;
 }
 
 export default async function PortfolioPage() {
@@ -71,158 +63,301 @@ export default async function PortfolioPage() {
 
   const categories = pageData?.galleryCategories || [
     { key: "all", label: "All Work", icon: <Briefcase size={14} /> },
-    {
-      key: "installation",
-      label: "Installations",
-      icon: <Sparkles size={14} />,
-    },
-    { key: "showroom", label: "Showroom", icon: <Camera size={14} /> },
-    { key: "product", label: "Products", icon: <ThumbsUp size={14} /> },
+    { key: "installation", label: "Installations", icon: <Camera size={14} /> },
+    { key: "showroom", label: "Showroom", icon: <Store size={14} /> },
+    { key: "product", label: "Products", icon: <Droplets size={14} /> },
   ];
 
-  const stats = pageData?.stats?.items ||
+  const stats =
+    pageData?.stats?.items ||
     pageData?.stats || [
-      { value: "500+", label: "Happy Customers", icon: <Users size={24} /> },
-      { value: "4.9★", label: "Average Rating", icon: <Star size={24} /> },
-      {
-        value: "24/7",
-        label: "WhatsApp Support",
-        icon: <MessageCircle size={24} />,
-      },
-      { value: "Same Day", label: "Nairobi Pickup", icon: <Truck size={24} /> },
+      { value: "500+", label: "Projects completed", icon: "Users" },
+      { value: "4.9", label: "Average rating", icon: "Star" },
+      { value: "24/7", label: "WhatsApp support", icon: "MessageCircle" },
+      { value: "Same day", label: "Nairobi pickup", icon: "Truck" },
     ];
 
-  const hero = pageData?.hero || {
-    badge: "TruePower Portfolio",
-    title: "Our Portfolio",
-    subtitle:
-      "Real installations, genuine reviews, and proof that we deliver reliable water, solar and electrical solutions for Kenyan homes.",
-  };
+  const hero =
+    pageData?.hero || {
+      badge: "Portfolio",
+      title: "Installations, products, and customer results.",
+      subtitle:
+        "A clear view of the work we do, the results we deliver, and the quality customers can expect from TruePower.",
+    };
 
-  const gallerySection = pageData?.gallerySection || {
-    title: "Project Gallery",
-    subtitle:
-      "Browse recent installations, product finishes, and highlights from completed projects.",
-  };
+  const gallerySection =
+    pageData?.gallerySection || {
+      title: "Project Gallery",
+      subtitle:
+        "Recent installations, showroom photos, and product highlights from completed work.",
+    };
 
-  const testimonialsSection = pageData?.testimonialsSection || {
-    title: "Customer Feedback",
-    subtitle: "Real feedback from real customers across Kenya.",
-  };
+  const testimonialsSection =
+    pageData?.testimonialsSection || {
+      title: "Customer Feedback",
+      subtitle: "Real feedback from real customers across Kenya.",
+    };
 
-  const promiseSection = pageData?.promiseSection || {
-    title: "Our Promise",
-    subtitle: "What makes us different",
-  };
+  const promiseSection =
+    pageData?.promiseSection || {
+      title: "What We Stand For",
+      subtitle: "Practical guidance, dependable products, and after-sales support.",
+    };
 
-  const cta = pageData?.cta || {
-    title: "Ready to find the right solution for your home?",
-    subtitle:
-      "Chat with us on WhatsApp — we’ll help you choose the right water heater, pump or solar option.",
-    button_text: "WhatsApp Us",
-    button_link: "https://wa.me/254701039256",
-  };
+  const cta =
+    pageData?.cta || {
+      title: "Need help choosing the right solution?",
+      subtitle:
+        "Chat with us on WhatsApp and we will help you match the right water heater, pump, solar setup, or electrical product to your needs.",
+      button_text: "WhatsApp Us",
+      button_link: "https://wa.me/254701039256",
+    };
+
+  const heroShots = (galleryImages || []).filter((image) => image?.image_url).slice(0, 4);
+  const ctaVisual = heroShots[1] || heroShots[0];
+
+  const processSteps = [
+    {
+      step: "01",
+      icon: MessageCircle,
+      title: "Share your setup",
+      desc: "Tell us about your water pressure, building type, or power setup and we will guide you from there.",
+    },
+    {
+      step: "02",
+      icon: Award,
+      title: "Get a clear recommendation",
+      desc: "We suggest the right product options, explain the trade-offs, and keep the pricing straightforward.",
+    },
+    {
+      step: "03",
+      icon: Truck,
+      title: "Order, pick up, or install",
+      desc: "Collect from the showroom or arrange delivery with installation guidance where needed.",
+    },
+  ];
+
+  const promiseCards = [
+    {
+      icon: Shield,
+      title: "Built for local conditions",
+      desc: "Products chosen with Kenyan water pressure, borehole use, and installation realities in mind.",
+    },
+    {
+      icon: Droplets,
+      title: "Low-pressure support",
+      desc: "Water heaters and pumps that are selected to perform reliably in difficult pressure conditions.",
+    },
+    {
+      icon: Sun,
+      title: "Solar-friendly choices",
+      desc: "Options that work well alongside existing solar systems and help reduce power costs.",
+    },
+    {
+      icon: Store,
+      title: "See before you buy",
+      desc: "Visit the Nyamakima showroom, compare the products, and ask questions before committing.",
+    },
+  ];
 
   return (
-    <main className="min-h-screen bg-white ">
-      {/* HERO */}
-      <section className="relative bg-gradient-to-br from-brand-900 via-brand-800 to-brand-700 text-white overflow-hidden">
-        <div className="relative w-full mx-auto px-4 sm:px-6 lg:px-10 py-20 text-center">
-          <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-1.5 mb-6">
-            <Sparkles size={16} />
-            <span className="text-sm font-medium">{hero.badge}</span>
+    <main className="min-h-screen bg-white overflow-x-hidden">
+      <section className="border-b border-border bg-[linear-gradient(135deg,#f8fafc_0%,#ffffff_52%,#eef4ff_100%)]">
+        <div className="mx-auto grid w-full gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:py-20 xl:px-12">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-1.5 text-sm font-semibold text-ink shadow-sm">
+              <Briefcase size={16} className="text-brand-500" />
+              {hero.badge || "Portfolio"}
+            </div>
+
+            <h1 className="mt-6 max-w-3xl font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
+              {hero.title || "Installations, products, and customer results."}
+            </h1>
+
+            <p className="mt-5 max-w-2xl text-base leading-8 text-sub sm:text-lg">
+              {hero.subtitle ||
+                "A clear view of the work we do, the results we deliver, and the quality customers can expect from TruePower."}
+            </p>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <a
+                href={cta.button_link || "https://wa.me/254701039256"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02] shadow-sm"
+              >
+                <MessageCircle size={18} />
+                {cta.button_text || "WhatsApp Us"}
+              </a>
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-6 py-3 font-display font-bold text-ink transition-transform hover:scale-[1.02] shadow-sm"
+              >
+                Browse Products
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+
+            <div className="mt-8 flex flex-wrap gap-2">
+              {[
+                "Water heaters",
+                "Solar solutions",
+                "Water pumps",
+                "Showroom support",
+              ].map((pill) => (
+                <span
+                  key={pill}
+                  className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-sub shadow-sm"
+                >
+                  {pill}
+                </span>
+              ))}
+            </div>
           </div>
-          <h1 className="text-5xl font-extrabold mb-4">{hero.title}</h1>
-          <p className="text-lg max-w-2xl mx-auto">{hero.subtitle}</p>
+
+          <div className="grid grid-cols-2 gap-3">
+            {heroShots.length > 0 ? (
+              heroShots.map((image, index) => (
+                <div
+                  key={image.id || index}
+                  className={`relative overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm ${
+                    index === 0
+                      ? "col-span-2 aspect-[16/9]"
+                      : index === 3
+                        ? "col-span-2 aspect-[12/5]"
+                        : "aspect-[4/5]"
+                  }`}
+                >
+                  <Image
+                    src={image.image_url}
+                    alt={image.title || "TruePower installation"}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                  <div className="absolute left-4 right-4 bottom-4">
+                    <p className="text-[10px] uppercase tracking-[0.26em] text-white/80">
+                      {index === 0 ? "Featured project" : "Installation / product"}
+                    </p>
+                    <p className="mt-1.5 font-display text-lg font-bold text-white sm:text-2xl">
+                      {image.title || "TruePower"}
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-white/75">
+                      {image.description || image.category || "Project highlight"}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="col-span-2 rounded-[1.5rem] border border-border bg-white p-6 text-center shadow-sm">
+                <p className="font-display font-bold text-ink">Real photos loading</p>
+                <p className="mt-2 text-sm text-sub">
+                  Add gallery photos from the dashboard to fill this portfolio panel.
+                </p>
+              </div>
+            )}
+
+            <div className="col-span-2 rounded-[1.5rem] border border-border bg-white p-5 shadow-sm">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                    Project focus
+                  </p>
+                  <p className="mt-2 text-xl font-display font-bold text-ink">
+                    Show what we actually deliver
+                  </p>
+                </div>
+                <div className="rounded-2xl bg-brand-50 p-3 text-brand-500">
+                  <Camera size={26} />
+                </div>
+              </div>
+
+              <div className="mt-5 grid grid-cols-2 gap-3">
+                {[
+                  "Clear product selection",
+                  "Practical installation advice",
+                  "Nairobi showroom support",
+                  "Real customer feedback",
+                ].map((item) => (
+                  <div
+                    key={item}
+                    className="rounded-2xl border border-border bg-muted px-3 py-3 text-sm font-medium text-ink"
+                  >
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* STATS */}
-      <section className="border-b border-border bg-white container">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <section className="border-b border-border bg-white">
+        <div className="mx-auto w-full px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.label} className="text-center group">
-                <div className="text-brand-500 mb-2 flex justify-center group-hover:scale-110 transition-transform">
+              <div
+                key={stat.label}
+                className="rounded-2xl border border-border bg-muted p-4 text-center shadow-sm"
+              >
+                <div className="mb-2 flex justify-center text-brand-500">
                   {typeof stat.icon === "string" ? (
-                    <DynamicPortfolioIcon name={stat.icon} size={24} />
+                    <DynamicPortfolioIcon name={stat.icon} size={22} />
                   ) : (
                     stat.icon
                   )}
                 </div>
-                <p className="font-display font-extrabold text-2xl text-ink">
+                <p className="font-display text-2xl font-extrabold text-ink">
                   {stat.value}
                 </p>
-                <p className="text-sub text-xs">{stat.label}</p>
+                <p className="mt-1 text-xs text-sub">{stat.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section className="py-16 lg:py-20 bg-muted">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="text-center mb-12">
-            <div className="badge mb-4">⚡ How It Works</div>
-            <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-ink mb-4">
-              From &quot;I Need Hot Water&quot; to <br />
-              <span className="text-brand-500">&quot;This is Perfect&quot;</span>
+      <section className="bg-muted py-16 lg:py-20">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <div className="badge mb-4">Process</div>
+            <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              Clear steps from enquiry to installation.
             </h2>
-            <p className="text-sub max-w-xl mx-auto">
-              3 simple steps. No confusion. No wrong purchases.
+            <p className="mt-4 text-sub">
+              Short, practical, and designed so customers know exactly what happens next.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                step: "01",
-                icon: <MessageCircle size={32} />,
-                title: "Tell Us Your Situation",
-                desc: "“I have borehole water and low pressure in my apartment — that is all we need to start.",
-                color: "from-blue-500 to-blue-600",
-              },
-              {
-                step: "02",
-                icon: <Award size={32} />,
-                title: "Get Expert Recommendations",
-                desc: "We share models, prices, and explain why each choice works for your setup.",
-                color: "from-emerald-500 to-emerald-600",
-              },
-              {
-                step: "03",
-                icon: <Truck size={32} />,
-                title: "Order & Install",
-                desc: "Pickup from our CBD shop or arrange delivery — with clear installation guidance.",
-                color: "from-purple-500 to-purple-600",
-              },
-            ].map((step) => (
-              <div key={step.step} className="relative group">
-                <div
-                  className={`bg-gradient-to-br ${step.color} rounded-2xl p-6 text-white text-center relative z-10 transition-all hover:-translate-y-2 hover:shadow-xl`}
+          <div className="grid gap-4 lg:grid-cols-3">
+            {processSteps.map((step) => {
+              const StepIcon = step.icon;
+              return (
+                <article
+                  key={step.step}
+                  className="relative rounded-[1.75rem] border border-border bg-white p-6 shadow-sm"
                 >
-                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    {step.icon}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-500">
+                      <StepIcon size={22} />
+                    </div>
+                    <div className="rounded-full border border-border bg-muted px-3 py-1 text-xs font-semibold tracking-[0.2em] text-sub">
+                      {step.step}
+                    </div>
                   </div>
-                  <div className="absolute -top-3 -left-3 w-10 h-10 bg-white rounded-full flex items-center justify-center text-ink font-display font-bold shadow-md">
-                    {step.step}
-                  </div>
-                  <h3 className="font-display font-bold text-xl mb-3">
+                  <h3 className="mt-6 text-xl font-display font-bold text-ink">
                     {step.title}
                   </h3>
-                  <p className="text-white/80 text-sm leading-relaxed">
-                    {step.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
+                  <p className="mt-3 text-sm leading-6 text-sub">{step.desc}</p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* ✅ PROJECT GALLERY (CLIENT) */}
-      <section className="container">
+      <section className="bg-white">
         <ProjectGallery
           galleryImages={galleryImages || []}
           categories={categories}
@@ -230,143 +365,208 @@ export default async function PortfolioPage() {
         />
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="py-16 lg:py-20 bg-muted">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="text-center mb-12">
+      <section className="bg-muted py-16 lg:py-20">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
             <div className="badge mb-4">{testimonialsSection.title}</div>
-            <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-ink mb-4">
-              {testimonialsSection.title}
+            <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              Real customers, real results.
             </h2>
-            <p className="text-sub max-w-xl mx-auto">
-              {testimonialsSection.subtitle}
-            </p>
+            <p className="mt-4 text-sub">{testimonialsSection.subtitle}</p>
           </div>
 
           {testimonials.length === 0 ? (
-            <div className="text-center py-16">
-              <Star size={48} className="mx-auto text-faint mb-4" />
-              <p className="text-sub">No testimonials yet. Check back soon!</p>
-              <p className="text-faint text-sm mt-2">
-                Admins can add testimonials in the dashboard
+            <div className="rounded-[1.75rem] border border-border bg-white px-6 py-16 text-center shadow-sm">
+              <Star size={48} className="mx-auto text-faint" />
+              <p className="mt-4 text-sub">No testimonials yet. Check back soon.</p>
+              <p className="mt-2 text-sm text-faint">
+                Admins can add testimonials in the dashboard.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {testimonials.map((t, idx) => (
-                <div
-                  key={t.id || idx}
-                  className="bg-white rounded-2xl p-6 border border-border hover:shadow-product-hover transition-all group"
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {testimonials.map((testimonial, index) => (
+                <article
+                  key={testimonial.id || index}
+                  className="rounded-[1.75rem] border border-border bg-white p-5 shadow-sm"
                 >
-                  <div className="flex gap-1 mb-4 text-yellow-400">
-                    {[...Array(5)].map((_, i) => (
+                  <div className="flex gap-1 text-yellow-400">
+                    {[...Array(5)].map((_, starIndex) => (
                       <Star
-                        key={i}
+                        key={starIndex}
                         size={16}
-                        fill={i < (t.rating || 5) ? "currentColor" : "none"}
+                        fill={
+                          starIndex < Number(testimonial.rating || 5)
+                            ? "currentColor"
+                            : "none"
+                        }
                       />
                     ))}
                   </div>
-                  <Quote size={24} className="text-brand-200 mb-3" />
-                  <p className="text-ink mb-4 leading-relaxed italic">
-                    &quot;{t.text}&quot;
+                  <Quote size={20} className="mt-4 text-brand-300" />
+                  <p className="mt-4 text-sm leading-6 text-ink italic line-clamp-6">
+                    &quot;{testimonial.text}&quot;
                   </p>
-                  <div className="flex items-center gap-3 pt-3 border-t border-border">
-                    <div className="w-10 h-10 bg-brand-100 rounded-full flex items-center justify-center text-brand-600 font-display font-bold">
-                      {t.name?.charAt(0) || "C"}
+                  <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 font-display font-bold text-brand-600">
+                      {(testimonial.name || "C").charAt(0)}
                     </div>
                     <div>
-                      <p className="font-display font-semibold text-ink text-sm">
-                        {t.name}
+                      <p className="font-display font-semibold text-ink">
+                        {testimonial.name}
                       </p>
-                      <p className="text-sub text-xs flex items-center gap-1">
-                        <MapPin size={10} /> {t.location || "Kenya"}
+                      <p className="flex items-center gap-1 text-xs text-sub">
+                        <MapPin size={10} /> {testimonial.location || "Kenya"}
                       </p>
                     </div>
                   </div>
-                </div>
+                </article>
               ))}
             </div>
           )}
         </div>
       </section>
 
-      {/* PROMISE */}
-      <section className="py-16 lg:py-20 bg-white">
-        <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="text-center mb-12">
+      <section className="bg-white py-16 lg:py-20">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
             <div className="badge mb-4">{promiseSection.title}</div>
-            <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-ink mb-4">
+            <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
               {promiseSection.subtitle}
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              {
-                icon: <Shield size={28} />,
-                title: "Borehole Ready",
-                desc: "Heavy-duty copper coils that resist corrosion. Lasts 3x longer in salty water.",
-                color: "bg-blue-50 text-blue-600",
-              },
-              {
-                icon: <Droplets size={28} />,
-                title: "Low Pressure? Solved",
-                desc: "Built-in booster pumps that work even when your tank is on the ground floor.",
-                color: "bg-emerald-50 text-emerald-600",
-              },
-              {
-                icon: <Sun size={28} />,
-                title: "Solar Compatible",
-                desc: "Works alongside your existing solar system. Heat water efficiently even on cloudy days.",
-                color: "bg-yellow-50 text-yellow-600",
-              },
-              {
-                icon: <Store size={28} />,
-                title: "See Before You Buy",
-                desc: "Visit our Nyamakima showroom. See products in person, get expert advice.",
-                color: "bg-purple-50 text-purple-600",
-              },
-            ].map((service) => (
-              <div
-                key={service.title}
-                className="group text-center p-6 rounded-2xl border border-border hover:shadow-product-hover transition-all hover:-translate-y-1 bg-white"
-              >
-                <div
-                  className={`${service.color} w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {promiseCards.map((service) => {
+              const ServiceIcon = service.icon;
+              return (
+                <article
+                  key={service.title}
+                  className="rounded-[1.5rem] border border-border bg-white p-5 shadow-sm"
                 >
-                  {service.icon}
-                </div>
-                <h3 className="font-display font-bold text-lg text-ink mb-2">
-                  {service.title}
-                </h3>
-                <p className="text-sub text-sm leading-relaxed">
-                  {service.desc}
-                </p>
-              </div>
-            ))}
+                  <div className="h-1 w-16 rounded-full bg-brand-500" />
+                  <div className="mt-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-500">
+                    <ServiceIcon size={22} />
+                  </div>
+                  <h3 className="mt-5 text-lg font-display font-bold text-ink">
+                    {service.title}
+                  </h3>
+                  <p className="mt-3 text-sm leading-6 text-sub">{service.desc}</p>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 text-center bg-brand-700 text-white">
-        <h2 className="text-3xl font-extrabold mb-4">{cta.title}</h2>
-        <p className="mb-6">{cta.subtitle}</p>
+      <section className="relative overflow-hidden border-t border-border bg-[linear-gradient(135deg,#f9f3ea_0%,#fffdf8_52%,#eef4ff_100%)] py-16 lg:py-20">
+        <div className="absolute inset-0 pointer-events-none">
+          {ctaVisual ? (
+            <div className="absolute inset-y-0 right-0 hidden w-1/2 lg:block">
+              <Image
+                src={ctaVisual.image_url}
+                alt={ctaVisual.title || "TruePower project"}
+                fill
+                className="object-cover opacity-20"
+                sizes="50vw"
+              />
+              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(249,243,234,0.98),rgba(249,243,234,0.72),rgba(238,244,255,0.18))]" />
+            </div>
+          ) : null}
+        </div>
 
-        <a
-          href={cta.button_link}
-          target="_blank"
-          className="bg-white text-black px-6 py-3 rounded-full"
-        >
-          {cta.button_text}
-        </a>
+        <div className="relative mx-auto grid w-full gap-8 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:px-10 xl:px-12">
+          <div>
+            <div className="badge border-border bg-white/90 text-ink shadow-sm">
+              Visit or chat with us
+            </div>
+            <h2 className="mt-4 max-w-2xl font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              {cta.title || "Need help choosing the right solution?"}
+            </h2>
+            <p className="mt-4 max-w-2xl text-sub">
+              {cta.subtitle ||
+                "Chat with us on WhatsApp and we will help you match the right water heater, pump, solar setup, or electrical product to your needs."}
+            </p>
 
-        <Link href="/shop" className="ml-4 underline">
-          Browse Products
-        </Link>
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Address
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">Nyamakima, Nairobi CBD</p>
+              </div>
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Phone
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">+254 701 039 256</p>
+              </div>
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Hours
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">Mon to Sat</p>
+              </div>
+              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  Support
+                </p>
+                <p className="mt-2 text-sm font-semibold text-ink">Quotes and installation help</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[1.75rem] border border-border bg-white/95 p-6 shadow-lg backdrop-blur-md">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
+                  TruePower contact
+                </p>
+                <p className="mt-2 text-2xl font-display font-bold text-ink">
+                  Let us help you choose well
+                </p>
+              </div>
+              <div className="rounded-2xl bg-brand-50 p-3 text-brand-500">
+                <MessageCircle size={26} />
+              </div>
+            </div>
+
+            <div className="mt-6 space-y-3 text-sm text-sub">
+              <p className="flex items-center gap-2">
+                <MapPin size={16} className="text-brand-500" />
+                Nyamakima, Nairobi CBD
+              </p>
+              <p className="flex items-center gap-2">
+                <MessageCircle size={16} className="text-brand-500" />
+                +254 701 039 256
+              </p>
+              <p className="flex items-center gap-2">
+                <Truck size={16} className="text-brand-500" />
+                Pickup, delivery, and installation guidance
+              </p>
+            </div>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={cta.button_link || "https://wa.me/254701039256"}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02]"
+              >
+                <MessageCircle size={18} />
+                {cta.button_text || "WhatsApp Us"}
+              </a>
+              <Link
+                href="/shop"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 py-3 font-display font-bold text-ink transition-transform hover:scale-[1.02]"
+              >
+                Browse Products
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   );
 }
-
