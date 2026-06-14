@@ -36,7 +36,7 @@ export default function ProductCard({
   };
 
   return (
-    <div className="card group flex flex-col w-full">
+    <div className="card group flex flex-col w-full min-w-0 overflow-hidden">
       {/* Image */}
       <div className="relative overflow-hidden bg-muted" style={{ aspectRatio: "3 / 4" }}>
         <Link
@@ -87,7 +87,7 @@ export default function ProductCard({
       </div>
 
       {/* Category badge for small screens: placed below image (primary badge already overlays image) */}
-      <div className="p-4 pt-3 md:hidden flex gap-2 items-center flex-wrap">
+      <div className="p-3 pt-2 md:hidden flex gap-2 items-center flex-wrap">
         <Link href={`/shop?subcategory=${product.cat}`} className="block">
           <span className="bg-white text-sub text-[8px] font-display font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-border">
             {product.catLabel || CAT_LABELS[product.cat] || product.cat}
@@ -96,50 +96,52 @@ export default function ProductCard({
       </div>
 
       {/* Info */}
-      <div className="p-5 flex flex-col flex-1">
-        <Link
-          href={`/product/${product.id}`}
-          onClick={handleSelectItem}
-          className="mb-0.5 group/link"
-        >
-          <h3 className="font-display font-semibold text-base leading-snug text-ink group-hover/link:text-brand-500 transition-colors line-clamp-2">
-            {product.name}
-          </h3>
-        </Link>
+      <div className="p-3 sm:p-5 flex flex-col flex-1 min-w-0">
+        <div className="flex items-start justify-between gap-2 min-w-0">
+          <Link
+            href={`/product/${product.id}`}
+            onClick={handleSelectItem}
+            className="mb-0.5 group/link min-w-0 flex-1"
+          >
+            <h3 className="font-display font-semibold text-[13px] sm:text-base leading-tight text-ink group-hover/link:text-brand-500 transition-colors line-clamp-2 break-words">
+              {product.name}
+            </h3>
+          </Link>
 
-        {product.model && (
-          <p className="text-faint text-xs mb-1.5">{product.model}</p>
-        )}
-
-        <div className="flex flex-col mt-auto pt-4">
-          <div>
-            <p className="font-display font-bold text-xl text-ink leading-tight">
+          <div className="shrink-0 text-right leading-tight">
+            <p className="font-display font-bold text-base sm:text-xl text-ink">
               KSh {Number(product.price).toLocaleString()}
             </p>
             {product.original_price && (
-              <p className="text-faint text-xs line-through">
+              <p className="text-faint text-[10px] sm:text-xs line-through">
                 KSh {Number(product.original_price).toLocaleString()}
               </p>
             )}
           </div>
+        </div>
 
-          <div className="flex items-center justify-between gap-3 mt-4">
-            <Link
-              href={`/product/${product.id}`}
-              onClick={handleSelectItem}
-              className="flex-1 text-center text-sm font-semibold h-9 leading-9 px-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all"
-            >
-              View
-            </Link>
+        {product.model && (
+          <p className="text-faint text-[10px] sm:text-xs mt-1.5 line-clamp-1">
+            {product.model}
+          </p>
+        )}
 
-            <button
-              onClick={() => addToCart(product, 1, analyticsList)}
-              aria-label="Add to cart"
-              className="h-9 w-9 flex items-center justify-center rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-sm"
-            >
-              <ShoppingBag size={16} />
-            </button>
-          </div>
+        <div className="flex items-center justify-between gap-2 mt-3 sm:mt-4">
+          <Link
+            href={`/product/${product.id}`}
+            onClick={handleSelectItem}
+            className="flex-1 text-center text-xs sm:text-sm font-semibold h-8 sm:h-9 leading-8 sm:leading-9 px-2 sm:px-3 rounded-full border border-border text-sub hover:text-brand-500 hover:border-brand-200 transition-all"
+          >
+            View
+          </Link>
+
+          <button
+            onClick={() => addToCart(product, 1, analyticsList)}
+            aria-label="Add to cart"
+            className="h-8 w-8 sm:h-9 sm:w-9 flex items-center justify-center rounded-full bg-brand-500 text-white hover:bg-brand-600 transition-colors shadow-sm"
+          >
+            <ShoppingBag size={15} />
+          </button>
         </div>
       </div>
     </div>
