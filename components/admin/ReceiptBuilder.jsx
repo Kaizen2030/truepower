@@ -265,8 +265,8 @@ export default function ReceiptBuilder() {
     : "Payment after installation";
 
   return (
-    <div className="grid lg:grid-cols-[1fr_420px] gap-6 sm:gap-8 px-3 py-4 sm:px-4 sm:py-8 lg:px-10 xl:px-12">
-      <div className="space-y-6 print:hidden">
+    <div className="grid lg:grid-cols-[1fr_420px] gap-6 sm:gap-8 px-3 py-4 sm:px-4 sm:py-8 lg:px-10 xl:px-12 overflow-x-hidden">
+      <div className="space-y-6 print:hidden min-w-0">
         <div className="flex items-center justify-between gap-3">
           <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
           <button
@@ -350,10 +350,10 @@ export default function ReceiptBuilder() {
           </div>
         </div>
 
-        <div className="card p-4 sm:p-5">
+        <div className="card p-4 sm:p-5 overflow-hidden">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
             <label className="label mb-0">Items</label>
-            <div className="relative w-full sm:w-auto">
+            <div className="relative w-full sm:w-auto min-w-0">
               <button
                 onClick={() => setShowProductPicker((s) => !s)}
                 className="btn-outline text-sm py-2 px-4 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
@@ -361,11 +361,11 @@ export default function ReceiptBuilder() {
                 <Search size={14} /> Add from Products
               </button>
               {showProductPicker && (
-                <div className="mt-2 w-full sm:absolute sm:right-0 sm:top-full sm:w-80 bg-white border border-border rounded-2xl shadow-pop z-20 p-3">
-                  <div className="flex items-center gap-2 mb-2">
+                <div className="mt-2 w-full max-w-full sm:absolute sm:right-0 sm:top-full sm:w-80 sm:max-w-[calc(100vw-1rem)] bg-white border border-border rounded-2xl shadow-pop z-20 p-3">
+                  <div className="flex items-center gap-2 mb-2 min-w-0">
                     <input
                       autoFocus
-                      className="input py-2"
+                      className="input py-2 min-w-0"
                       placeholder="Search products..."
                       value={productQuery}
                       onChange={(e) => setProductQuery(e.target.value)}
@@ -379,10 +379,12 @@ export default function ReceiptBuilder() {
                       <button
                         key={p.id}
                         onClick={() => addProductLine(p)}
-                        className="w-full text-left py-2 px-1 hover:bg-muted rounded-lg flex items-center justify-between gap-2"
+                        className="w-full text-left py-2 px-1 hover:bg-muted rounded-lg flex items-start justify-between gap-2"
                       >
-                        <span className="text-sm truncate">{p.name}</span>
-                        <span className="text-sm font-semibold text-brand-500 whitespace-nowrap">
+                        <span className="text-sm min-w-0 flex-1 whitespace-normal break-words leading-snug">
+                          {p.name}
+                        </span>
+                        <span className="text-sm font-semibold text-brand-500 whitespace-nowrap shrink-0">
                           KSh {formatMoney(p.price)}
                         </span>
                       </button>
@@ -396,7 +398,7 @@ export default function ReceiptBuilder() {
             </div>
           </div>
 
-          <div className="space-y-3">
+          <div className="space-y-3 min-w-0">
             {lines.map((l) => (
               <div
                 key={l.id}
@@ -465,11 +467,11 @@ export default function ReceiptBuilder() {
         </div>
       </div>
 
-      <div className="lg:sticky lg:top-24 lg:self-start">
+      <div className="lg:sticky lg:top-24 lg:self-start min-w-0">
         <div
           ref={printRef}
           id="receipt-print-area"
-          className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0"
+          className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
         >
           <div className="flex items-start justify-between gap-4 pb-4 sm:pb-5 border-b-2 border-ink print:pb-4">
             <div className="flex items-start gap-3 sm:gap-4">
@@ -572,12 +574,12 @@ export default function ReceiptBuilder() {
             <p className="font-display font-semibold text-sm text-ink">
               Thank you for shopping with us.
             </p>
-            <p className="text-faint text-xs mt-1 leading-5">
+            <p className="text-faint text-xs mt-1 leading-5 break-words">
               Need help with delivery, installation, or after-sales support? Call or WhatsApp us on{" "}
-              <span className="font-semibold text-ink whitespace-nowrap">{business.phone}</span>.
+              <span className="font-semibold text-ink sm:whitespace-nowrap">{business.phone}</span>.
             </p>
             <p className="text-faint text-[11px] mt-1">
-              {business.website}
+              <span className="break-all">{business.website}</span>
               <span className="mx-2">|</span>
               Maridadi Plaza, Shop C10
             </p>
