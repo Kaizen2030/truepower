@@ -97,34 +97,32 @@ export default function ProductCard({
 
       {/* Info */}
       <div className="p-3 sm:p-5 flex flex-col flex-1 min-w-0">
-        <div className="flex items-start justify-between gap-2 min-w-0">
-          <Link
-            href={`/product/${product.id}`}
-            onClick={handleSelectItem}
-            className="mb-0.5 group/link min-w-0 flex-1"
-          >
-            <h3 className="font-display font-semibold text-[13px] sm:text-base leading-tight text-ink group-hover/link:text-brand-500 transition-colors line-clamp-2 break-words">
-              {product.name}
-            </h3>
-          </Link>
-
-          <div className="shrink-0 text-right leading-tight">
-            <p className="font-display font-bold text-base sm:text-xl text-ink">
-              KSh {Number(product.price).toLocaleString()}
-            </p>
-            {product.original_price && (
-              <p className="text-faint text-[10px] sm:text-xs line-through">
-                KSh {Number(product.original_price).toLocaleString()}
-              </p>
-            )}
-          </div>
-        </div>
+        <Link
+          href={`/product/${product.id}`}
+          onClick={handleSelectItem}
+          className="mb-1 group/link min-w-0"
+        >
+          <h3 className="font-display font-semibold text-[13px] sm:text-base leading-tight text-ink group-hover/link:text-brand-500 transition-colors line-clamp-2 break-words">
+            {product.name}
+          </h3>
+        </Link>
 
         {product.model && (
           <p className="text-faint text-[10px] sm:text-xs mt-1.5 line-clamp-1">
             {product.model}
           </p>
         )}
+
+        <div className="mt-2 sm:mt-3">
+          <p className="font-display font-bold text-base sm:text-xl text-ink leading-tight">
+            KSh {Number(product.price).toLocaleString()}
+          </p>
+          {product.original_price && (
+            <p className="text-faint text-[10px] sm:text-xs line-through">
+              KSh {Number(product.original_price).toLocaleString()}
+            </p>
+          )}
+        </div>
 
         <div className="flex items-center justify-between gap-2 mt-3 sm:mt-4">
           <Link
