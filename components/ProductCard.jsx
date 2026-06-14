@@ -36,7 +36,7 @@ export default function ProductCard({
   };
 
   return (
-    <div className="card group flex flex-col w-full min-w-0 overflow-hidden">
+    <div className="card group flex flex-col w-full min-w-0 overflow-hidden h-full min-h-[360px] sm:min-h-[440px]">
       {/* Image */}
       <div className="relative overflow-hidden bg-muted" style={{ aspectRatio: "3 / 4" }}>
         <Link
@@ -100,20 +100,22 @@ export default function ProductCard({
         <Link
           href={`/product/${product.id}`}
           onClick={handleSelectItem}
-          className="mb-1 group/link min-w-0"
+          className="mb-1 min-h-[2.4rem] sm:min-h-[3.2rem] group/link min-w-0"
         >
           <h3 className="font-display font-semibold text-[13px] sm:text-base leading-tight text-ink group-hover/link:text-brand-500 transition-colors line-clamp-2 break-words">
             {product.name}
           </h3>
         </Link>
 
-        {product.model && (
-          <p className="text-faint text-[10px] sm:text-xs mt-1.5 line-clamp-1">
-            {product.model}
-          </p>
-        )}
+        <div className="min-h-[1rem] sm:min-h-[1.25rem]">
+          {product.model && (
+            <p className="text-faint text-[10px] sm:text-xs mt-1.5 line-clamp-1">
+              {product.model}
+            </p>
+          )}
+        </div>
 
-        <div className="mt-2 sm:mt-3">
+        <div className="mt-2 sm:mt-3 min-h-[2.25rem] sm:min-h-[3rem]">
           <p className="font-display font-bold text-base sm:text-xl text-ink leading-tight">
             KSh {Number(product.price).toLocaleString()}
           </p>
