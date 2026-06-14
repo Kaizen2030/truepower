@@ -265,13 +265,13 @@ export default function ReceiptBuilder() {
     : "Payment after installation";
 
   return (
-    <div className="grid lg:grid-cols-[1fr_420px] gap-8 px-4 py-8 lg:px-10 xl:px-12">
+    <div className="grid lg:grid-cols-[1fr_420px] gap-6 sm:gap-8 px-3 py-4 sm:px-4 sm:py-8 lg:px-10 xl:px-12">
       <div className="space-y-6 print:hidden">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display font-bold text-xl">Receipt Builder</h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
           <button
             onClick={() => setShowHistory((s) => !s)}
-            className="btn-ghost text-sm inline-flex items-center gap-2"
+            className="btn-ghost text-xs sm:text-sm inline-flex items-center gap-2"
           >
             <History size={16} /> History
           </button>
@@ -312,11 +312,11 @@ export default function ReceiptBuilder() {
           </div>
         )}
 
-        <div className="card p-5 grid grid-cols-2 gap-4">
+        <div className="card p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label className="label">Receipt #</label>
             <input
-              className="input"
+              className="input py-2.5 sm:py-3"
               value={receiptNumber}
               onChange={(e) => setReceiptNumber(e.target.value)}
             />
@@ -325,7 +325,7 @@ export default function ReceiptBuilder() {
             <label className="label">Date</label>
             <input
               type="date"
-              className="input"
+              className="input py-2.5 sm:py-3"
               value={receiptDate}
               onChange={(e) => setReceiptDate(e.target.value)}
             />
@@ -333,7 +333,7 @@ export default function ReceiptBuilder() {
           <div>
             <label className="label">Customer Name (optional)</label>
             <input
-              className="input"
+              className="input py-2.5 sm:py-3"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
               placeholder="John Doe"
@@ -342,7 +342,7 @@ export default function ReceiptBuilder() {
           <div>
             <label className="label">Customer Phone</label>
             <input
-              className="input"
+              className="input py-2.5 sm:py-3"
               value={customerPhone}
               onChange={(e) => setCustomerPhone(e.target.value)}
               placeholder="0712345678"
@@ -350,22 +350,22 @@ export default function ReceiptBuilder() {
           </div>
         </div>
 
-        <div className="card p-5">
-          <div className="flex items-center justify-between mb-4">
+        <div className="card p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
             <label className="label mb-0">Items</label>
-            <div className="relative">
+            <div className="relative w-full sm:w-auto">
               <button
                 onClick={() => setShowProductPicker((s) => !s)}
-                className="btn-outline text-sm py-2 px-4 inline-flex items-center gap-2"
+                className="btn-outline text-sm py-2 px-4 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <Search size={14} /> Add from Products
               </button>
               {showProductPicker && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white border border-border rounded-2xl shadow-pop z-20 p-3">
+                <div className="mt-2 w-full sm:absolute sm:right-0 sm:top-full sm:w-80 bg-white border border-border rounded-2xl shadow-pop z-20 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <input
                       autoFocus
-                      className="input"
+                      className="input py-2"
                       placeholder="Search products..."
                       value={productQuery}
                       onChange={(e) => setProductQuery(e.target.value)}
@@ -374,7 +374,7 @@ export default function ReceiptBuilder() {
                       <X size={16} />
                     </button>
                   </div>
-                  <div className="max-h-64 overflow-y-auto divide-y divide-border">
+                  <div className="max-h-56 sm:max-h-64 overflow-y-auto divide-y divide-border">
                     {filteredProducts.map((p) => (
                       <button
                         key={p.id}
@@ -398,9 +398,12 @@ export default function ReceiptBuilder() {
 
           <div className="space-y-3">
             {lines.map((l) => (
-              <div key={l.id} className="grid grid-cols-[1fr_70px_110px_36px] gap-2 items-center">
+              <div
+                key={l.id}
+                className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_70px_110px_36px] gap-2 sm:items-center"
+              >
                 <input
-                  className="input"
+                  className="input py-2.5 sm:py-3"
                   placeholder="Description (e.g. Labour, Delivery, Product name)"
                   value={l.description}
                   onChange={(e) => updateLine(l.id, { description: e.target.value })}
@@ -408,7 +411,7 @@ export default function ReceiptBuilder() {
                 <input
                   type="number"
                   min="0"
-                  className="input text-center"
+                  className="input py-2.5 sm:py-3 text-center"
                   placeholder="Qty"
                   value={l.qty}
                   onChange={(e) => updateLine(l.id, { qty: e.target.value })}
@@ -416,14 +419,14 @@ export default function ReceiptBuilder() {
                 <input
                   type="number"
                   min="0"
-                  className="input text-right"
+                  className="input py-2.5 sm:py-3 text-right"
                   placeholder="Price"
                   value={l.price}
                   onChange={(e) => updateLine(l.id, { price: e.target.value })}
                 />
                 <button
                   onClick={() => removeLine(l.id)}
-                  className="btn-ghost text-red-500 p-2 justify-self-center"
+                  className="btn-ghost text-red-500 p-2 justify-self-end sm:justify-self-center"
                   title="Remove line"
                 >
                   <Trash2 size={16} />
@@ -432,28 +435,31 @@ export default function ReceiptBuilder() {
             ))}
           </div>
 
-          <button onClick={addLine} className="btn-ghost text-sm mt-3 inline-flex items-center gap-2">
+          <button
+            onClick={addLine}
+            className="btn-ghost text-sm mt-3 inline-flex items-center gap-2 w-full sm:w-auto"
+          >
             <Plus size={14} /> Add line
           </button>
         </div>
 
-        <div className="card p-5">
+        <div className="card p-4 sm:p-5">
           <label className="label">Terms & Notes</label>
           <textarea
-            className="input h-24 resize-none"
+            className="input h-24 resize-none py-2.5 sm:py-3"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />
         </div>
 
-        <div className="flex flex-wrap gap-3">
-          <button onClick={handlePrint} className="btn-primary">
+        <div className="flex flex-col sm:flex-row gap-3">
+          <button onClick={handlePrint} className="btn-primary justify-center">
             <Printer size={16} /> Print / Save PDF
           </button>
-          <button onClick={handleShareWhatsApp} className="btn-outline">
+          <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
             <Share2 size={16} /> Share via WhatsApp
           </button>
-          <button onClick={handleSave} disabled={saving} className="btn-ghost">
+          <button onClick={handleSave} disabled={saving} className="btn-ghost justify-center">
             {saving ? "Saving..." : savedId ? "Update record" : "Save receipt record"}
           </button>
         </div>
@@ -463,29 +469,29 @@ export default function ReceiptBuilder() {
         <div
           ref={printRef}
           id="receipt-print-area"
-          className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-8 sm:p-10 print:border-0 print:shadow-none print:rounded-none print:p-0"
+          className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0"
         >
-          <div className="flex items-start justify-between gap-5 pb-5 border-b-2 border-ink print:pb-4">
-            <div className="flex items-start gap-4">
+          <div className="flex items-start justify-between gap-4 pb-4 sm:pb-5 border-b-2 border-ink print:pb-4">
+            <div className="flex items-start gap-3 sm:gap-4">
               <div className="w-1.5 h-24 rounded-full bg-brand-500/15 print:bg-brand-500" />
-              <div className="rounded-3xl bg-brand-50 p-4 shadow-sm print:bg-white print:p-0 print:shadow-none">
+              <div className="rounded-3xl bg-brand-50 p-2.5 sm:p-4 shadow-sm print:bg-white print:p-0 print:shadow-none">
                 <Image
                   src={business.logo}
                   alt="TruePower Solutions logo"
-                  className="h-32 w-32 sm:h-36 sm:w-36 object-contain"
+                  className="h-20 w-20 sm:h-36 sm:w-36 object-contain"
                   width={144}
                   height={144}
                 />
               </div>
             </div>
             <div className="text-right shrink-0 pt-1">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-brand-500 font-semibold mb-1">
+              <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-brand-500 font-semibold mb-1">
                 Official Receipt
               </p>
-              <h1 className="font-display font-bold text-3xl tracking-tight uppercase mb-2">
+              <h1 className="font-display font-bold text-xl sm:text-3xl tracking-tight uppercase mb-2">
                 Receipt
               </h1>
-              <div className="inline-flex flex-col items-end rounded-2xl border border-brand-100 bg-brand-50/60 px-4 py-3">
+              <div className="inline-flex flex-col items-end rounded-2xl border border-brand-100 bg-brand-50/60 px-3 py-2 sm:px-4 sm:py-3">
                 <p className="text-sm leading-6">
                   <span className="text-sub">No. </span>
                   <span className="font-semibold">{receiptNumber}</span>
@@ -495,14 +501,14 @@ export default function ReceiptBuilder() {
                   <span className="font-semibold">{receiptDate}</span>
                 </p>
               </div>
-              <p className="text-xs text-sub mt-2 max-w-[11rem] ml-auto">
+              <p className="text-[11px] sm:text-xs text-sub mt-2 max-w-[9rem] sm:max-w-[11rem] ml-auto">
                 {buildReceiptSubtitle()}
               </p>
             </div>
           </div>
 
           {(customerName || customerPhone) && (
-            <div className="py-3.5 border-b border-border">
+            <div className="py-3 border-b border-border">
               <p className="label mb-2">Billed To</p>
               <div className="grid gap-1">
                 {customerName && <p className="font-semibold text-base">{customerName}</p>}
@@ -511,19 +517,19 @@ export default function ReceiptBuilder() {
             </div>
           )}
 
-          <table className="w-full mt-4 text-sm receipt-table">
+          <table className="w-full mt-4 text-xs sm:text-sm receipt-table">
             <thead>
               <tr className="border-b border-border text-left">
-                <th className="py-2 font-display font-semibold text-sub uppercase text-xs tracking-wider">
+                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider">
                   Description
                 </th>
-                <th className="py-2 font-display font-semibold text-sub uppercase text-xs tracking-wider text-center w-16">
+                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-center w-12 sm:w-16">
                   Qty
                 </th>
-                <th className="py-2 font-display font-semibold text-sub uppercase text-xs tracking-wider text-right w-28">
+                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
                   Price
                 </th>
-                <th className="py-2 font-display font-semibold text-sub uppercase text-xs tracking-wider text-right w-28">
+                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
                   Amount
                 </th>
               </tr>
@@ -533,10 +539,10 @@ export default function ReceiptBuilder() {
                 .filter((l) => l.description.trim())
                 .map((l) => (
                   <tr key={l.id} className="border-b border-border/60">
-                    <td className="py-2">{l.description}</td>
+                    <td className="py-2 pr-1">{l.description}</td>
                     <td className="py-2 text-center">{l.qty}</td>
-                    <td className="py-2 text-right">{formatMoney(l.price)}</td>
-                    <td className="py-2 text-right font-medium">
+                    <td className="py-2 text-right whitespace-nowrap">{formatMoney(l.price)}</td>
+                    <td className="py-2 text-right font-medium whitespace-nowrap">
                       {formatMoney((Number(l.qty) || 0) * (Number(l.price) || 0))}
                     </td>
                   </tr>
@@ -545,7 +551,7 @@ export default function ReceiptBuilder() {
           </table>
 
           <div className="flex justify-end mt-4">
-            <div className="w-56 space-y-1">
+            <div className="w-44 sm:w-56 space-y-1">
               <div className="flex justify-between text-sm border-t-2 border-ink pt-2 mt-1">
                 <span className="font-display font-bold">Total</span>
                 <span className="font-display font-bold">KSh {formatMoney(total)}</span>
