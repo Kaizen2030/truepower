@@ -68,10 +68,10 @@ function DynamicIcon({ name, size = 24, className = "" }) {
 }
 
 const DEFAULT_STATS = [
-  { value: "1,000+", label: "Customers served", icon: "Users" },
-  { value: "4.9 ★", label: "Average rating", icon: "Star" },
-  { value: "Same day", label: "CBD pickup", icon: "Truck" },
-  { value: "24/7", label: "WhatsApp support", icon: "MessageCircle" },
+  { value: "1,000+", label: "Customers served", sublabel: "Across Kenya" },
+  { value: "4.9 ★", label: "Average rating", sublabel: "200+ reviews" },
+  { value: "Same day", label: "CBD pickup", sublabel: "Mon – Sat" },
+  { value: "24/7", label: "WhatsApp support", sublabel: "Reply in minutes" },
 ];
 
 const DEFAULT_SERVICES = [
@@ -126,14 +126,14 @@ const DEFAULT_VALUES = [
     description: "Right product for real local conditions.",
   },
   {
-    icon: "Shield",
-    title: "Quality checked",
-    description: "Products we'd trust in our own homes.",
-  },
-  {
     icon: "Clock",
     title: "Fast response",
     description: "WhatsApp questions answered quickly.",
+  },
+  {
+    icon: "Shield",
+    title: "Quality checked",
+    description: "Products we'd trust in our own homes.",
   },
   {
     icon: "ThumbsUp",
@@ -144,7 +144,7 @@ const DEFAULT_VALUES = [
 
 const DEFAULT_HERO = {
   badge: "About TruePower",
-  title: "Kenya's honest guide<br>to hot water and power.",
+  title: "Kenya's honest guide to hot water and power.",
   subtitle:
     "We help homes and businesses choose products that actually work — tested against local water pressure, borehole conditions, and real installation needs.",
 };
@@ -184,90 +184,85 @@ export default async function AboutPage() {
   const storyParagraphs = story.paragraphs?.length
     ? story.paragraphs
     : [
-        "We started because too many water heaters and pumps were being sold without considering Kenyan water pressure, borehole conditions, or installation reality.",
-        "We test what we stock, explain the differences clearly, and make sure customers can buy with confidence instead of guesswork.",
-        "Our Nyamakima showroom gives you a place to see products in person, ask questions, and get support after the sale.",
+        "Most water heaters on the market are designed for European water quality and pressure standards. They fail fast in Nairobi's borehole-heavy, variable-pressure environment.",
+        "We visit factories, test products, and only stock units we'd put in our own homes. Our Nyamakima showroom means you can see and touch every product before buying.",
+        "Every sale comes with real advice — we help you pick the right heater for your building, tank position, and water source.",
       ];
 
   const storyFeatures = story.features?.length
     ? story.features
     : [
-        "Borehole tested",
-        "Low pressure ready",
-        "Solar compatible",
-        "Nairobi delivery",
-        "After-sales help",
+        "Borehole Tested",
+        "Low Pressure Approved",
+        "Solar Compatible",
+        "Nairobi Delivery",
+        "1 Year Warranty",
+        "Expert Support",
       ];
 
   const heroPills = [
-    showroom.address || "Nyamakima CBD",
-    showroom.phone || "+254 701 039 256",
+    showroom.address || "Nyamakima, Nairobi CBD",
     "WhatsApp quotes",
     "Install guidance",
   ];
 
   return (
-    <main className="min-h-screen bg-white overflow-x-hidden">
+    <main className="min-h-screen bg-white">
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-white text-ink border-b border-gray-100">
-        <div className="relative mx-auto w-full px-4 py-12 sm:px-6 lg:px-10 lg:py-16 xl:px-12">
-          <div className="grid items-start gap-8 lg:grid-cols-2">
+      <section className="relative overflow-hidden bg-white border-b border-gray-100">
+        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+          <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Left column */}
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
-                  About TruePower
+                  {hero.badge}
                 </span>
               </div>
 
-              <h1 className="font-display text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-5xl">
-                Kenya's honest guide<br />to <span className="text-blue-600">hot water and power.</span>
+              <h1 className="font-display text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-6xl">
+                {hero.title}
               </h1>
 
               <p className="mt-4 text-base leading-relaxed text-gray-600 max-w-md">
-                We help homes and businesses choose products that actually work — tested against local water pressure, borehole conditions, and real installation needs.
+                {hero.subtitle}
               </p>
 
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-wrap gap-3">
                 <a
                   href="https://wa.me/254701039256"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <MessageCircle size={18} />
                   Talk on WhatsApp
                 </a>
                 <Link
                   href="/shop"
-                  className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
                 >
                   View products
                   <ArrowRight size={16} />
                 </Link>
               </div>
 
-              <div className="mt-6 flex flex-wrap gap-4 pt-4 border-t border-gray-100">
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <MapPin size={14} className="text-blue-600" />
-                  {heroPills[0]}
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <MessageCircle size={14} className="text-blue-600" />
-                  {heroPills[2]}
-                </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <Wrench size={14} className="text-blue-600" />
-                  {heroPills[3]}
-                </div>
+              <div className="mt-8 flex flex-wrap gap-4 pt-4 border-t border-gray-100">
+                {heroPills.map((pill) => (
+                  <div key={pill} className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600"></div>
+                    {pill}
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Right column - image collage */}
-            <div className="grid gap-3">
-              <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 h-48">
-                <div className="absolute inset-0 flex items-center justify-center text-blue-200">
+            {/* Right column - image collage with proper sizing */}
+            <div className="space-y-3">
+              {/* Main large image */}
+              <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 aspect-[16/9]">
+                <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                   <Zap size={48} />
                 </div>
                 {heroVisuals[0] && (
@@ -276,22 +271,25 @@ export default async function AboutPage() {
                     alt={heroVisuals[0].title || "Featured product"}
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    priority
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-3 left-3 right-3">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4">
                   <p className="text-[10px] uppercase tracking-wider text-white/70">Featured product</p>
-                  <p className="text-sm font-semibold text-white">Tankless water heater</p>
+                  <p className="text-base font-semibold text-white">Tankless water heater</p>
                 </div>
-                <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm rounded-full px-2 py-0.5 text-[10px] font-semibold text-blue-600">
+                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-[10px] font-semibold text-blue-600 shadow-sm">
                   40+ products
                 </div>
               </div>
 
+              {/* Two smaller images */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-blue-50 h-28">
+                <div className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-blue-50 aspect-[4/3]">
                   <div className="absolute inset-0 flex items-center justify-center text-blue-200">
-                    <Sun size={28} />
+                    <Sun size={32} />
                   </div>
                   {heroVisuals[1] && (
                     <Image
@@ -299,17 +297,18 @@ export default async function AboutPage() {
                       alt="Solar"
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 25vw"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-2 left-2 right-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3">
                     <p className="text-[9px] uppercase tracking-wider text-white/70">Solar</p>
-                    <p className="text-xs font-medium text-white">Hybrid setup</p>
+                    <p className="text-sm font-medium text-white">Hybrid setup</p>
                   </div>
                 </div>
-                <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-emerald-50 h-28">
+                <div className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-emerald-50 aspect-[4/3]">
                   <div className="absolute inset-0 flex items-center justify-center text-emerald-200">
-                    <Store size={28} />
+                    <Store size={32} />
                   </div>
                   {heroVisuals[2] && (
                     <Image
@@ -317,12 +316,13 @@ export default async function AboutPage() {
                       alt="Showroom"
                       fill
                       className="object-cover"
+                      sizes="(max-width: 768px) 50vw, 25vw"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                  <div className="absolute bottom-2 left-2 right-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  <div className="absolute bottom-3 left-3 right-3">
                     <p className="text-[9px] uppercase tracking-wider text-white/70">Showroom</p>
-                    <p className="text-xs font-medium text-white">Nyamakima</p>
+                    <p className="text-sm font-medium text-white">Nyamakima</p>
                   </div>
                 </div>
               </div>
@@ -333,19 +333,16 @@ export default async function AboutPage() {
 
       {/* STATS SECTION */}
       <section className="border-b border-gray-100 bg-white">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="grid grid-cols-2 md:grid-cols-4">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-y divide-gray-100 md:divide-y-0">
             {stats.map((stat, idx) => (
               <div
                 key={stat.label}
-                className={`py-5 px-3 text-center ${idx < 3 ? 'border-r border-gray-100' : ''} ${idx < 2 ? 'border-b border-gray-100 md:border-b-0' : ''}`}
+                className={`py-6 px-4 text-center ${idx < 2 ? 'border-b border-gray-100 md:border-b-0' : ''} ${idx === 0 || idx === 2 ? 'border-r border-gray-100' : ''}`}
               >
-                <p className="text-xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
-                {stat.label === "Average rating" && <p className="text-[10px] text-gray-400 mt-0.5">200+ reviews</p>}
-                {stat.label === "CBD pickup" && <p className="text-[10px] text-gray-400 mt-0.5">Mon – Sat</p>}
-                {stat.label === "WhatsApp support" && <p className="text-[10px] text-gray-400 mt-0.5">Reply in minutes</p>}
-                {stat.label === "Customers served" && <p className="text-[10px] text-gray-400 mt-0.5">Across Kenya</p>}
+                {stat.sublabel && <p className="text-[10px] text-gray-400 mt-0.5">{stat.sublabel}</p>}
               </div>
             ))}
           </div>
@@ -353,35 +350,35 @@ export default async function AboutPage() {
       </section>
 
       {/* SERVICES SECTION */}
-      <section className="bg-gray-50 py-12 border-b border-gray-100">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="mb-6">
+      <section className="bg-gray-50 py-16 border-b border-gray-100">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600">
               What we do
             </span>
-            <h2 className="text-xl font-semibold mt-2 text-gray-900">
+            <h2 className="text-2xl font-semibold mt-3 text-gray-900 sm:text-3xl">
               Complete support for water, power, and electrical needs.
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 mt-2">
               From product selection to installation advice, we keep it simple and practical.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {services.map((service) => (
               <div
                 key={service.title}
-                className="flex gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm"
+                className="flex gap-4 p-5 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
               >
-                <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
-                  <DynamicIcon name={service.icon} size={20} />
+                <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
+                  <DynamicIcon name={service.icon} size={24} />
                 </div>
-                <div>
-                  <h3 className="text-sm font-semibold text-gray-900">{service.title}</h3>
+                <div className="flex-1">
+                  <h3 className="text-base font-semibold text-gray-900">{service.title}</h3>
                   <p className="text-xs text-gray-500 mt-1 leading-relaxed">{service.description}</p>
-                  <div className="flex flex-wrap gap-1.5 mt-2">
+                  <div className="flex flex-wrap gap-1.5 mt-3">
                     {service.chips.slice(0, 3).map((chip) => (
-                      <span key={chip} className="text-[10px] border border-gray-200 rounded-full px-2 py-0.5 text-gray-600">
+                      <span key={chip} className="text-[10px] border border-gray-200 rounded-full px-2.5 py-1 text-gray-600 bg-gray-50">
                         {chip}
                       </span>
                     ))}
@@ -393,25 +390,25 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* STORY + VALUES SECTION - FIXED LAYOUT WITH NO EMPTY SPACE */}
-      <section className="py-12 bg-white border-b border-gray-100">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="grid gap-8 lg:grid-cols-2">
+      {/* STORY + VALUES SECTION */}
+      <section className="py-16 bg-white border-b border-gray-100">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Left column */}
             <div>
               <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
                 Our story
               </span>
-              <h2 className="text-xl font-semibold mt-3 text-gray-900">
+              <h2 className="text-2xl font-semibold mt-3 text-gray-900 sm:text-3xl">
                 Built by Kenyans, for Kenyan conditions
               </h2>
-              <div className="mt-4 space-y-3 text-sm text-gray-600 leading-relaxed">
+              <div className="mt-5 space-y-4 text-sm text-gray-600 leading-relaxed">
                 {storyParagraphs.map((paragraph, idx) => (
                   <p key={idx}>{paragraph}</p>
                 ))}
               </div>
 
-              <div className="flex flex-wrap gap-2 mt-5">
+              <div className="flex flex-wrap gap-2 mt-6">
                 {storyFeatures.map((feature) => (
                   <span
                     key={feature}
@@ -423,19 +420,19 @@ export default async function AboutPage() {
                 ))}
               </div>
 
-              <div className="mt-6 bg-gradient-to-r from-gray-50 to-blue-50/30 rounded-xl p-4 border border-gray-100">
-                <p className="text-[10px] uppercase tracking-wider text-blue-600 font-medium">
+              <div className="mt-8 bg-gradient-to-r from-gray-50 to-blue-50/30 rounded-xl p-5 border border-gray-100">
+                <p className="text-[11px] uppercase tracking-wider text-blue-600 font-semibold">
                   Why customers choose us
                 </p>
-                <div className="mt-3 grid grid-cols-2 gap-3">
+                <div className="mt-4 grid grid-cols-2 gap-4">
                   {values.map((value) => (
-                    <div key={value.title} className="flex gap-2 items-start">
-                      <div className="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0 mt-0.5">
-                        <DynamicIcon name={value.icon} size={14} />
+                    <div key={value.title} className="flex gap-3 items-start">
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                        <DynamicIcon name={value.icon} size={16} />
                       </div>
                       <div>
-                        <p className="text-xs font-semibold text-gray-900">{value.title}</p>
-                        <p className="text-[10px] text-gray-500 leading-relaxed">{value.description}</p>
+                        <p className="text-sm font-semibold text-gray-900">{value.title}</p>
+                        <p className="text-xs text-gray-500 leading-relaxed">{value.description}</p>
                       </div>
                     </div>
                   ))}
@@ -443,12 +440,12 @@ export default async function AboutPage() {
               </div>
             </div>
 
-            {/* Right column - Image grid (FILLS THE SPACE) */}
-            <div className="grid grid-cols-2 gap-2 auto-rows-min">
+            {/* Right column - Image grid with proper sizing */}
+            <div className="grid grid-cols-2 gap-3 auto-rows-min">
               {/* Main image - spans both columns */}
-              <div className="col-span-2 relative overflow-hidden rounded-xl border border-gray-200 bg-gray-100 h-40">
+              <div className="col-span-2 relative w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100 aspect-[16/9]">
                 <div className="absolute inset-0 flex items-center justify-center text-gray-300">
-                  <CameraIcon size={32} />
+                  <CameraIcon size={36} />
                 </div>
                 {galleryPreview[0] && (
                   <Image
@@ -456,19 +453,20 @@ export default async function AboutPage() {
                     alt="Recent installation"
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-2 left-2 right-2">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                <div className="absolute bottom-3 left-3 right-3">
                   <p className="text-[9px] uppercase tracking-wider text-white/70">Real project photo</p>
-                  <p className="text-xs font-semibold text-white">Recent installation</p>
+                  <p className="text-sm font-semibold text-white">Recent installation</p>
                 </div>
               </div>
 
               {/* Bottom left image */}
-              <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-blue-50 h-28">
+              <div className="relative w-full overflow-hidden rounded-lg border border-gray-200 bg-blue-50 aspect-[4/3]">
                 <div className="absolute inset-0 flex items-center justify-center text-blue-200">
-                  <Droplets size={24} />
+                  <Droplets size={28} />
                 </div>
                 {galleryPreview[1] && (
                   <Image
@@ -476,19 +474,20 @@ export default async function AboutPage() {
                     alt="Borehole setup"
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute bottom-1.5 left-1.5 right-1.5">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute bottom-2 left-2 right-2">
                   <p className="text-[8px] uppercase tracking-wider text-white/70">Installation</p>
-                  <p className="text-[10px] font-medium text-white">Borehole setup</p>
+                  <p className="text-xs font-medium text-white">Borehole setup</p>
                 </div>
               </div>
 
               {/* Bottom right image */}
-              <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-emerald-50 h-28">
+              <div className="relative w-full overflow-hidden rounded-lg border border-gray-200 bg-emerald-50 aspect-[4/3]">
                 <div className="absolute inset-0 flex items-center justify-center text-emerald-200">
-                  <Sun size={24} />
+                  <Sun size={28} />
                 </div>
                 {galleryPreview[2] && (
                   <Image
@@ -496,12 +495,13 @@ export default async function AboutPage() {
                     alt="Hybrid system"
                     fill
                     className="object-cover"
+                    sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-                <div className="absolute bottom-1.5 left-1.5 right-1.5">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                <div className="absolute bottom-2 left-2 right-2">
                   <p className="text-[8px] uppercase tracking-wider text-white/70">Solar</p>
-                  <p className="text-[10px] font-medium text-white">Hybrid system</p>
+                  <p className="text-xs font-medium text-white">Hybrid system</p>
                 </div>
               </div>
             </div>
@@ -510,48 +510,52 @@ export default async function AboutPage() {
       </section>
 
       {/* TESTIMONIALS SECTION */}
-      <section className="bg-gray-50 py-12">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="mb-6">
+      <section className="bg-gray-50 py-16">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600">
               Customer feedback
             </span>
-            <h2 className="text-xl font-semibold mt-2 text-gray-900">Real customers, real results.</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <h2 className="text-2xl font-semibold mt-3 text-gray-900 sm:text-3xl">
+              Real customers, real results.
+            </h2>
+            <p className="text-sm text-gray-500 mt-2">
               What people say after buying, installing, and using our products.
             </p>
           </div>
 
           {testimonials.length === 0 ? (
-            <div className="rounded-xl border border-gray-200 bg-white px-6 py-12 text-center">
-              <Star size={40} className="mx-auto text-gray-300" />
-              <p className="mt-3 text-sm text-gray-500">No testimonials yet. Check back soon.</p>
+            <div className="rounded-xl border border-gray-200 bg-white px-6 py-16 text-center">
+              <Star size={48} className="mx-auto text-gray-300" />
+              <p className="mt-4 text-sm text-gray-500">No testimonials yet. Check back soon.</p>
             </div>
           ) : (
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-3">
               {testimonials.slice(0, 3).map((testimonial, index) => (
                 <div
                   key={testimonial.id || index}
-                  className={`bg-white rounded-xl border p-4 ${index === 0 ? 'border-blue-300 shadow-sm' : 'border-gray-200'}`}
+                  className={`bg-white rounded-xl border p-6 ${
+                    index === 0 ? 'border-blue-300 shadow-md' : 'border-gray-200 shadow-sm'
+                  }`}
                 >
                   {index === 0 && (
-                    <span className="inline-block bg-blue-50 text-blue-600 text-[10px] px-2 py-0.5 rounded-full mb-2">
+                    <span className="inline-block bg-blue-50 text-blue-600 text-[10px] font-semibold px-2 py-0.5 rounded-full mb-3">
                       Top review
                     </span>
                   )}
-                  <div className="flex gap-0.5 text-amber-400 text-xs mb-2">
+                  <div className="flex gap-0.5 text-amber-400 text-sm mb-3">
                     {"★".repeat(5)}
                   </div>
-                  <p className="text-xs text-gray-700 italic leading-relaxed">
+                  <p className="text-sm text-gray-700 italic leading-relaxed">
                     "{testimonial.text}"
                   </p>
-                  <div className="mt-3 pt-3 border-t border-gray-100 flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs font-semibold">
+                  <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-sm font-semibold">
                       {(testimonial.name || "C").charAt(0)}
                     </div>
                     <div>
-                      <p className="text-xs font-semibold text-gray-900">{testimonial.name}</p>
-                      <p className="text-[10px] text-gray-400">{testimonial.location || "Kenya"}</p>
+                      <p className="text-sm font-semibold text-gray-900">{testimonial.name}</p>
+                      <p className="text-xs text-gray-400">{testimonial.location || "Kenya"}</p>
                     </div>
                   </div>
                 </div>
@@ -562,28 +566,28 @@ export default async function AboutPage() {
       </section>
 
       {/* BLOG SECTION */}
-      <section className="py-12 bg-white border-b border-gray-100">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="flex justify-between items-end mb-6">
+      <section className="py-16 bg-white border-b border-gray-100">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-10">
             <div>
               <span className="inline-flex items-center rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-medium text-gray-600">
                 From the blog
               </span>
-              <h2 className="text-xl font-semibold mt-2 text-gray-900">
+              <h2 className="text-2xl font-semibold mt-3 text-gray-900 sm:text-3xl">
                 Helpful reads for better buying decisions.
               </h2>
             </div>
-            <Link href="/blog" className="text-xs font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1">
-              All posts <ArrowRight size={12} />
+            <Link href="/blog" className="text-sm font-medium text-gray-600 hover:text-gray-900 flex items-center gap-1">
+              All posts <ArrowRight size={14} />
             </Link>
           </div>
 
           {blogPosts.length === 0 ? (
-            <div className="rounded-xl border border-gray-200 bg-gray-50 px-6 py-12 text-center">
+            <div className="rounded-xl border border-gray-200 bg-gray-50 px-6 py-16 text-center">
               <p className="text-sm text-gray-500">No blog posts published yet.</p>
             </div>
           ) : (
-            <div className="grid gap-3 md:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-3">
               {blogPosts.slice(0, 3).map((post) => (
                 <BlogCard key={post.id} post={post} />
               ))}
@@ -593,52 +597,52 @@ export default async function AboutPage() {
       </section>
 
       {/* CTA SECTION */}
-      <section className="py-12 bg-gradient-to-br from-gray-50 via-white to-blue-50/30">
-        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="grid gap-6 lg:grid-cols-2">
+      <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-blue-50/30">
+        <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             <div>
               <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600">
                 Come see us
               </span>
-              <h2 className="text-xl font-semibold mt-3 text-gray-900">
+              <h2 className="text-2xl font-semibold mt-3 text-gray-900 sm:text-3xl">
                 Visit the showroom or start on WhatsApp.
               </h2>
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm text-gray-500 mt-3">
                 See products in person at Nyamakima, ask questions before you buy, or get a quick quote on WhatsApp — whichever works for you.
               </p>
 
-              <div className="grid grid-cols-2 gap-2 mt-5">
-                <div className="bg-white rounded-lg border border-gray-200 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-blue-600">Location</p>
+              <div className="grid grid-cols-2 gap-3 mt-6">
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <p className="text-[10px] uppercase tracking-wider text-blue-600 font-semibold">Location</p>
                   <p className="text-sm font-medium text-gray-900 mt-1">{showroom.address || "Nyamakima, Nairobi CBD"}</p>
                 </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-blue-600">Phone</p>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <p className="text-[10px] uppercase tracking-wider text-blue-600 font-semibold">Phone</p>
                   <p className="text-sm font-medium text-gray-900 mt-1">{showroom.phone || "+254 701 039 256"}</p>
                 </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-blue-600">Hours</p>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <p className="text-[10px] uppercase tracking-wider text-blue-600 font-semibold">Hours</p>
                   <p className="text-sm font-medium text-gray-900 mt-1">Mon – Sat, 8am – 6pm</p>
                 </div>
-                <div className="bg-white rounded-lg border border-gray-200 p-3">
-                  <p className="text-[10px] uppercase tracking-wider text-blue-600">Support</p>
+                <div className="bg-white rounded-xl border border-gray-200 p-4">
+                  <p className="text-[10px] uppercase tracking-wider text-blue-600 font-semibold">Support</p>
                   <p className="text-sm font-medium text-gray-900 mt-1">Quotes + install help</p>
                 </div>
               </div>
 
-              <div className="flex gap-3 mt-5">
+              <div className="flex flex-wrap gap-3 mt-6">
                 <a
                   href="https://wa.me/254701039256"
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors shadow-sm"
                 >
                   <MessageCircle size={18} />
                   Chat on WhatsApp
                 </a>
                 <Link
                   href="/shop"
-                  className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
                 >
                   Browse products
                   <ArrowRight size={16} />
@@ -647,47 +651,47 @@ export default async function AboutPage() {
             </div>
 
             {/* Showroom card */}
-            <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-              <div className="h-24 bg-gradient-to-r from-emerald-100 to-teal-100 flex items-center justify-center">
-                <MapPin size={28} className="text-emerald-600" />
+            <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-md">
+              <div className="h-32 bg-gradient-to-r from-emerald-100 to-teal-100 flex items-center justify-center">
+                <MapPin size={40} className="text-emerald-600" />
               </div>
-              <div className="p-5">
-                <h3 className="text-base font-semibold text-gray-900">Nyamakima Showroom</h3>
-                <p className="text-xs text-gray-500 mt-1">Walk in, compare products in person, and leave with the right choice.</p>
-                <div className="mt-4 space-y-2 text-sm text-gray-600">
-                  <div className="flex items-center gap-2">
-                    <MapPin size={14} className="text-blue-600" />
-                    <span className="text-xs">{showroom.address || "Nyamakima, Nairobi CBD"}</span>
+              <div className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900">Nyamakima Showroom</h3>
+                <p className="text-sm text-gray-500 mt-1">Walk in, compare products in person, and leave with the right choice.</p>
+                <div className="mt-5 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <MapPin size={16} className="text-blue-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-600">{showroom.address || "Nyamakima, Nairobi CBD"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <MessageCircle size={14} className="text-blue-600" />
-                    <span className="text-xs">{showroom.phone || "+254 701 039 256"}</span>
+                  <div className="flex items-center gap-3">
+                    <MessageCircle size={16} className="text-blue-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-600">{showroom.phone || "+254 701 039 256"}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock size={14} className="text-blue-600" />
-                    <span className="text-xs">Mon – Sat · 8am – 6pm</span>
+                  <div className="flex items-center gap-3">
+                    <Clock size={16} className="text-blue-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-600">Mon – Sat · 8am – 6pm</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Truck size={14} className="text-blue-600" />
-                    <span className="text-xs">Same day pickup available</span>
+                  <div className="flex items-center gap-3">
+                    <Truck size={16} className="text-blue-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-600">Same day pickup available</span>
                   </div>
                 </div>
-                <div className="mt-5 flex flex-col gap-2">
+                <div className="mt-6 flex flex-col gap-3">
                   <a
                     href="https://wa.me/254701039256"
                     target="_blank"
                     rel="noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-full bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
+                    className="flex items-center justify-center gap-2 rounded-full bg-blue-600 px-5 py-3 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
                   >
                     <MessageCircle size={16} />
                     Chat now on WhatsApp
                   </a>
-                  <button className="flex items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2.5 text-xs font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                  <button className="flex items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-5 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
                     <MapPin size={14} />
                     Get directions
                   </button>
                 </div>
-                <p className="text-[10px] text-gray-400 text-center mt-3">No appointment needed</p>
+                <p className="text-[11px] text-gray-400 text-center mt-4">No appointment needed</p>
               </div>
             </div>
           </div>
