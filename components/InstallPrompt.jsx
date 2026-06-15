@@ -33,6 +33,7 @@ export default function InstallPrompt() {
 
     const onBeforeInstallPrompt = (event) => {
       event.preventDefault();
+      if (window.localStorage.getItem(DISMISS_KEY)) return;
       setDeferredPrompt(event);
     };
 
@@ -56,6 +57,7 @@ export default function InstallPrompt() {
     window.localStorage.setItem(DISMISS_KEY, "1");
     setShowBanner(false);
     setShowIos(false);
+    setDeferredPrompt(null);
   }
 
   async function handleInstall() {
