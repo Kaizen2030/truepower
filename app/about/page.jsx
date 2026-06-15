@@ -221,18 +221,18 @@ export default async function AboutPage() {
         </div>
 
         <div className="relative mx-auto w-full px-4 py-16 sm:px-6 lg:px-10 lg:py-24 xl:px-12">
-          <div className="grid items-center gap-10 lg:grid-cols-[1.02fr_0.98fr]">
-            <div>
+          <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+            <div className="max-w-xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white/80 px-4 py-1.5 text-sm font-medium text-ink shadow-sm backdrop-blur-sm">
                 <Sparkles size={16} className="text-brand-500" />
                 {hero.badge || "About TruePower"}
               </div>
 
-              <h1 className="mt-6 max-w-3xl font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
+              <h1 className="mt-6 font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
                 {hero.title || "A trusted partner for water, solar, and electrical solutions."}
               </h1>
 
-              <p className="mt-5 max-w-2xl text-base leading-8 text-sub sm:text-lg">
+              <p className="mt-5 text-base leading-8 text-sub sm:text-lg">
                 {hero.subtitle ||
                   "We help Kenyan homes and businesses choose products that perform well in real life, not just on the box."}
               </p>
@@ -254,20 +254,13 @@ export default async function AboutPage() {
                   View Products
                   <ArrowRight size={16} />
                 </Link>
-                <Link
-                  href="/portfolio"
-                  className="inline-flex items-center gap-2 rounded-full border border-border bg-white/70 px-6 py-3 font-display font-bold text-ink backdrop-blur-sm transition-transform hover:scale-[1.02] shadow-sm"
-                >
-                  See Our Work
-                  <ArrowRight size={16} />
-                </Link>
               </div>
 
-              <div className="mt-8 flex flex-wrap gap-2">
+              <div className="mt-8 grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {heroPills.map((pill) => (
                   <span
                     key={pill}
-                    className="rounded-full border border-border bg-white/80 px-3 py-1.5 text-xs font-medium text-sub backdrop-blur-sm"
+                    className="rounded-full border border-border bg-white/90 px-3 py-2 text-[11px] font-medium text-sub"
                   >
                     {pill}
                   </span>
@@ -275,107 +268,57 @@ export default async function AboutPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid gap-4">
               {heroVisuals.length > 0 ? (
-                heroVisuals.map((image, index) => (
-                  <div
-                    key={image.id || index}
-                    className={`relative overflow-hidden rounded-[1.5rem] border border-white/60 bg-white/80 shadow-sm ${
-                      index === 0
-                        ? "col-span-2 aspect-[16/9]"
-                        : index === 3
-                          ? "col-span-2 aspect-[12/5]"
-                          : "aspect-[4/5]"
-                    }`}
-                  >
+                <>
+                  <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-white shadow-sm aspect-[16/10]">
                     <Image
-                      src={image.image_url}
-                      alt={image.title || "TruePower installation"}
+                      src={heroVisuals[0].image_url}
+                      alt={heroVisuals[0].title || "TruePower installation"}
                       fill
                       className="object-cover"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                     <div className="absolute left-4 right-4 bottom-4">
                       <p className="text-[10px] uppercase tracking-[0.26em] text-white/80">
-                        {index === 0 ? "Real product photo" : "Showroom / project"}
+                        Real product photo
                       </p>
                       <p className="mt-1.5 font-display text-lg font-bold text-white sm:text-2xl">
-                        {image.title || "TruePower"}
-                      </p>
-                      <p className="mt-1 text-xs leading-5 text-white/75">
-                        {image.description || image.category || "Project highlight"}
+                        {heroVisuals[0].title || "TruePower"}
                       </p>
                     </div>
                   </div>
-                ))
+
+                  {heroVisuals[1] ? (
+                    <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm h-72">
+                      <Image
+                        src={heroVisuals[1].image_url}
+                        alt={heroVisuals[1].title || "TruePower installation"}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-transparent" />
+                      <div className="absolute left-3 right-3 bottom-3">
+                        <p className="text-[10px] uppercase tracking-[0.24em] text-white/70">
+                          Showroom / project
+                        </p>
+                        <p className="mt-1 font-display text-sm font-bold text-white sm:text-base">
+                          {heroVisuals[1].title || "TruePower"}
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+                </>
               ) : (
-                <div className="col-span-2 rounded-[1.5rem] border border-border bg-white/80 p-6 text-center">
+                <div className="rounded-[1.75rem] border border-border bg-white/80 p-6 text-center">
                   <p className="font-display font-bold text-ink">Real photos loading</p>
                   <p className="mt-2 text-sm text-sub">
                     Add gallery or product images in the dashboard to fill this collage.
                   </p>
                 </div>
               )}
-
-              <div className="col-span-2 rounded-[1.5rem] border border-border bg-white/90 p-4 shadow-sm">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                      Showroom
-                    </p>
-                    <p className="mt-2 text-xl font-display font-bold text-ink">
-                      {showroom.title || "Nyamakima Showroom, Nairobi CBD"}
-                    </p>
-                  </div>
-                  <Store className="text-brand-500" size={30} />
-                </div>
-                <p className="mt-4 max-w-xl text-sm leading-6 text-sub">
-                  {showroom.address ||
-                    "Nyamakima, Nairobi Central Business District"}
-                </p>
-                <div className="mt-4 flex flex-wrap gap-2 text-xs text-sub">
-                  <span className="rounded-full bg-brand-50 px-3 py-1">Walk in support</span>
-                  <span className="rounded-full bg-brand-50 px-3 py-1">Product advice</span>
-                  <span className="rounded-full bg-brand-50 px-3 py-1">Same day pickup</span>
-                </div>
-              </div>
-
-              {stats.slice(0, 3).map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-[1.5rem] border border-border bg-white/90 p-4 shadow-sm"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="text-brand-500">
-                      <DynamicIcon name={stat.icon} size={22} />
-                    </div>
-                    <div className="rounded-full bg-brand-50 px-2 py-1 text-[10px] uppercase tracking-[0.24em] text-brand-500">
-                      TruePower
-                    </div>
-                  </div>
-                  <p className="mt-4 font-display text-2xl font-bold text-ink">
-                    {stat.value}
-                  </p>
-                  <p className="mt-1 text-sm text-sub">{stat.label}</p>
-                </div>
-              ))}
-              <div className="col-span-2 rounded-[1.5rem] border border-border bg-[linear-gradient(135deg,#fff,#f7fbff)] p-4 shadow-sm">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                      Fast response
-                    </p>
-                    <p className="mt-2 font-display text-lg font-bold text-ink">
-                      WhatsApp help, quotes, and support
-                    </p>
-                  </div>
-                  <Truck className="text-brand-500" size={28} />
-                </div>
-                <p className="mt-2 text-sm leading-6 text-sub">
-                  We help you choose, buy, and install with less confusion.
-                </p>
-              </div>
             </div>
           </div>
         </div>

@@ -215,22 +215,13 @@ export default async function PortfolioPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-4">
             {heroShots.length > 0 ? (
-              heroShots.map((image, index) => (
-                <div
-                  key={image.id || index}
-                  className={`relative overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm ${
-                    index === 0
-                      ? "col-span-2 aspect-[16/9]"
-                      : index === 3
-                        ? "col-span-2 aspect-[12/5]"
-                        : "aspect-[4/5]"
-                  }`}
-                >
+              <>
+                <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-white shadow-sm aspect-[16/10]">
                   <Image
-                    src={image.image_url}
-                    alt={image.title || "TruePower installation"}
+                    src={heroShots[0].image_url}
+                    alt={heroShots[0].title || "TruePower installation"}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -238,19 +229,40 @@ export default async function PortfolioPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
                   <div className="absolute left-4 right-4 bottom-4">
                     <p className="text-[10px] uppercase tracking-[0.26em] text-white/80">
-                      {index === 0 ? "Featured project" : "Installation / product"}
+                      Featured project
                     </p>
                     <p className="mt-1.5 font-display text-lg font-bold text-white sm:text-2xl">
-                      {image.title || "TruePower"}
+                      {heroShots[0].title || "TruePower"}
                     </p>
                     <p className="mt-1 text-xs leading-5 text-white/75">
-                      {image.description || image.category || "Project highlight"}
+                      {heroShots[0].description || heroShots[0].category || "Project highlight"}
                     </p>
                   </div>
                 </div>
-              ))
+
+                {heroShots[1] ? (
+                  <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm h-72">
+                    <Image
+                      src={heroShots[1].image_url}
+                      alt={heroShots[1].title || "TruePower installation"}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-transparent" />
+                    <div className="absolute left-3 right-3 bottom-3">
+                      <p className="text-[10px] uppercase tracking-[0.24em] text-white/70">
+                        Installation / product
+                      </p>
+                      <p className="mt-1 font-display text-sm font-bold text-white sm:text-base">
+                        {heroShots[1].title || "TruePower"}
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
+              </>
             ) : (
-              <div className="col-span-2 rounded-[1.5rem] border border-border bg-white p-6 text-center shadow-sm">
+              <div className="rounded-[1.5rem] border border-border bg-white p-6 text-center shadow-sm">
                 <p className="font-display font-bold text-ink">Real photos loading</p>
                 <p className="mt-2 text-sm text-sub">
                   Add gallery photos from the dashboard to fill this portfolio panel.
@@ -258,7 +270,7 @@ export default async function PortfolioPage() {
               </div>
             )}
 
-            <div className="col-span-2 rounded-[1.5rem] border border-border bg-white p-5 shadow-sm">
+            <div className="rounded-[1.5rem] border border-border bg-white p-5 shadow-sm">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
@@ -273,7 +285,7 @@ export default async function PortfolioPage() {
                 </div>
               </div>
 
-              <div className="mt-5 grid grid-cols-2 gap-3">
+              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
                   "Clear product selection",
                   "Practical installation advice",
