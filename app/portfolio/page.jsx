@@ -8,7 +8,6 @@ import {
   Droplets,
   MapPin,
   MessageCircle,
-  Quote,
   Shield,
   Sparkles,
   Star,
@@ -16,6 +15,8 @@ import {
   Sun,
   Truck,
   Users,
+  Clock,
+  Phone,
 } from "lucide-react";
 
 import { getGalleryImages, getTestimonials, getPageContent } from "@/lib/supabase";
@@ -71,112 +72,121 @@ export default async function PortfolioPage() {
   const stats =
     pageData?.stats?.items ||
     pageData?.stats || [
-      { value: "500+", label: "Projects completed", icon: "Users" },
-      { value: "4.9", label: "Average rating", icon: "Star" },
-      { value: "24/7", label: "WhatsApp support", icon: "MessageCircle" },
-      { value: "Same day", label: "Nairobi pickup", icon: "Truck" },
+      { value: "1,000+", label: "Customers served", icon: "Users", trend: "Growing across Kenya" },
+      { value: "4.9 ★", label: "Average rating", icon: "Star", trend: "Based on 200+ reviews" },
+      { value: "Same day", label: "Nairobi CBD pickup", icon: "Truck", trend: "Mon – Sat" },
+      { value: "24/7", label: "WhatsApp support", icon: "MessageCircle", trend: "Reply within minutes" },
     ];
 
   const hero =
     pageData?.hero || {
       badge: "Portfolio",
-      title: "Installations, products, and customer results.",
+      title: "Hot water that works —",
+      titleAccent: "proof included.",
       subtitle:
-        "A clear view of the work we do, the results we deliver, and the quality customers can expect from TruePower.",
+        "Real installs, real reviews, and products tested against Kenyan water pressure. Browse the work, then let us help you choose.",
     };
 
   const gallerySection =
     pageData?.gallerySection || {
-      title: "Project Gallery",
-      subtitle:
-        "Recent installations, showroom photos, and product highlights from completed work.",
+      title: "Recent Projects",
+      subtitle: "Installations, showroom photos, and product highlights from completed work.",
     };
 
   const testimonialsSection =
     pageData?.testimonialsSection || {
-      title: "Customer Feedback",
-      subtitle: "Real feedback from real customers across Kenya.",
+      title: "Reviews",
+      subtitle: "Verified buyers across Nairobi and beyond.",
     };
 
   const promiseSection =
     pageData?.promiseSection || {
-      title: "What We Stand For",
-      subtitle: "Practical guidance, dependable products, and after-sales support.",
+      title: "Why TruePower",
+      subtitle: "Built around Kenyan conditions",
     };
 
   const cta =
     pageData?.cta || {
-      title: "Need help choosing the right solution?",
+      title: "Let's get you the right product — fast.",
       subtitle:
-        "Chat with us on WhatsApp and we will help you match the right water heater, pump, solar setup, or electrical product to your needs.",
-      button_text: "WhatsApp Us",
+        "Tell us your setup on WhatsApp and we'll match you with the right water heater, pump, or solar solution the same day.",
+      button_text: "Start on WhatsApp",
       button_link: "https://wa.me/254701039256",
     };
 
-  const heroShots = (galleryImages || []).filter((image) => image?.image_url).slice(0, 4);
-  const ctaVisual = heroShots[1] || heroShots[0];
+  const heroShots = (galleryImages || []).filter((image) => image?.image_url).slice(0, 3);
 
   const processSteps = [
     {
       step: "01",
       icon: MessageCircle,
       title: "Share your setup",
-      desc: "Tell us about your water pressure, building type, or power setup and we will guide you from there.",
+      desc: "Water pressure, building type, borehole or mains — just tell us what you're working with.",
     },
     {
       step: "02",
       icon: Award,
-      title: "Get a clear recommendation",
-      desc: "We suggest the right product options, explain the trade-offs, and keep the pricing straightforward.",
+      title: "Get a clear pick",
+      desc: "We recommend the right product, explain the trade-offs, and keep the pricing clear.",
     },
     {
       step: "03",
       icon: Truck,
-      title: "Order, pick up, or install",
-      desc: "Collect from the showroom or arrange delivery with installation guidance where needed.",
+      title: "Pick up or deliver",
+      desc: "Visit the Nyamakima showroom or arrange delivery with installation support where needed.",
     },
   ];
 
   const promiseCards = [
     {
       icon: Shield,
-      title: "Built for local conditions",
-      desc: "Products chosen with Kenyan water pressure, borehole use, and installation realities in mind.",
+      title: "Local conditions first",
+      desc: "Every product is vetted for Kenyan water pressure, borehole use, and installation reality.",
     },
     {
       icon: Droplets,
-      title: "Low-pressure support",
-      desc: "Water heaters and pumps that are selected to perform reliably in difficult pressure conditions.",
+      title: "Low-pressure ready",
+      desc: "Heaters and pumps that perform in difficult pressure conditions — not just high-flow homes.",
     },
     {
       icon: Sun,
-      title: "Solar-friendly choices",
-      desc: "Options that work well alongside existing solar systems and help reduce power costs.",
+      title: "Solar-compatible",
+      desc: "Options designed to work alongside existing solar systems and cut monthly power costs.",
     },
     {
       icon: Store,
-      title: "See before you buy",
-      desc: "Visit the Nyamakima showroom, compare the products, and ask questions before committing.",
+      title: "See it before buying",
+      desc: "Nyamakima showroom — compare products in person and ask questions with no pressure.",
     },
   ];
 
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
-      <section className="border-b border-border bg-[linear-gradient(135deg,#f8fafc_0%,#ffffff_52%,#eef4ff_100%)]">
+
+      {/* ── HERO ── */}
+      <section className="border-b border-border bg-white">
         <div className="mx-auto grid w-full gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:py-20 xl:px-12">
+
+          {/* Left */}
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-1.5 text-sm font-semibold text-ink shadow-sm">
-              <Briefcase size={16} className="text-brand-500" />
-              {hero.badge || "Portfolio"}
+            {/* Eyebrow */}
+            <div className="flex items-center gap-3 mb-6">
+              <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-1.5 text-sm font-semibold text-ink shadow-sm">
+                <Camera size={14} className="text-brand-500" />
+                {hero.badge || "Portfolio"}
+              </div>
             </div>
 
-            <h1 className="mt-6 max-w-3xl font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
-              {hero.title || "Installations, products, and customer results."}
+            {/* Headline — two-tone */}
+            <h1 className="mt-2 max-w-2xl font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
+              {hero.title || "Hot water that works —"}
+              <span className="text-brand-500"> {hero.titleAccent || "proof included."}</span>
             </h1>
 
-            <p className="mt-5 max-w-2xl text-base leading-8 text-sub sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-8 text-sub sm:text-lg">
               {hero.subtitle ||
-                "A clear view of the work we do, the results we deliver, and the quality customers can expect from TruePower."}
+                "Real installs, real reviews, and products tested against Kenyan water pressure. Browse the work, then let us help you choose."}
             </p>
 
             <div className="mt-8 flex flex-wrap gap-3">
@@ -187,7 +197,7 @@ export default async function PortfolioPage() {
                 className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02] shadow-sm"
               >
                 <MessageCircle size={18} />
-                {cta.button_text || "WhatsApp Us"}
+                WhatsApp Us
               </a>
               <Link
                 href="/shop"
@@ -198,13 +208,8 @@ export default async function PortfolioPage() {
               </Link>
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-2">
-              {[
-                "Water heaters",
-                "Solar solutions",
-                "Water pumps",
-                "Showroom support",
-              ].map((pill) => (
+            <div className="mt-6 flex flex-wrap gap-2">
+              {["Water heaters", "Solar", "Pumps", "Showroom · Nyamakima"].map((pill) => (
                 <span
                   key={pill}
                   className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-sub shadow-sm"
@@ -215,9 +220,11 @@ export default async function PortfolioPage() {
             </div>
           </div>
 
-          <div className="grid gap-4">
+          {/* Right — image grid */}
+          <div className="flex flex-col gap-4">
             {heroShots.length > 0 ? (
               <>
+                {/* Main featured image */}
                 <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-white shadow-sm aspect-[16/10]">
                   <Image
                     src={heroShots[0].image_url}
@@ -226,123 +233,119 @@ export default async function PortfolioPage() {
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+
+                  {/* Photo count badge */}
+                  <div className="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-brand-600 shadow-sm">
+                    {galleryImages?.length || 0} photos
+                  </div>
+
                   <div className="absolute left-4 right-4 bottom-4">
-                    <p className="text-[10px] uppercase tracking-[0.26em] text-white/80">
-                      Featured project
-                    </p>
-                    <p className="mt-1.5 font-display text-lg font-bold text-white sm:text-2xl">
+                    <p className="text-[10px] uppercase tracking-[0.26em] text-white/70">Featured install</p>
+                    <p className="mt-1 font-display text-lg font-bold text-white sm:text-xl">
                       {heroShots[0].title || "TruePower"}
                     </p>
-                    <p className="mt-1 text-xs leading-5 text-white/75">
-                      {heroShots[0].description || heroShots[0].category || "Project highlight"}
+                    <p className="mt-0.5 text-xs text-white/70">
+                      {[heroShots[0].description, heroShots[0].location, heroShots[0].category]
+                        .filter(Boolean)
+                        .join(" · ") || "Project highlight"}
                     </p>
                   </div>
                 </div>
 
-                {heroShots[1] ? (
-                  <div className="relative overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm h-72">
-                    <Image
-                      src={heroShots[1].image_url}
-                      alt={heroShots[1].title || "TruePower installation"}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/0 to-transparent" />
-                    <div className="absolute left-3 right-3 bottom-3">
-                      <p className="text-[10px] uppercase tracking-[0.24em] text-white/70">
-                        Installation / product
-                      </p>
-                      <p className="mt-1 font-display text-sm font-bold text-white sm:text-base">
-                        {heroShots[1].title || "TruePower"}
-                      </p>
-                    </div>
+                {/* Two smaller images */}
+                {heroShots.length > 1 && (
+                  <div className="grid grid-cols-2 gap-4">
+                    {heroShots.slice(1, 3).map((shot, i) => (
+                      <div
+                        key={shot.image_url}
+                        className="relative overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm h-48"
+                      >
+                        <Image
+                          src={shot.image_url}
+                          alt={shot.title || "TruePower installation"}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-transparent" />
+                        <div className="absolute left-3 right-3 bottom-3">
+                          <p className="text-[10px] uppercase tracking-[0.22em] text-white/70">
+                            {shot.category || "Installation"}
+                          </p>
+                          <p className="mt-0.5 font-display text-sm font-bold text-white">
+                            {shot.title || "TruePower"}
+                          </p>
+                          {(shot.location || shot.description) && (
+                            <p className="mt-0.5 text-[10px] text-white/65">
+                              {shot.location || shot.description}
+                            </p>
+                          )}
+                        </div>
+                        {i === 1 && galleryImages?.length > 3 && (
+                          <div className="absolute top-3 right-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-brand-600">
+                            +{galleryImages.length - 3} more
+                          </div>
+                        )}
+                      </div>
+                    ))}
                   </div>
-                ) : null}
+                )}
               </>
             ) : (
               <div className="rounded-[1.5rem] border border-border bg-white p-6 text-center shadow-sm">
+                <Camera size={40} className="mx-auto text-faint mb-4" />
                 <p className="font-display font-bold text-ink">Real photos loading</p>
                 <p className="mt-2 text-sm text-sub">
                   Add gallery photos from the dashboard to fill this portfolio panel.
                 </p>
               </div>
             )}
-
-            <div className="rounded-[1.5rem] border border-border bg-white p-5 shadow-sm">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                    Project focus
-                  </p>
-                  <p className="mt-2 text-xl font-display font-bold text-ink">
-                    Show what we actually deliver
-                  </p>
-                </div>
-                <div className="rounded-2xl bg-brand-50 p-3 text-brand-500">
-                  <Camera size={26} />
-                </div>
-              </div>
-
-              <div className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {[
-                  "Clear product selection",
-                  "Practical installation advice",
-                  "Nairobi showroom support",
-                  "Real customer feedback",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl border border-border bg-muted px-3 py-3 text-sm font-medium text-ink"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
+      {/* ── STATS ── */}
       <section className="border-b border-border bg-white">
-        <div className="mx-auto w-full px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
             {stats.map((stat) => (
-              <div
-                key={stat.label}
-                className="rounded-2xl border border-border bg-muted p-4 text-center shadow-sm"
-              >
+              <div key={stat.label} className="py-8 px-6 text-center">
                 <div className="mb-2 flex justify-center text-brand-500">
                   {typeof stat.icon === "string" ? (
-                    <DynamicPortfolioIcon name={stat.icon} size={22} />
+                    <DynamicPortfolioIcon name={stat.icon} size={20} />
                   ) : (
                     stat.icon
                   )}
                 </div>
-                <p className="font-display text-2xl font-extrabold text-ink">
-                  {stat.value}
-                </p>
-                <p className="mt-1 text-xs text-sub">{stat.label}</p>
+                <p className="font-display text-2xl font-extrabold text-ink">{stat.value}</p>
+                <p className="mt-1 text-sm font-medium text-ink">{stat.label}</p>
+                {stat.trend && (
+                  <p className="mt-1 text-xs text-sub">{stat.trend}</p>
+                )}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-muted py-16 lg:py-20">
+      {/* ── PROCESS ── */}
+      <section className="bg-muted border-b border-border py-16 lg:py-20">
         <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="badge mb-4">Process</div>
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <div className="badge mb-4">How it works</div>
             <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
-              Clear steps from enquiry to installation.
+              Three steps to the right product
             </h2>
             <p className="mt-4 text-sub">
-              Short, practical, and designed so customers know exactly what happens next.
+              No back-and-forth. Tell us your setup and we'll guide you to the right choice.
             </p>
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="relative grid gap-4 lg:grid-cols-3">
+            {/* Dashed connector lines on desktop */}
+            <div className="absolute hidden lg:block top-10 left-[calc(33.33%+8px)] right-[calc(33.33%+8px)] h-px border-t border-dashed border-border" />
+
             {processSteps.map((step) => {
               const StepIcon = step.icon;
               return (
@@ -358,9 +361,7 @@ export default async function PortfolioPage() {
                       {step.step}
                     </div>
                   </div>
-                  <h3 className="mt-6 text-xl font-display font-bold text-ink">
-                    {step.title}
-                  </h3>
+                  <h3 className="mt-6 text-xl font-display font-bold text-ink">{step.title}</h3>
                   <p className="mt-3 text-sm leading-6 text-sub">{step.desc}</p>
                 </article>
               );
@@ -369,6 +370,7 @@ export default async function PortfolioPage() {
         </div>
       </section>
 
+      {/* ── GALLERY ── */}
       <section className="bg-white">
         <ProjectGallery
           galleryImages={galleryImages || []}
@@ -377,12 +379,13 @@ export default async function PortfolioPage() {
         />
       </section>
 
-      <section className="bg-muted py-16 lg:py-20">
+      {/* ── TESTIMONIALS ── */}
+      <section className="bg-muted border-b border-border py-16 lg:py-20">
         <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="mx-auto mb-12 max-w-3xl text-center">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
             <div className="badge mb-4">{testimonialsSection.title}</div>
             <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
-              Real customers, real results.
+              What customers say
             </h2>
             <p className="mt-4 text-sub">{testimonialsSection.subtitle}</p>
           </div>
@@ -391,57 +394,62 @@ export default async function PortfolioPage() {
             <div className="rounded-[1.75rem] border border-border bg-white px-6 py-16 text-center shadow-sm">
               <Star size={48} className="mx-auto text-faint" />
               <p className="mt-4 text-sub">No testimonials yet. Check back soon.</p>
-              <p className="mt-2 text-sm text-faint">
-                Admins can add testimonials in the dashboard.
-              </p>
+              <p className="mt-2 text-sm text-faint">Admins can add testimonials in the dashboard.</p>
             </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-              {testimonials.map((testimonial, index) => (
-                <article
-                  key={testimonial.id || index}
-                  className="rounded-[1.75rem] border border-border bg-white p-5 shadow-sm"
-                >
-                  <div className="flex gap-1 text-yellow-400">
-                    {[...Array(5)].map((_, starIndex) => (
-                      <Star
-                        key={starIndex}
-                        size={16}
-                        fill={
-                          starIndex < Number(testimonial.rating || 5)
-                            ? "currentColor"
-                            : "none"
-                        }
-                      />
-                    ))}
-                  </div>
-                  <Quote size={20} className="mt-4 text-brand-300" />
-                  <p className="mt-4 text-sm leading-6 text-ink italic line-clamp-6">
-                    &quot;{testimonial.text}&quot;
-                  </p>
-                  <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 font-display font-bold text-brand-600">
-                      {(testimonial.name || "C").charAt(0)}
-                    </div>
+              {testimonials.map((testimonial, index) => {
+                const isFirst = index === 0;
+                return (
+                  <article
+                    key={testimonial.id || index}
+                    className={`rounded-[1.75rem] border bg-white p-5 shadow-sm flex flex-col justify-between ${
+                      isFirst ? "border-brand-400 border-2" : "border-border"
+                    }`}
+                  >
                     <div>
-                      <p className="font-display font-semibold text-ink">
-                        {testimonial.name}
-                      </p>
-                      <p className="flex items-center gap-1 text-xs text-sub">
-                        <MapPin size={10} /> {testimonial.location || "Kenya"}
+                      {isFirst && (
+                        <span className="inline-block mb-3 rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold text-brand-600">
+                          Top review
+                        </span>
+                      )}
+                      <div className="flex gap-1 text-yellow-400">
+                        {[...Array(5)].map((_, starIndex) => (
+                          <Star
+                            key={starIndex}
+                            size={15}
+                            fill={starIndex < Number(testimonial.rating || 5) ? "currentColor" : "none"}
+                          />
+                        ))}
+                      </div>
+                      <p className="mt-4 text-sm leading-6 text-ink italic line-clamp-6">
+                        &quot;{testimonial.text}&quot;
                       </p>
                     </div>
-                  </div>
-                </article>
-              ))}
+                    <div className="mt-6 flex items-center gap-3 border-t border-border pt-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-100 font-display font-bold text-brand-600 flex-shrink-0">
+                        {(testimonial.name || "C").charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-display font-semibold text-ink">{testimonial.name}</p>
+                        <p className="flex items-center gap-1 text-xs text-sub">
+                          <MapPin size={10} />
+                          {testimonial.location || "Kenya"}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
       </section>
 
-      <section className="bg-white py-16 lg:py-20">
+      {/* ── PROMISE ── */}
+      <section className="bg-white border-b border-border py-16 lg:py-20">
         <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="mx-auto mb-12 max-w-3xl text-center">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
             <div className="badge mb-4">{promiseSection.title}</div>
             <h2 className="font-display text-3xl font-extrabold text-ink sm:text-4xl">
               {promiseSection.subtitle}
@@ -449,21 +457,19 @@ export default async function PortfolioPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {promiseCards.map((service) => {
-              const ServiceIcon = service.icon;
+            {promiseCards.map((card) => {
+              const CardIcon = card.icon;
               return (
                 <article
-                  key={service.title}
+                  key={card.title}
                   className="rounded-[1.5rem] border border-border bg-white p-5 shadow-sm"
                 >
-                  <div className="h-1 w-16 rounded-full bg-brand-500" />
-                  <div className="mt-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-500">
-                    <ServiceIcon size={22} />
+                  <div className="h-1 w-8 rounded-full bg-brand-500 mb-5" />
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-500">
+                    <CardIcon size={22} />
                   </div>
-                  <h3 className="mt-5 text-lg font-display font-bold text-ink">
-                    {service.title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-6 text-sub">{service.desc}</p>
+                  <h3 className="mt-5 text-lg font-display font-bold text-ink">{card.title}</h3>
+                  <p className="mt-3 text-sm leading-6 text-sub">{card.desc}</p>
                 </article>
               );
             })}
@@ -471,114 +477,92 @@ export default async function PortfolioPage() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden border-t border-border bg-[linear-gradient(135deg,#f9f3ea_0%,#fffdf8_52%,#eef4ff_100%)] py-16 lg:py-20">
-        <div className="absolute inset-0 pointer-events-none">
-          {ctaVisual ? (
-            <div className="absolute inset-y-0 right-0 hidden w-1/2 lg:block">
-              <Image
-                src={ctaVisual.image_url}
-                alt={ctaVisual.title || "TruePower project"}
-                fill
-                className="object-cover opacity-20"
-                sizes="50vw"
-              />
-              <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(249,243,234,0.98),rgba(249,243,234,0.72),rgba(238,244,255,0.18))]" />
-            </div>
-          ) : null}
-        </div>
+      {/* ── CTA ── */}
+      <section className="bg-muted py-16 lg:py-20">
+        <div className="mx-auto grid w-full gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:items-start lg:px-10 xl:px-12">
 
-        <div className="relative mx-auto grid w-full gap-8 px-4 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:items-start lg:px-10 xl:px-12">
+          {/* Left — context */}
           <div>
-            <div className="badge border-border bg-white/90 text-ink shadow-sm">
-              Visit or chat with us
-            </div>
-            <h2 className="mt-4 max-w-2xl font-display text-3xl font-extrabold text-ink sm:text-4xl">
-              {cta.title || "Need help choosing the right solution?"}
+            <div className="badge mb-4">Ready to order?</div>
+            <h2 className="mt-4 max-w-xl font-display text-3xl font-extrabold text-ink sm:text-4xl">
+              {cta.title || "Let's get you the right product — fast."}
             </h2>
-            <p className="mt-4 max-w-2xl text-sub">
+            <p className="mt-4 max-w-xl text-sub leading-7">
               {cta.subtitle ||
-                "Chat with us on WhatsApp and we will help you match the right water heater, pump, solar setup, or electrical product to your needs."}
+                "Tell us your setup on WhatsApp and we'll match you with the right water heater, pump, or solar solution the same day."}
             </p>
 
             <div className="mt-8 grid grid-cols-2 gap-3">
-              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                  Address
-                </p>
-                <p className="mt-2 text-sm font-semibold text-ink">Nyamakima, Nairobi CBD</p>
-              </div>
-              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                  Phone
-                </p>
-                <p className="mt-2 text-sm font-semibold text-ink">+254 701 039 256</p>
-              </div>
-              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                  Hours
-                </p>
-                <p className="mt-2 text-sm font-semibold text-ink">Mon to Sat</p>
-              </div>
-              <div className="rounded-[1.35rem] border border-border bg-white/95 p-4 shadow-sm">
-                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                  Support
-                </p>
-                <p className="mt-2 text-sm font-semibold text-ink">Quotes and installation help</p>
-              </div>
+              {[
+                { label: "Location", value: "Nyamakima, Nairobi CBD", icon: MapPin },
+                { label: "Phone", value: "+254 701 039 256", icon: Phone },
+                { label: "Hours", value: "Mon – Sat, 8am – 6pm", icon: Clock },
+                { label: "Support", value: "Quotes + installation help", icon: MessageCircle },
+              ].map(({ label, value, icon: Icon }) => (
+                <div key={label} className="rounded-[1.35rem] border border-border bg-white p-4 shadow-sm">
+                  <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500 flex items-center gap-1.5">
+                    <Icon size={11} />
+                    {label}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-ink">{value}</p>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="rounded-[1.75rem] border border-border bg-white/95 p-6 shadow-lg backdrop-blur-md">
-            <div className="flex items-start justify-between gap-4">
+          {/* Right — action card */}
+          <div className="rounded-[1.75rem] border border-border bg-white p-6 shadow-lg">
+            <div className="flex items-start justify-between gap-4 mb-6">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">
-                  TruePower contact
-                </p>
-                <p className="mt-2 text-2xl font-display font-bold text-ink">
-                  Let us help you choose well
-                </p>
+                <p className="text-[11px] uppercase tracking-[0.28em] text-brand-500">TruePower contact</p>
+                <p className="mt-2 text-2xl font-display font-bold text-ink">Chat with us now</p>
+                <p className="mt-1 text-sm text-sub">Usually replies within a few minutes</p>
               </div>
-              <div className="rounded-2xl bg-brand-50 p-3 text-brand-500">
-                <MessageCircle size={26} />
+              <div className="rounded-2xl bg-brand-50 p-3 text-brand-500 flex-shrink-0">
+                <MessageCircle size={24} />
               </div>
             </div>
 
-            <div className="mt-6 space-y-3 text-sm text-sub">
-              <p className="flex items-center gap-2">
-                <MapPin size={16} className="text-brand-500" />
-                Nyamakima, Nairobi CBD
-              </p>
-              <p className="flex items-center gap-2">
-                <MessageCircle size={16} className="text-brand-500" />
-                +254 701 039 256
-              </p>
-              <p className="flex items-center gap-2">
-                <Truck size={16} className="text-brand-500" />
-                Pickup, delivery, and installation guidance
-              </p>
+            <div className="mb-6 space-y-3 border-t border-border pt-6">
+              {[
+                { icon: MapPin, text: "Nyamakima, Nairobi CBD" },
+                { icon: Phone, text: "+254 701 039 256" },
+                { icon: Truck, text: "Pickup, delivery, and installation support" },
+                { icon: Clock, text: "Mon – Sat · 8am – 6pm" },
+              ].map(({ icon: Icon, text }) => (
+                <p key={text} className="flex items-center gap-2 text-sm text-sub">
+                  <Icon size={15} className="text-brand-500 flex-shrink-0" />
+                  {text}
+                </p>
+              ))}
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a
-                href={cta.button_link || "https://wa.me/254701039256"}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-5 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02]"
-              >
-                <MessageCircle size={18} />
-                {cta.button_text || "WhatsApp Us"}
-              </a>
+            <a
+              href={cta.button_link || "https://wa.me/254701039256"}
+              target="_blank"
+              rel="noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-full bg-brand-500 px-6 py-3.5 font-display font-bold text-white transition-transform hover:scale-[1.02] shadow-sm"
+            >
+              <MessageCircle size={18} />
+              {cta.button_text || "Start on WhatsApp"}
+            </a>
+
+            <p className="mt-3 text-center text-xs text-faint">No account needed — just chat</p>
+
+            <div className="mt-5 pt-5 border-t border-border flex justify-center">
               <Link
                 href="/shop"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 py-3 font-display font-bold text-ink transition-transform hover:scale-[1.02]"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-5 py-2.5 font-display font-bold text-ink text-sm transition-transform hover:scale-[1.02]"
               >
                 Browse Products
-                <ArrowRight size={16} />
+                <ArrowRight size={15} />
               </Link>
             </div>
           </div>
+
         </div>
       </section>
+
     </main>
   );
 }
