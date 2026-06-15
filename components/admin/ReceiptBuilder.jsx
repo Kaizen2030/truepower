@@ -507,37 +507,45 @@ export default function ReceiptBuilder() {
                 <Search size={14} /> Add from Products
               </button>
               {showProductPicker && (
-                <div className="mt-2 w-full max-w-full sm:absolute sm:right-0 sm:top-full sm:min-w-[20rem] sm:w-[min(36rem,calc(100vw-1rem))] sm:max-w-[calc(100vw-1rem)] bg-white border border-border rounded-2xl shadow-pop z-20 p-3">
-                  <div className="flex items-center gap-2 mb-2 min-w-0">
-                    <input
-                      autoFocus
-                      className="input py-2 min-w-0"
-                      placeholder="Search products..."
-                      value={productQuery}
-                      onChange={(e) => setProductQuery(e.target.value)}
-                    />
-                    <button onClick={() => setShowProductPicker(false)} className="btn-ghost p-1">
-                      <X size={16} />
-                    </button>
-                  </div>
-                  <div className="max-h-56 sm:max-h-64 overflow-y-auto divide-y divide-border">
-                    {filteredProducts.map((p) => (
-                      <button
-                        key={p.id}
-                        onClick={() => addProductLine(p)}
-                        className="w-full text-left py-2 px-1 hover:bg-muted rounded-lg flex items-start justify-between gap-2"
-                      >
-                        <span className="text-sm min-w-0 flex-1 whitespace-normal break-words leading-snug">
-                          {p.name}
-                        </span>
-                        <span className="text-sm font-semibold text-brand-500 whitespace-nowrap shrink-0">
-                          KSh {formatMoney(p.price)}
-                        </span>
+                <div
+                  className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/40 p-4 sm:p-6"
+                  onClick={() => setShowProductPicker(false)}
+                >
+                  <div
+                    className="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-white shadow-pop"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className="flex flex-col gap-2 border-b border-border p-4 sm:flex-row sm:items-center">
+                      <input
+                        autoFocus
+                        className="input flex-1 py-2"
+                        placeholder="Search products..."
+                        value={productQuery}
+                        onChange={(e) => setProductQuery(e.target.value)}
+                      />
+                      <button onClick={() => setShowProductPicker(false)} className="btn-ghost p-2">
+                        <X size={20} />
                       </button>
-                    ))}
-                    {filteredProducts.length === 0 && (
-                      <p className="text-sub text-sm py-2">No products found.</p>
-                    )}
+                    </div>
+                    <div className="max-h-[min(65vh,34rem)] overflow-y-auto divide-y divide-border p-3">
+                      {filteredProducts.map((p) => (
+                        <button
+                          key={p.id}
+                          onClick={() => addProductLine(p)}
+                          className="w-full text-left py-3 px-3 hover:bg-muted rounded-2xl flex items-start justify-between gap-3"
+                        >
+                          <span className="text-sm min-w-0 flex-1 whitespace-normal break-words leading-snug">
+                            {p.name}
+                          </span>
+                          <span className="text-sm font-semibold text-brand-500 whitespace-nowrap shrink-0">
+                            KSh {formatMoney(p.price)}
+                          </span>
+                        </button>
+                      ))}
+                      {filteredProducts.length === 0 && (
+                        <p className="text-sub text-sm py-4 text-center">No products found.</p>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
