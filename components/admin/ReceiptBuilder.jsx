@@ -244,13 +244,15 @@ export default function ReceiptBuilder() {
       return;
     }
 
+    const receiptTitle = `TruePower Kenya Receipt${receiptNumber ? ` #${receiptNumber}` : ""}`;
+
     doc.open();
     doc.write(`<!doctype html>
       <html lang="en">
         <head>
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>Receipt ${receiptNumber || ""}</title>
+          <title>${receiptTitle}</title>
           ${styles}
           <style>
             html, body {
@@ -270,6 +272,7 @@ export default function ReceiptBuilder() {
         </body>
       </html>`);
     doc.close();
+    doc.title = receiptTitle;
 
     try {
       await waitForPrintAssets(doc);
@@ -284,6 +287,7 @@ export default function ReceiptBuilder() {
       return;
     }
 
+    printWindow.document.title = receiptTitle;
     printWindow.focus();
     printWindow.print();
     window.setTimeout(cleanup, 10000);
@@ -608,7 +612,7 @@ export default function ReceiptBuilder() {
               <h1 className="font-display font-bold text-xl sm:text-3xl tracking-tight uppercase mb-2">
                 Receipt
               </h1>
-              <div className="inline-flex flex-col items-end rounded-2xl border border-brand-100 bg-brand-50/60 px-3 py-2 sm:px-4 sm:py-3">
+              <div className="inline-flex flex-col items-end rounded-2xl border border-brand-100 bg-white px-3 py-2 sm:px-4 sm:py-3">
                 <p className="text-sm leading-6">
                   <span className="text-sub">No. </span>
                   <span className="font-semibold">{receiptNumber}</span>
