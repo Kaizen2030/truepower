@@ -507,7 +507,7 @@ export default function ReceiptBuilder() {
                 <Search size={14} /> Add from Products
               </button>
               {showProductPicker && (
-                <div className="mt-2 w-full max-w-full sm:absolute sm:right-0 sm:top-full sm:w-80 sm:max-w-[calc(100vw-1rem)] bg-white border border-border rounded-2xl shadow-pop z-20 p-3">
+                <div className="mt-2 w-full max-w-full sm:absolute sm:right-0 sm:top-full sm:min-w-[20rem] sm:w-[min(36rem,calc(100vw-1rem))] sm:max-w-[calc(100vw-1rem)] bg-white border border-border rounded-2xl shadow-pop z-20 p-3">
                   <div className="flex items-center gap-2 mb-2 min-w-0">
                     <input
                       autoFocus
