@@ -23,13 +23,44 @@ export default async function HomePage() {
 
   const homeJsonLd = {
     "@context": "https://schema.org",
-    "@type": "Store",
-    name: "TruePower Kenya",
+    "@type": "ElectronicsStore",
+    "@id": `${SITE_URL}/#business`,
+    name: "TruePower Solutions",
     url: SITE_URL,
     image: DEFAULT_IMAGE,
+    logo: `${SITE_URL}/logo.png`,
     description:
       "Water heaters, pumps, solar solutions, lighting and electrical gear for Kenyan homes.",
+    telephone: "+254701039256",
+    priceRange: "KSh 80 - KSh 30000",
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "Maridadi Business Plaza, 5 Ambala Rd",
+      addressLocality: "Nairobi",
+      addressRegion: "Nairobi County",
+      addressCountry: "KE",
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: -1.2826347,
+      longitude: 36.8299638,
+    },
     areaServed: "Kenya",
+    hasMap: "https://maps.google.com/?cid=12689537872173264310",
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ],
+      opens: "08:00",
+      closes: "18:00",
+    },
+    sameAs: [],
   };
 
   return (
