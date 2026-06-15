@@ -208,8 +208,12 @@ export default function ReceiptBuilder() {
     const source = printRef.current;
     if (!source) return;
 
+    const originalTitle = document.title;
+    const receiptTitle = `TruePower Kenya Receipt${receiptNumber ? ` #${receiptNumber}` : ""}`;
+    document.title = receiptTitle;
+
     const frame = document.createElement("iframe");
-    frame.setAttribute("title", "Receipt print preview");
+    frame.setAttribute("title", receiptTitle);
     frame.setAttribute("aria-hidden", "true");
     frame.style.position = "fixed";
     frame.style.right = "0";
@@ -243,8 +247,6 @@ export default function ReceiptBuilder() {
       window.print();
       return;
     }
-
-    const receiptTitle = `TruePower Kenya Receipt${receiptNumber ? ` #${receiptNumber}` : ""}`;
 
     doc.open();
     doc.write(`<!doctype html>
@@ -288,9 +290,34 @@ export default function ReceiptBuilder() {
     }
 
     printWindow.document.title = receiptTitle;
+    const titleElement = printWindow.document.querySelector("title");
+    if (titleElement) {
+      titleElement.textContent = receiptTitle;
+    }
+
+    if (printWindow.document.body) {
+      printWindow.document.body.style.backgroundColor = "#ffffff";
+    }
+
     printWindow.focus();
-    printWindow.print();
+    setTimeout(() => {
+      try {
+        printWindow.print();
+      } catch (error) {
+        console.error("Print failed, falling back to top-level print:", error);
+        window.print();
+      }
+    }, 100);
+
     window.setTimeout(cleanup, 10000);
+
+    const restoreTitle = () => {
+      if (document.title === receiptTitle) {
+        document.title = originalTitle;
+      }
+    };
+
+    window.addEventListener("afterprint", restoreTitle, { once: true });
   }
 
   async function handleSave() {
@@ -612,7 +639,7 @@ export default function ReceiptBuilder() {
               <h1 className="font-display font-bold text-xl sm:text-3xl tracking-tight uppercase mb-2">
                 Receipt
               </h1>
-              <div className="inline-flex flex-col items-end rounded-2xl border border-brand-100 bg-white px-3 py-2 sm:px-4 sm:py-3">
+              <div className="space-y-1 text-right">
                 <p className="text-sm leading-6">
                   <span className="text-sub">No. </span>
                   <span className="font-semibold">{receiptNumber}</span>

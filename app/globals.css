@@ -52,6 +52,9 @@
   .btn-ghost {
     @apply inline-flex items-center gap-2 text-sub hover:text-ink font-body text-sm transition-colors duration-200;
   }
+  .btn-secondary {
+    @apply inline-flex items-center gap-2 bg-slate-100 text-slate-800 font-display font-semibold px-4 py-2 rounded-full transition-all duration-200 hover:bg-slate-200;
+  }
   .btn-white {
     @apply inline-flex items-center gap-2 bg-white text-brand-600 hover:bg-brand-50 font-display font-bold px-6 py-3 rounded-full transition-all duration-200 shadow-sm;
   }

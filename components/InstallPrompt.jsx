@@ -99,10 +99,17 @@ export default function InstallPrompt() {
             </>
           ) : showIos ? (
             <>
-              <p className="text-sub text-xs mt-0.5">
+              <p className="text-sub text-xs mt-0.5 mb-3">
                 Tap <Share2 size={12} className="inline -mt-0.5" /> Share, then
                 choose <span className="font-semibold">Add to Home Screen</span>.
               </p>
+              <button
+                type="button"
+                onClick={dismiss}
+                className="btn-primary text-xs py-2 px-4 inline-flex items-center gap-1.5"
+              >
+                <Share2 size={14} /> Got it
+              </button>
             </>
           ) : showBanner ? (
             <>

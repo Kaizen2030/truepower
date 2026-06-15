@@ -13,8 +13,10 @@ import {
   LockOpen,
   LogOut,
   ChevronDown,
+  Download,
+  Share2,
 } from "lucide-react";
-import { Suspense, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 
 import TruePowerLogo from "./TruePowerLogo";
 import SearchProducts from "./SearchProducts";
@@ -55,10 +57,62 @@ export default function Navbar() {
   const { user, isAdmin, signOut = async () => {}, profile } = auth ?? {};
 
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstall, setShowInstall] = useState(false);
+  const [isIos, setIsIos] = useState(false);
+  const [isStandalone, setIsStandalone] = useState(false);
   const accountRef = useRef(null);
   const accountBtnRef = useRef(null);
   const accountMenuRef = useRef(null);
   const [menuPos, setMenuPos] = useState(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const ua = window.navigator.userAgent.toLowerCase();
+    const ios = /iphone|ipad|ipod/.test(ua) && /safari/.test(ua) && !/crios|fxios|edgios/.test(ua);
+    setIsIos(ios);
+
+    const standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+    setIsStandalone(standalone);
+
+    if (standalone) return;
+
+    if (ios) {
+      setShowInstall(true);
+    }
+
+    const onBeforeInstallPrompt = (event) => {
+      event.preventDefault();
+      setDeferredPrompt(event);
+      setShowInstall(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    return () => {
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted" || outcome === "dismissed") {
+      setShowInstall(false);
+      setDeferredPrompt(null);
+    }
+  };
+
+  const handleIosInstallClick = () => {
+    if (typeof window === "undefined") return;
+    window.alert(
+      "Use your browser menu, then choose 'Add to Home Screen'."
+    );
+  };
 
   const handleLogout = async () => {
     try {
@@ -99,6 +153,16 @@ export default function Navbar() {
             {/* RIGHT ICONS (UNCHANGED) */}
             <div className="flex items-center md:gap-4 sm:gap-3  gap-2">
               {/* Desktop profile / Login button placed next to wishlist/cart */}
+              {showInstall && !isStandalone ? (
+                <button
+                  type="button"
+                  onClick={deferredPrompt ? handleInstallClick : handleIosInstallClick}
+                  className="btn-secondary inline-flex items-center gap-1 text-xs py-2 px-3"
+                >
+                  <Download size={14} />
+                  {deferredPrompt ? "Install" : isIos ? "Add to Home" : "Install"}
+                </button>
+              ) : null}
               {user ? (
                 <>
                   {isAdmin && (
@@ -258,6 +322,18 @@ export default function Navbar() {
                 {l.label}
               </Link>
             ))}
+            {(showInstall && !isStandalone) && (
+              <button
+                type="button"
+                onClick={deferredPrompt ? handleInstallClick : handleIosInstallClick}
+                className="btn-secondary mt-4 px-3 py-3 text-left"
+              >
+                <Download size={16} />
+                <span className="ml-2">
+                  {deferredPrompt ? "Install TruePower" : isIos ? "Add to Home Screen" : "Install App"}
+                </span>
+              </button>
+            )}
             {isAdmin && (
               <Link
                 href="/admin"
