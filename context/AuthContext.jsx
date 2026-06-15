@@ -45,14 +45,19 @@ export function AuthProvider({ children }) {
       return () => { mounted = false }
     }
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!mounted) return
-      const u = session?.user ?? null
-      setUser(u)
-      Promise.allSettled([checkAdmin(u), refreshProfile(u)]).finally(() => {
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (!mounted) return
+        const u = session?.user ?? null
+        setUser(u)
+        return Promise.allSettled([checkAdmin(u), refreshProfile(u)])
+      })
+      .catch((error) => {
+        console.error("Supabase session load failed:", error)
+      })
+      .finally(() => {
         if (mounted) setLoading(false)
       })
-    })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       const u = session?.user ?? null

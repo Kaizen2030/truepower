@@ -30,7 +30,13 @@ export default function ResetPasswordPage() {
       }
 
       try {
-        const code = new URLSearchParams(window.location.search).get("code");
+        const searchParams = new URLSearchParams(window.location.search);
+        const hasRecoveryLink =
+          searchParams.has("code") ||
+          searchParams.has("access_token") ||
+          searchParams.get("type") === "recovery";
+
+        const code = searchParams.get("code");
 
         if (code) {
           const { error: exchangeError } =
@@ -46,7 +52,7 @@ export default function ResetPasswordPage() {
         if (!active) return;
         setReady(Boolean(session));
 
-        if (!session && !code) {
+        if (!session && !hasRecoveryLink) {
           setError("Open the password reset link from your email first.");
         }
       } catch (err) {

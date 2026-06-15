@@ -170,20 +170,57 @@ export default function ReceiptBuilder() {
   );
   const total = subtotal;
 
-  function handlePrint() {
+  async function waitForPrintAssets(doc) {
+    const images = Array.from(doc.images || []);
+    const fontPromise =
+      doc.fonts && typeof doc.fonts.ready?.then === "function"
+        ? doc.fonts.ready.catch(() => {})
+        : Promise.resolve();
+
+    const imagePromise = new Promise((resolve) => {
+      if (images.length === 0) {
+        resolve();
+        return;
+      }
+
+      let remaining = images.length;
+      const settle = () => {
+        remaining -= 1;
+        if (remaining <= 0) resolve();
+      };
+
+      images.forEach((img) => {
+        if (img.complete) {
+          settle();
+          return;
+        }
+
+        img.addEventListener("load", settle, { once: true });
+        img.addEventListener("error", settle, { once: true });
+      });
+    });
+
+    await Promise.all([fontPromise, imagePromise]);
+    await new Promise((resolve) => window.setTimeout(resolve, 200));
+  }
+
+  async function handlePrint() {
     const source = printRef.current;
     if (!source) return;
 
-    const printWindow = window.open(
-      "",
-      "_blank",
-      "noopener,noreferrer,width=900,height=1200",
-    );
-
-    if (!printWindow) {
-      window.print();
-      return;
-    }
+    const frame = document.createElement("iframe");
+    frame.setAttribute("title", "Receipt print preview");
+    frame.setAttribute("aria-hidden", "true");
+    frame.style.position = "fixed";
+    frame.style.right = "0";
+    frame.style.bottom = "0";
+    frame.style.width = "0";
+    frame.style.height = "0";
+    frame.style.border = "0";
+    frame.style.opacity = "0";
+    frame.style.pointerEvents = "none";
+    document.body.appendChild(frame);
+    let cleanedUp = false;
 
     const styles = Array.from(
       document.querySelectorAll('link[rel="stylesheet"], style'),
@@ -191,8 +228,24 @@ export default function ReceiptBuilder() {
       .map((node) => node.outerHTML)
       .join("\n");
 
-    printWindow.document.open();
-    printWindow.document.write(`<!doctype html>
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      window.removeEventListener("afterprint", cleanup);
+      window.setTimeout(() => frame.remove(), 250);
+    };
+
+    window.addEventListener("afterprint", cleanup, { once: true });
+
+    const doc = frame.contentDocument;
+    if (!doc) {
+      cleanup();
+      window.print();
+      return;
+    }
+
+    doc.open();
+    doc.write(`<!doctype html>
       <html lang="en">
         <head>
           <meta charset="utf-8" />
@@ -216,21 +269,24 @@ export default function ReceiptBuilder() {
           ${source.outerHTML}
         </body>
       </html>`);
-    printWindow.document.close();
+    doc.close();
 
-    const triggerPrint = () => {
-      setTimeout(() => {
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-      }, 250);
-    };
-
-    if (printWindow.document.readyState === "complete") {
-      triggerPrint();
-    } else {
-      printWindow.onload = triggerPrint;
+    try {
+      await waitForPrintAssets(doc);
+    } catch {
+      // If the receipt assets fail to settle, still try to print the document.
     }
+
+    const printWindow = frame.contentWindow;
+    if (!printWindow) {
+      cleanup();
+      window.print();
+      return;
+    }
+
+    printWindow.focus();
+    printWindow.print();
+    window.setTimeout(cleanup, 10000);
   }
 
   async function handleSave() {

@@ -42,6 +42,7 @@ import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
 import RouteAnalytics from "@/components/RouteAnalytics";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import InstallPrompt from "@/components/InstallPrompt";
 import RouteResume from "@/components/RouteResume";
 
 export default function RootLayout({ children }) {
@@ -58,6 +59,7 @@ export default function RootLayout({ children }) {
               <RouteResume />
             </Suspense>
             <ServiceWorkerRegistration />
+            <InstallPrompt />
             <CartDrawer></CartDrawer>
             {children}
             <Footer></Footer>
