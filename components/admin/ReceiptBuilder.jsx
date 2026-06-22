@@ -34,6 +34,48 @@ function buildReceiptSubtitle() {
   return "Professional electrical, solar, and water-heating solutions.";
 }
 
+function parseReceiptNumber(value) {
+  const parsed = Number.parseInt(String(value ?? "").replace(/[^\d]/g, ""), 10);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function formatReceiptDate(value) {
+  if (!value) return "Unknown date";
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+
+  return date.toLocaleDateString("en-KE", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+}
+
+function getNextReceiptNumber(rows, fallback = 1007) {
+  const highest = (rows || []).reduce((max, row) => {
+    const number = parseReceiptNumber(row?.receipt_number);
+    return number != null && number > max ? number : max;
+  }, fallback - 1);
+
+  return String(Math.max(fallback, highest + 1));
+}
+
+function summarizeItems(items) {
+  const descriptions = (Array.isArray(items) ? items : [])
+    .map((item) => String(item?.description || item?.product_name || item?.name || "").trim())
+    .filter(Boolean);
+
+  if (!descriptions.length) return "No item details";
+  if (descriptions.length === 1) return descriptions[0];
+
+  const [first, second] = descriptions;
+  const remaining = descriptions.length - 2;
+  return remaining > 0 ? `${first}, ${second} +${remaining} more` : `${first}, ${second}`;
+}
+
 export default function ReceiptBuilder() {
   const [products, setProducts] = useState([]);
   const [productQuery, setProductQuery] = useState("");
@@ -63,6 +105,7 @@ export default function ReceiptBuilder() {
 
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [selectedReceipt, setSelectedReceipt] = useState(null);
 
   const printRef = useRef();
 
@@ -72,7 +115,6 @@ export default function ReceiptBuilder() {
       .catch(() => setProducts([]));
     loadSettings();
     loadHistory();
-    suggestNextReceiptNumber();
   }, []);
 
   async function loadSettings() {
@@ -101,30 +143,17 @@ export default function ReceiptBuilder() {
     try {
       const { data, error } = await supabase
         .from("receipts")
-        .select("*")
+        .select("id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes")
         .order("created_at", { ascending: false })
-        .limit(25);
+        .limit(1000);
       if (error) throw error;
-      setHistory(data || []);
+      const rows = data || [];
+      setHistory(rows);
+      setReceiptNumber(getNextReceiptNumber(rows));
     } catch (e) {
       setHistory([]);
       setLoadError(describeRlsError(e));
-    }
-  }
-
-  async function suggestNextReceiptNumber() {
-    try {
-      const { data, error } = await supabase
-        .from("receipts")
-        .select("receipt_number")
-        .order("receipt_number", { ascending: false })
-        .limit(1);
-      if (error) throw error;
-      const last = data?.[0]?.receipt_number;
-      setReceiptNumber(last ? String(last + 1) : "1006");
-    } catch (err) {
-      setLoadError(describeRlsError(err));
-      setReceiptNumber("1006");
+      setReceiptNumber("1007");
     }
   }
 
@@ -323,8 +352,10 @@ export default function ReceiptBuilder() {
   async function handleSave() {
     setSaving(true);
     try {
+      const normalizedReceiptNumber =
+        parseReceiptNumber(receiptNumber) ?? Number(getNextReceiptNumber(history));
       const payload = {
-        receipt_number: Number(receiptNumber) || undefined,
+        receipt_number: normalizedReceiptNumber,
         customer_name: customerName || null,
         customer_phone: customerPhone || null,
         items: lines.map((l) => ({
@@ -388,24 +419,6 @@ export default function ReceiptBuilder() {
     window.open(url, "_blank");
   }
 
-  function loadFromHistory(r) {
-    setReceiptNumber(String(r.receipt_number));
-    setReceiptDate(r.created_at?.slice(0, 10) || receiptDate);
-    setCustomerName(r.customer_name || "");
-    setCustomerPhone(r.customer_phone || "");
-    setLines(
-      (r.items || []).map((it) => ({
-        id: crypto.randomUUID(),
-        description: it.description,
-        qty: it.qty,
-        price: it.price,
-      })),
-    );
-    setNotes(r.notes || "");
-    setSavedId(r.id);
-    setShowHistory(false);
-  }
-
   const receiptNotes = notes?.trim()
     ? notes.trim()
     : "Payment after installation";
@@ -419,7 +432,7 @@ export default function ReceiptBuilder() {
             onClick={() => setShowHistory((s) => !s)}
             className="btn-ghost text-xs sm:text-sm inline-flex items-center gap-2"
           >
-            <History size={16} /> History
+            <History size={16} /> Sales History
           </button>
         </div>
 
@@ -434,27 +447,108 @@ export default function ReceiptBuilder() {
         )}
 
         {showHistory && (
-          <div className="card-muted p-4 max-h-64 overflow-y-auto">
+          <div className="card-muted p-4 max-h-[70vh] overflow-y-auto">
             {history.length === 0 ? (
-              <p className="text-sub text-sm">No receipts saved yet.</p>
+              <p className="text-sub text-sm">No sales saved yet.</p>
             ) : (
-              <div className="divide-y divide-border">
+              <div className="grid gap-3">
                 {history.map((r) => (
                   <button
                     key={r.id}
-                    onClick={() => loadFromHistory(r)}
-                    className="w-full text-left py-2 flex items-center justify-between hover:bg-white/60 px-2 rounded-lg"
+                    type="button"
+                    onClick={() => setSelectedReceipt(r)}
+                    className="rounded-3xl border border-border bg-white p-4 text-left shadow-sm hover:border-brand-300 hover:bg-brand-50"
                   >
-                    <span className="text-sm font-medium">
-                      #{r.receipt_number} {r.customer_name ? `- ${r.customer_name}` : ""}
-                    </span>
-                    <span className="text-sm text-sub">
-                      KSh {formatMoney(r.total)} | {r.created_at?.slice(0, 10)}
-                    </span>
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <div className="text-sm font-semibold">#{r.receipt_number}</div>
+                        <div className="text-xs text-sub mt-1">{r.customer_name || "Customer"}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm font-semibold">KSh {formatMoney(r.total)}</div>
+                        <div className="text-xs text-sub mt-1">{r.customer_phone || "No phone"}</div>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-faint">
+                      <span>{formatReceiptDate(r.created_at)}</span>
+                      <span className="truncate">{summarizeItems(r.items)}</span>
+                    </div>
                   </button>
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {selectedReceipt && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70">
+            <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl">
+              <div className="flex items-center justify-between border-b border-border px-4 py-3">
+                <div>
+                  <div className="text-sm uppercase tracking-[0.2em] text-brand-600 font-semibold">Receipt details</div>
+                  <div className="text-base font-semibold">#{selectedReceipt.receipt_number}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedReceipt(null)}
+                  className="btn-ghost p-2"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="p-4 space-y-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <div className="text-sub text-xs uppercase tracking-[0.18em]">Customer</div>
+                    <div className="font-semibold">{selectedReceipt.customer_name || "N/A"}</div>
+                    <div className="text-sm text-sub">{selectedReceipt.customer_phone || "No phone"}</div>
+                  </div>
+                  <div>
+                    <div className="text-sub text-xs uppercase tracking-[0.18em]">Sale</div>
+                    <div className="font-semibold">KSh {formatMoney(selectedReceipt.total)}</div>
+                    <div className="text-sm text-sub">{formatReceiptDate(selectedReceipt.created_at)}</div>
+                  </div>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-2xl bg-slate-50 p-3">
+                    <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Receipt No.</div>
+                    <div className="mt-1 font-semibold">#{selectedReceipt.receipt_number}</div>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-3">
+                    <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Subtotal</div>
+                    <div className="mt-1 font-semibold">KSh {formatMoney(selectedReceipt.subtotal ?? selectedReceipt.total)}</div>
+                  </div>
+                  <div className="rounded-2xl bg-slate-50 p-3">
+                    <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Total</div>
+                    <div className="mt-1 font-semibold">KSh {formatMoney(selectedReceipt.total)}</div>
+                  </div>
+                </div>
+                <div>
+                  <div className="text-sub text-xs uppercase tracking-[0.18em]">Notes</div>
+                  <div className="text-sm whitespace-pre-line">{selectedReceipt.notes || "None"}</div>
+                </div>
+                <div>
+                  <div className="text-sub text-xs uppercase tracking-[0.18em]">Items</div>
+                  <div className="mt-2 grid gap-2">
+                    {(selectedReceipt.items || []).map((item, index) => (
+                      <div key={`${selectedReceipt.id}-item-${index}`} className="rounded-2xl border border-border bg-slate-50 p-3">
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="font-medium">{item.description || item.product_name || "Item"}</div>
+                          <div className="text-sm text-sub">KSh {formatMoney(item.price)}</div>
+                        </div>
+                        <div className="mt-1 flex items-center justify-between gap-3 text-xs text-sub">
+                          <span>Qty: {item.qty || 0}</span>
+                          <span>Line total: KSh {formatMoney((Number(item.qty) || 0) * (Number(item.price) || 0))}</span>
+                        </div>
+                      </div>
+                    ))}
+                    {!(selectedReceipt.items || []).length && (
+                      <div className="text-sm text-sub">No item details saved.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -641,9 +735,6 @@ export default function ReceiptBuilder() {
               </div>
             </div>
             <div className="text-right shrink-0 pt-1">
-              <p className="text-[10px] sm:text-[11px] uppercase tracking-[0.22em] text-brand-500 font-semibold mb-1">
-                Official Receipt
-              </p>
               <h1 className="font-display font-bold text-xl sm:text-3xl tracking-tight uppercase mb-2">
                 Receipt
               </h1>
@@ -804,4 +895,3 @@ export default function ReceiptBuilder() {
     </div>
   );
 }
-
