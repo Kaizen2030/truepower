@@ -260,7 +260,74 @@ export default function ReceiptBuilder() {
     await new Promise((resolve) => window.setTimeout(resolve, 200));
   }
 
+  async function saveReceipt({ openHistory = false, openModal = false } = {}) {
+    setSaving(true);
+    try {
+      const nextReceiptNumber = getNextReceiptNumber(history);
+      const parsedReceiptNumber = parseReceiptNumber(receiptNumber);
+      const receiptNumberForSave =
+        parsedReceiptNumber && parsedReceiptNumber >= Number(nextReceiptNumber)
+          ? parsedReceiptNumber
+          : Number(nextReceiptNumber);
+
+      const payload = {
+        receipt_number: receiptNumberForSave,
+        customer_name: customerName || null,
+        customer_phone: customerPhone || null,
+        items: lines.map((l) => ({
+          description: l.description,
+          qty: Number(l.qty) || 0,
+          price: Number(l.price) || 0,
+        })),
+        subtotal,
+        total,
+        notes,
+      };
+      let response;
+      if (savedId) {
+        const updateResult = await supabase
+          .from("receipts")
+          .update(payload)
+          .eq("id", savedId)
+          .select()
+          .single();
+        response = updateResult;
+      } else {
+        const insertResult = await supabase
+          .from("receipts")
+          .insert(payload)
+          .select()
+          .single();
+        response = insertResult;
+      }
+      if (response.error) throw response.error;
+      const data = response.data;
+      setSavedId(data.id);
+      setSelectedReceipt(data);
+      if (openModal) {
+        setIsReceiptModalOpen(true);
+      }
+      await loadHistory();
+      if (openHistory) {
+        setActivePanel("history");
+        setHistoryPage(0);
+      }
+      return data;
+    } finally {
+      setSaving(false);
+    }
+  }
+
   async function handlePrint() {
+    if (!savedId) {
+      try {
+        await saveReceipt();
+      } catch (error) {
+        alert(error.message || "Could not save receipt before printing");
+        return;
+      }
+    }
+
     const source = printRef.current;
     if (!source) return;
 
@@ -377,44 +444,10 @@ export default function ReceiptBuilder() {
   }
 
   async function handleSave() {
-    setSaving(true);
     try {
-      const nextReceiptNumber = getNextReceiptNumber(history);
-      const parsedReceiptNumber = parseReceiptNumber(receiptNumber);
-      const receiptNumberForSave =
-        parsedReceiptNumber && parsedReceiptNumber >= Number(nextReceiptNumber)
-          ? parsedReceiptNumber
-          : Number(nextReceiptNumber);
-
-      const payload = {
-        receipt_number: receiptNumberForSave,
-        customer_name: customerName || null,
-        customer_phone: customerPhone || null,
-        items: lines.map((l) => ({
-          description: l.description,
-          qty: Number(l.qty) || 0,
-          price: Number(l.price) || 0,
-        })),
-        subtotal,
-        total,
-        notes,
-      };
-      const { data, error } = await supabase
-        .from("receipts")
-        .insert(payload)
-        .select()
-        .single();
-      if (error) throw error;
-      setSavedId(data.id);
-      setSelectedReceipt(data);
-      setIsReceiptModalOpen(true);
-      await loadHistory();
-      setActivePanel("history");
-      setHistoryPage(0);
-    } catch (e) {
-      alert(e.message || "Could not save receipt");
-    } finally {
-      setSaving(false);
+      await saveReceipt({ openHistory: true, openModal: true });
+    } catch (error) {
+      alert(error.message || "Could not save receipt");
     }
   }
 
