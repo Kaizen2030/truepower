@@ -104,7 +104,9 @@ export default function ReceiptBuilder() {
   const [savedId, setSavedId] = useState(null);
 
   const [history, setHistory] = useState([]);
-  const [showHistory, setShowHistory] = useState(false);
+  const [activePanel, setActivePanel] = useState("builder");
+  const [historyQuery, setHistoryQuery] = useState("");
+  const [historyPage, setHistoryPage] = useState(0);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
 
   const printRef = useRef();
@@ -162,6 +164,30 @@ export default function ReceiptBuilder() {
     const q = productQuery.toLowerCase();
     return products.filter((p) => p.name?.toLowerCase().includes(q)).slice(0, 30);
   }, [productQuery, products]);
+
+  const filteredHistory = useMemo(() => {
+    const q = historyQuery.trim().toLowerCase();
+    if (!q) return history;
+
+    return history.filter((row) => {
+      const fields = [
+        row?.receipt_number,
+        row?.customer_name,
+        row?.customer_phone,
+        row?.total,
+        row?.created_at,
+        ...(Array.isArray(row?.items) ? row.items.map((item) => item?.description || item?.product_name || item?.name || "") : []),
+      ]
+        .map((value) => String(value || "").toLowerCase().trim())
+        .filter(Boolean);
+
+      return fields.some((value) => value.includes(q));
+    });
+  }, [history, historyQuery]);
+
+  const historyPageSize = 12;
+  const historyPageCount = Math.max(1, Math.ceil(filteredHistory.length / historyPageSize));
+  const visibleHistory = filteredHistory.slice(historyPage * historyPageSize, (historyPage + 1) * historyPageSize);
 
   function addLine() {
     setLines((ls) => [...ls, emptyLine()]);
@@ -419,418 +445,536 @@ export default function ReceiptBuilder() {
     window.open(url, "_blank");
   }
 
+  function renderReceiptDetails(receipt) {
+    if (!receipt) {
+      return (
+        <div className="rounded-3xl border border-dashed border-border bg-slate-50 p-6 text-sm text-sub">
+          Pick a sale on the left to see the full receipt breakdown here.
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        <div className="rounded-3xl border border-brand-100 bg-brand-50/60 p-4">
+          <div className="text-[11px] uppercase tracking-[0.22em] text-brand-600 font-semibold">Selected sale</div>
+          <div className="mt-1 text-lg font-semibold">Receipt #{receipt.receipt_number}</div>
+          <div className="mt-1 text-sm text-sub">{formatReceiptDate(receipt.created_at)}</div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="rounded-2xl bg-slate-50 p-3">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Customer</div>
+            <div className="mt-1 font-semibold">{receipt.customer_name || "N/A"}</div>
+            <div className="text-xs text-sub">{receipt.customer_phone || "No phone"}</div>
+          </div>
+          <div className="rounded-2xl bg-slate-50 p-3">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Subtotal</div>
+            <div className="mt-1 font-semibold">KSh {formatMoney(receipt.subtotal ?? receipt.total)}</div>
+          </div>
+          <div className="rounded-2xl bg-slate-50 p-3">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Total</div>
+            <div className="mt-1 font-semibold">KSh {formatMoney(receipt.total)}</div>
+          </div>
+        </div>
+
+        <div>
+          <div className="text-xs uppercase tracking-[0.18em] text-sub">Notes</div>
+          <p className="mt-2 rounded-2xl border border-border bg-white p-3 text-sm whitespace-pre-line">
+            {receipt.notes || "None"}
+          </p>
+        </div>
+
+        <div>
+          <div className="text-xs uppercase tracking-[0.18em] text-sub">Items</div>
+          <div className="mt-2 grid gap-2">
+            {(receipt.items || []).map((item, index) => (
+              <div key={`${receipt.id}-item-${index}`} className="rounded-2xl border border-border bg-white p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="font-medium">{item.description || item.product_name || "Item"}</div>
+                  <div className="text-sm text-sub">KSh {formatMoney(item.price)}</div>
+                </div>
+                <div className="mt-1 flex items-center justify-between gap-3 text-xs text-sub">
+                  <span>Qty: {item.qty || 0}</span>
+                  <span>Line total: KSh {formatMoney((Number(item.qty) || 0) * (Number(item.price) || 0))}</span>
+                </div>
+              </div>
+            ))}
+            {!(receipt.items || []).length && (
+              <div className="rounded-2xl border border-dashed border-border bg-slate-50 p-3 text-sm text-sub">
+                No item details saved.
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  function renderHistoryPanel() {
+    const totalMatches = filteredHistory.length;
+    const showingStart = totalMatches === 0 ? 0 : historyPage * historyPageSize + 1;
+    const showingEnd = Math.min((historyPage + 1) * historyPageSize, totalMatches);
+    const selectedHistoryReceipt =
+      selectedReceipt && filteredHistory.some((row) => String(row.id) === String(selectedReceipt.id))
+        ? selectedReceipt
+        : visibleHistory[0] || filteredHistory[0] || null;
+
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-brand-500">Sales History</p>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-ink">Sales and receipts</h2>
+            <p className="text-sub text-sm">Browse receipts without covering the builder screen.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActivePanel("builder")}
+            className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50"
+          >
+            <X size={16} />
+            Back to Builder
+          </button>
+        </div>
+
+        <div className="rounded-3xl border border-brand-100 bg-gradient-to-r from-brand-50 via-white to-sky-50 p-4 sm:p-5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex-1">
+              <label className="label">Search sales</label>
+              <input
+                className="input bg-white"
+                value={historyQuery}
+                onChange={(e) => {
+                  setHistoryQuery(e.target.value);
+                  setHistoryPage(0);
+                  setSelectedReceipt(null);
+                }}
+                placeholder="Search by receipt number, customer, phone, product..."
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3 lg:min-w-[260px]">
+              <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Receipts</div>
+                <div className="mt-1 text-lg font-semibold text-ink">{history.length}</div>
+              </div>
+              <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Results</div>
+                <div className="mt-1 text-lg font-semibold text-ink">{totalMatches}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {loadError && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            {loadError}
+          </div>
+        )}
+
+        <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+          <div className="rounded-3xl border border-border bg-white p-4 sm:p-5">
+            {totalMatches === 0 ? (
+              <p className="text-sub text-sm">No sales found for that search.</p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {visibleHistory.map((r) => {
+                  const isActive = String(selectedReceipt?.id || "") === String(r.id);
+                  return (
+                    <button
+                      key={r.id}
+                      type="button"
+                      onClick={() => setSelectedReceipt(r)}
+                      className={`rounded-3xl border p-4 text-left shadow-sm transition ${
+                        isActive
+                          ? "border-brand-400 bg-brand-50 ring-2 ring-brand-100"
+                          : "border-border bg-white hover:border-brand-300 hover:bg-brand-50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-semibold">#{r.receipt_number}</div>
+                          <div className="text-xs text-sub mt-1">{r.customer_name || "Customer"}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-semibold text-brand-700">KSh {formatMoney(r.total)}</div>
+                          <div className="text-xs text-sub mt-1">{r.customer_phone || "No phone"}</div>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-faint">
+                        <span>{formatReceiptDate(r.created_at)}</span>
+                        <span className="truncate">{summarizeItems(r.items)}</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {historyPageCount > 1 && (
+              <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-sub">
+                  Showing {showingStart}-{showingEnd} of {totalMatches} sales
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="btn-ghost px-3 py-2 text-sm disabled:opacity-50"
+                    disabled={historyPage === 0}
+                    onClick={() => {
+                      setHistoryPage((page) => Math.max(0, page - 1));
+                      setSelectedReceipt(visibleHistory[0] || filteredHistory[0] || null);
+                    }}
+                  >
+                    Prev
+                  </button>
+                  <span className="text-xs font-semibold text-sub">
+                    Page {historyPage + 1} of {historyPageCount}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn-ghost px-3 py-2 text-sm disabled:opacity-50"
+                    disabled={historyPage + 1 >= historyPageCount}
+                    onClick={() => {
+                      setHistoryPage((page) => Math.min(historyPageCount - 1, page + 1));
+                      const nextStart = Math.min((historyPage + 1) * historyPageSize, Math.max(0, filteredHistory.length - 1));
+                      setSelectedReceipt(filteredHistory[nextStart] || filteredHistory[0] || null);
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-3xl border border-border bg-white p-4 sm:p-5">
+            {renderReceiptDetails(selectedHistoryReceipt)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const receiptNotes = notes?.trim()
     ? notes.trim()
     : "Payment after installation";
 
   return (
     <div className="grid lg:grid-cols-[1fr_420px] gap-6 sm:gap-8 px-3 py-4 sm:px-4 sm:py-8 lg:px-10 xl:px-12 overflow-x-hidden">
-      <div className="space-y-6 print:hidden min-w-0">
-        <div className="flex items-center justify-between gap-3">
-          <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
-          <button
-            onClick={() => setShowHistory((s) => !s)}
-            className="btn-ghost text-xs sm:text-sm inline-flex items-center gap-2"
-          >
-            <History size={16} /> Sales History
-          </button>
-        </div>
-
-        {loadError && (
-          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            {loadError}
-            <div className="mt-1 text-xs text-amber-700/80">
-              This tool needs the `receipts` table and read/write access in
-              Supabase.
+      {activePanel === "builder" ? (
+        <>
+          <div className="space-y-6 print:hidden min-w-0">
+            <div className="flex items-center justify-between gap-3">
+              <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
+              <button
+                type="button"
+                onClick={() => {
+                  setActivePanel("history");
+                  setSelectedReceipt(filteredHistory[0] || null);
+                  setHistoryPage(0);
+                }}
+                className="inline-flex items-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700"
+              >
+                <History size={16} /> Sales History
+              </button>
             </div>
-          </div>
-        )}
 
-        {showHistory && (
-          <div className="card-muted p-4 max-h-[70vh] overflow-y-auto">
-            {history.length === 0 ? (
-              <p className="text-sub text-sm">No sales saved yet.</p>
-            ) : (
-              <div className="grid gap-3">
-                {history.map((r) => (
-                  <button
-                    key={r.id}
-                    type="button"
-                    onClick={() => setSelectedReceipt(r)}
-                    className="rounded-3xl border border-border bg-white p-4 text-left shadow-sm hover:border-brand-300 hover:bg-brand-50"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-sm font-semibold">#{r.receipt_number}</div>
-                        <div className="text-xs text-sub mt-1">{r.customer_name || "Customer"}</div>
-                      </div>
-                      <div className="text-right">
-                        <div className="text-sm font-semibold">KSh {formatMoney(r.total)}</div>
-                        <div className="text-xs text-sub mt-1">{r.customer_phone || "No phone"}</div>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-faint">
-                      <span>{formatReceiptDate(r.created_at)}</span>
-                      <span className="truncate">{summarizeItems(r.items)}</span>
-                    </div>
-                  </button>
-                ))}
+            {loadError && (
+              <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                {loadError}
+                <div className="mt-1 text-xs text-amber-700/80">
+                  This tool needs the `receipts` table and read/write access in
+                  Supabase.
+                </div>
               </div>
             )}
-          </div>
-        )}
 
-        {selectedReceipt && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70">
-            <div className="w-full max-w-3xl overflow-hidden rounded-3xl bg-white shadow-2xl">
-              <div className="flex items-center justify-between border-b border-border px-4 py-3">
-                <div>
-                  <div className="text-sm uppercase tracking-[0.2em] text-brand-600 font-semibold">Receipt details</div>
-                  <div className="text-base font-semibold">#{selectedReceipt.receipt_number}</div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setSelectedReceipt(null)}
-                  className="btn-ghost p-2"
-                >
-                  <X size={20} />
-                </button>
+            <div className="card p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div>
+                <label className="label">Receipt #</label>
+                <input
+                  className="input py-2.5 sm:py-3"
+                  value={receiptNumber}
+                  onChange={(e) => setReceiptNumber(e.target.value)}
+                />
               </div>
-              <div className="p-4 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <div className="text-sub text-xs uppercase tracking-[0.18em]">Customer</div>
-                    <div className="font-semibold">{selectedReceipt.customer_name || "N/A"}</div>
-                    <div className="text-sm text-sub">{selectedReceipt.customer_phone || "No phone"}</div>
-                  </div>
-                  <div>
-                    <div className="text-sub text-xs uppercase tracking-[0.18em]">Sale</div>
-                    <div className="font-semibold">KSh {formatMoney(selectedReceipt.total)}</div>
-                    <div className="text-sm text-sub">{formatReceiptDate(selectedReceipt.created_at)}</div>
-                  </div>
-                </div>
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="rounded-2xl bg-slate-50 p-3">
-                    <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Receipt No.</div>
-                    <div className="mt-1 font-semibold">#{selectedReceipt.receipt_number}</div>
-                  </div>
-                  <div className="rounded-2xl bg-slate-50 p-3">
-                    <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Subtotal</div>
-                    <div className="mt-1 font-semibold">KSh {formatMoney(selectedReceipt.subtotal ?? selectedReceipt.total)}</div>
-                  </div>
-                  <div className="rounded-2xl bg-slate-50 p-3">
-                    <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Total</div>
-                    <div className="mt-1 font-semibold">KSh {formatMoney(selectedReceipt.total)}</div>
-                  </div>
-                </div>
-                <div>
-                  <div className="text-sub text-xs uppercase tracking-[0.18em]">Notes</div>
-                  <div className="text-sm whitespace-pre-line">{selectedReceipt.notes || "None"}</div>
-                </div>
-                <div>
-                  <div className="text-sub text-xs uppercase tracking-[0.18em]">Items</div>
-                  <div className="mt-2 grid gap-2">
-                    {(selectedReceipt.items || []).map((item, index) => (
-                      <div key={`${selectedReceipt.id}-item-${index}`} className="rounded-2xl border border-border bg-slate-50 p-3">
-                        <div className="flex items-center justify-between gap-3">
-                          <div className="font-medium">{item.description || item.product_name || "Item"}</div>
-                          <div className="text-sm text-sub">KSh {formatMoney(item.price)}</div>
-                        </div>
-                        <div className="mt-1 flex items-center justify-between gap-3 text-xs text-sub">
-                          <span>Qty: {item.qty || 0}</span>
-                          <span>Line total: KSh {formatMoney((Number(item.qty) || 0) * (Number(item.price) || 0))}</span>
-                        </div>
-                      </div>
-                    ))}
-                    {!(selectedReceipt.items || []).length && (
-                      <div className="text-sm text-sub">No item details saved.</div>
-                    )}
-                  </div>
-                </div>
+              <div>
+                <label className="label">Date</label>
+                <input
+                  type="date"
+                  className="input py-2.5 sm:py-3"
+                  value={receiptDate}
+                  onChange={(e) => setReceiptDate(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="label">Customer Name (optional)</label>
+                <input
+                  className="input py-2.5 sm:py-3"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="John Doe"
+                />
+              </div>
+              <div>
+                <label className="label">Customer Phone</label>
+                <input
+                  className="input py-2.5 sm:py-3"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  placeholder="0712345678"
+                />
               </div>
             </div>
-          </div>
-        )}
 
-        <div className="card p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <div>
-            <label className="label">Receipt #</label>
-            <input
-              className="input py-2.5 sm:py-3"
-              value={receiptNumber}
-              onChange={(e) => setReceiptNumber(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="label">Date</label>
-            <input
-              type="date"
-              className="input py-2.5 sm:py-3"
-              value={receiptDate}
-              onChange={(e) => setReceiptDate(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="label">Customer Name (optional)</label>
-            <input
-              className="input py-2.5 sm:py-3"
-              value={customerName}
-              onChange={(e) => setCustomerName(e.target.value)}
-              placeholder="John Doe"
-            />
-          </div>
-          <div>
-            <label className="label">Customer Phone</label>
-            <input
-              className="input py-2.5 sm:py-3"
-              value={customerPhone}
-              onChange={(e) => setCustomerPhone(e.target.value)}
-              placeholder="0712345678"
-            />
-          </div>
-        </div>
-
-        <div className="card p-4 sm:p-5 overflow-hidden">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-            <label className="label mb-0">Items</label>
-            <div className="relative w-full sm:w-auto min-w-0">
-              <button
-                onClick={() => setShowProductPicker((s) => !s)}
-                className="btn-outline text-sm py-2 px-4 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
-              >
-                <Search size={14} /> Add from Products
-              </button>
-              {showProductPicker && (
-                <div
-                  className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/40 p-4 sm:p-6"
-                  onClick={() => setShowProductPicker(false)}
-                >
-                  <div
-                    className="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-white shadow-pop"
-                    onClick={(e) => e.stopPropagation()}
+            <div className="card p-4 sm:p-5 overflow-hidden">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
+                <label className="label mb-0">Items</label>
+                <div className="relative w-full sm:w-auto min-w-0">
+                  <button
+                    onClick={() => setShowProductPicker((s) => !s)}
+                    className="btn-outline text-sm py-2 px-4 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
                   >
-                    <div className="flex flex-col gap-2 border-b border-border p-4 sm:flex-row sm:items-center">
-                      <input
-                        autoFocus
-                        className="input flex-1 py-2"
-                        placeholder="Search products..."
-                        value={productQuery}
-                        onChange={(e) => setProductQuery(e.target.value)}
-                      />
-                      <button onClick={() => setShowProductPicker(false)} className="btn-ghost p-2">
-                        <X size={20} />
-                      </button>
+                    <Search size={14} /> Add from Products
+                  </button>
+                  {showProductPicker && (
+                    <div
+                      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/40 p-4 sm:p-6"
+                      onClick={() => setShowProductPicker(false)}
+                    >
+                      <div
+                        className="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-white shadow-pop"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="flex flex-col gap-2 border-b border-border p-4 sm:flex-row sm:items-center">
+                          <input
+                            autoFocus
+                            className="input flex-1 py-2"
+                            placeholder="Search products..."
+                            value={productQuery}
+                            onChange={(e) => setProductQuery(e.target.value)}
+                          />
+                          <button onClick={() => setShowProductPicker(false)} className="btn-ghost p-2">
+                            <X size={20} />
+                          </button>
+                        </div>
+                        <div className="max-h-[min(65vh,34rem)] overflow-y-auto divide-y divide-border p-3">
+                          {filteredProducts.map((p) => (
+                            <button
+                              key={p.id}
+                              onClick={() => addProductLine(p)}
+                              className="w-full text-left py-3 px-3 hover:bg-muted rounded-2xl flex items-start justify-between gap-3"
+                            >
+                              <span className="text-sm min-w-0 flex-1 whitespace-normal break-words leading-snug">
+                                {p.name}
+                              </span>
+                              <span className="text-sm font-semibold text-brand-500 whitespace-nowrap shrink-0">
+                                KSh {formatMoney(p.price)}
+                              </span>
+                            </button>
+                          ))}
+                          {filteredProducts.length === 0 && (
+                            <p className="text-sub text-sm py-4 text-center">No products found.</p>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                    <div className="max-h-[min(65vh,34rem)] overflow-y-auto divide-y divide-border p-3">
-                      {filteredProducts.map((p) => (
-                        <button
-                          key={p.id}
-                          onClick={() => addProductLine(p)}
-                          className="w-full text-left py-3 px-3 hover:bg-muted rounded-2xl flex items-start justify-between gap-3"
-                        >
-                          <span className="text-sm min-w-0 flex-1 whitespace-normal break-words leading-snug">
-                            {p.name}
-                          </span>
-                          <span className="text-sm font-semibold text-brand-500 whitespace-nowrap shrink-0">
-                            KSh {formatMoney(p.price)}
-                          </span>
-                        </button>
-                      ))}
-                      {filteredProducts.length === 0 && (
-                        <p className="text-sub text-sm py-4 text-center">No products found.</p>
-                      )}
-                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-3 min-w-0">
+                {lines.map((l) => (
+                  <div
+                    key={l.id}
+                    className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_70px_110px_36px] gap-2 sm:items-center"
+                  >
+                    <input
+                      className="input py-2.5 sm:py-3"
+                      placeholder="Description (e.g. Labour, Delivery, Product name)"
+                      value={l.description}
+                      onChange={(e) => updateLine(l.id, { description: e.target.value })}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      className="input py-2.5 sm:py-3 text-center"
+                      placeholder="Qty"
+                      value={l.qty}
+                      onChange={(e) => updateLine(l.id, { qty: e.target.value })}
+                    />
+                    <input
+                      type="number"
+                      min="0"
+                      className="input py-2.5 sm:py-3 text-right"
+                      placeholder="Price"
+                      value={l.price}
+                      onChange={(e) => updateLine(l.id, { price: e.target.value })}
+                    />
+                    <button
+                      onClick={() => removeLine(l.id)}
+                      className="btn-ghost text-red-500 p-2 justify-self-end sm:justify-self-center"
+                      title="Remove line"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={addLine}
+                className="btn-ghost text-sm mt-3 inline-flex items-center gap-2 w-full sm:w-auto"
+              >
+                <Plus size={14} /> Add line
+              </button>
+            </div>
+
+            <div className="card p-4 sm:p-5">
+              <label className="label">Terms & Notes</label>
+              <textarea
+                className="input h-24 resize-none py-2.5 sm:py-3"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button onClick={handlePrint} className="btn-primary justify-center">
+                <Printer size={16} /> Print / Save PDF
+              </button>
+              <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
+                <Share2 size={16} /> Share via WhatsApp
+              </button>
+              <button onClick={handleSave} disabled={saving} className="btn-ghost justify-center">
+                {saving ? "Saving..." : savedId ? "Update record" : "Save receipt record"}
+              </button>
+            </div>
+          </div>
+
+          <div className="lg:sticky lg:top-24 lg:self-start min-w-0">
+            <div
+              ref={printRef}
+              id="receipt-print-area"
+              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
+            >
+              <div className="flex items-start justify-between gap-4 pb-4 sm:pb-5 border-b-2 border-ink print:pb-4">
+                <div className="flex items-start gap-3 sm:gap-4">
+                  <div className="w-1.5 h-24 rounded-full bg-brand-500/15 print:bg-brand-500" />
+                  <div className="rounded-3xl bg-brand-50 p-2.5 sm:p-4 shadow-sm print:bg-white print:p-0 print:shadow-none">
+                    <Image
+                      src={business.logo}
+                      alt="TruePower Solutions logo"
+                      className="h-20 w-20 sm:h-36 sm:w-36 object-contain"
+                      width={144}
+                      height={144}
+                    />
+                  </div>
+                </div>
+                <div className="text-right shrink-0 pt-1">
+                  <h1 className="font-display font-bold text-xl sm:text-3xl tracking-tight uppercase mb-2">
+                    Receipt
+                  </h1>
+                  <div className="space-y-1 text-right">
+                    <p className="text-sm leading-6">
+                      <span className="text-sub">No. </span>
+                      <span className="font-semibold">{receiptNumber}</span>
+                    </p>
+                    <p className="text-sm leading-6">
+                      <span className="text-sub">Date </span>
+                      <span className="font-semibold">{receiptDate}</span>
+                    </p>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-sub mt-2 max-w-[9rem] sm:max-w-[11rem] ml-auto">
+                    {buildReceiptSubtitle()}
+                  </p>
+                </div>
+              </div>
+
+              {(customerName || customerPhone) && (
+                <div className="py-3 border-b border-border">
+                  <p className="label mb-2">Billed To</p>
+                  <div className="grid gap-1">
+                    {customerName && <p className="font-semibold text-base">{customerName}</p>}
+                    {customerPhone && <p className="text-sub text-sm">{customerPhone}</p>}
                   </div>
                 </div>
               )}
-            </div>
-          </div>
 
-          <div className="space-y-3 min-w-0">
-            {lines.map((l) => (
-              <div
-                key={l.id}
-                className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_70px_110px_36px] gap-2 sm:items-center"
-              >
-                <input
-                  className="input py-2.5 sm:py-3"
-                  placeholder="Description (e.g. Labour, Delivery, Product name)"
-                  value={l.description}
-                  onChange={(e) => updateLine(l.id, { description: e.target.value })}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  className="input py-2.5 sm:py-3 text-center"
-                  placeholder="Qty"
-                  value={l.qty}
-                  onChange={(e) => updateLine(l.id, { qty: e.target.value })}
-                />
-                <input
-                  type="number"
-                  min="0"
-                  className="input py-2.5 sm:py-3 text-right"
-                  placeholder="Price"
-                  value={l.price}
-                  onChange={(e) => updateLine(l.id, { price: e.target.value })}
-                />
-                <button
-                  onClick={() => removeLine(l.id)}
-                  className="btn-ghost text-red-500 p-2 justify-self-end sm:justify-self-center"
-                  title="Remove line"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={addLine}
-            className="btn-ghost text-sm mt-3 inline-flex items-center gap-2 w-full sm:w-auto"
-          >
-            <Plus size={14} /> Add line
-          </button>
-        </div>
-
-        <div className="card p-4 sm:p-5">
-          <label className="label">Terms & Notes</label>
-          <textarea
-            className="input h-24 resize-none py-2.5 sm:py-3"
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-          />
-        </div>
-
-        <div className="flex flex-col sm:flex-row gap-3">
-          <button onClick={handlePrint} className="btn-primary justify-center">
-            <Printer size={16} /> Print / Save PDF
-          </button>
-          <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
-            <Share2 size={16} /> Share via WhatsApp
-          </button>
-          <button onClick={handleSave} disabled={saving} className="btn-ghost justify-center">
-            {saving ? "Saving..." : savedId ? "Update record" : "Save receipt record"}
-          </button>
-        </div>
-      </div>
-
-      <div className="lg:sticky lg:top-24 lg:self-start min-w-0">
-        <div
-          ref={printRef}
-          id="receipt-print-area"
-          className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
-        >
-          <div className="flex items-start justify-between gap-4 pb-4 sm:pb-5 border-b-2 border-ink print:pb-4">
-            <div className="flex items-start gap-3 sm:gap-4">
-              <div className="w-1.5 h-24 rounded-full bg-brand-500/15 print:bg-brand-500" />
-              <div className="rounded-3xl bg-brand-50 p-2.5 sm:p-4 shadow-sm print:bg-white print:p-0 print:shadow-none">
-                <Image
-                  src={business.logo}
-                  alt="TruePower Solutions logo"
-                  className="h-20 w-20 sm:h-36 sm:w-36 object-contain"
-                  width={144}
-                  height={144}
-                />
-              </div>
-            </div>
-            <div className="text-right shrink-0 pt-1">
-              <h1 className="font-display font-bold text-xl sm:text-3xl tracking-tight uppercase mb-2">
-                Receipt
-              </h1>
-              <div className="space-y-1 text-right">
-                <p className="text-sm leading-6">
-                  <span className="text-sub">No. </span>
-                  <span className="font-semibold">{receiptNumber}</span>
-                </p>
-                <p className="text-sm leading-6">
-                  <span className="text-sub">Date </span>
-                  <span className="font-semibold">{receiptDate}</span>
-                </p>
-              </div>
-              <p className="text-[11px] sm:text-xs text-sub mt-2 max-w-[9rem] sm:max-w-[11rem] ml-auto">
-                {buildReceiptSubtitle()}
-              </p>
-            </div>
-          </div>
-
-          {(customerName || customerPhone) && (
-            <div className="py-3 border-b border-border">
-              <p className="label mb-2">Billed To</p>
-              <div className="grid gap-1">
-                {customerName && <p className="font-semibold text-base">{customerName}</p>}
-                {customerPhone && <p className="text-sub text-sm">{customerPhone}</p>}
-              </div>
-            </div>
-          )}
-
-          <table className="w-full mt-4 text-xs sm:text-sm receipt-table">
-            <thead>
-              <tr className="border-b border-border text-left">
-                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider">
-                  Description
-                </th>
-                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-center w-12 sm:w-16">
-                  Qty
-                </th>
-                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
-                  Price
-                </th>
-                <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
-                  Amount
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {lines
-                .filter((l) => l.description.trim())
-                .map((l) => (
-                  <tr key={l.id} className="border-b border-border/60">
-                    <td className="py-2 pr-1">{l.description}</td>
-                    <td className="py-2 text-center">{l.qty}</td>
-                    <td className="py-2 text-right whitespace-nowrap">{formatMoney(l.price)}</td>
-                    <td className="py-2 text-right font-medium whitespace-nowrap">
-                      {formatMoney((Number(l.qty) || 0) * (Number(l.price) || 0))}
-                    </td>
+              <table className="w-full mt-4 text-xs sm:text-sm receipt-table">
+                <thead>
+                  <tr className="border-b border-border text-left">
+                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider">
+                      Description
+                    </th>
+                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-center w-12 sm:w-16">
+                      Qty
+                    </th>
+                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
+                      Price
+                    </th>
+                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
+                      Amount
+                    </th>
                   </tr>
-                ))}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {lines
+                    .filter((l) => l.description.trim())
+                    .map((l) => (
+                      <tr key={l.id} className="border-b border-border/60">
+                        <td className="py-2 pr-1">{l.description}</td>
+                        <td className="py-2 text-center">{l.qty}</td>
+                        <td className="py-2 text-right whitespace-nowrap">{formatMoney(l.price)}</td>
+                        <td className="py-2 text-right font-medium whitespace-nowrap">
+                          {formatMoney((Number(l.qty) || 0) * (Number(l.price) || 0))}
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
 
-          <div className="flex justify-end mt-4">
-            <div className="w-44 sm:w-56 space-y-1">
-              <div className="flex justify-between text-sm border-t-2 border-ink pt-2 mt-1">
-                <span className="font-display font-bold">Total</span>
-                <span className="font-display font-bold">KSh {formatMoney(total)}</span>
+              <div className="flex justify-end mt-4">
+                <div className="w-44 sm:w-56 space-y-1">
+                  <div className="flex justify-between text-sm border-t-2 border-ink pt-2 mt-1">
+                    <span className="font-display font-bold">Total</span>
+                    <span className="font-display font-bold">KSh {formatMoney(total)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {receiptNotes && (
+                <div className="receipt-notes mt-6 pt-4 border-t border-border print:mt-3 print:pt-3">
+                  <p className="label mb-2">Terms & Conditions</p>
+                  <p className="text-sub text-sm whitespace-pre-line leading-6 print:text-[11px] print:leading-4">
+                    {receiptNotes}
+                  </p>
+                </div>
+              )}
+
+              <div className="receipt-footer mt-7 pt-4 border-t-2 border-ink/10 text-center print:mt-3 print:pt-3">
+                <p className="font-display font-semibold text-sm text-ink print:text-[13px]">
+                  Thank you for shopping with us.
+                </p>
+                <p className="text-faint text-xs mt-1 leading-5 break-words print:text-[11px] print:leading-4">
+                  Need help with delivery, installation, or after-sales support? Call or WhatsApp us on{" "}
+                  <span className="font-semibold text-ink sm:whitespace-nowrap">{business.phone}</span>.
+                </p>
+                <p className="text-faint text-[11px] mt-1 print:text-[10px] print:mt-0.5">
+                  <span className="break-all">{business.website}</span>
+                  <span className="mx-2">|</span>
+                  Maridadi Plaza
+                </p>
               </div>
             </div>
           </div>
-
-          {receiptNotes && (
-            <div className="receipt-notes mt-6 pt-4 border-t border-border print:mt-3 print:pt-3">
-              <p className="label mb-2">Terms & Conditions</p>
-              <p className="text-sub text-sm whitespace-pre-line leading-6 print:text-[11px] print:leading-4">
-                {receiptNotes}
-              </p>
-            </div>
-          )}
-
-          <div className="receipt-footer mt-7 pt-4 border-t-2 border-ink/10 text-center print:mt-3 print:pt-3">
-            <p className="font-display font-semibold text-sm text-ink print:text-[13px]">
-              Thank you for shopping with us.
-            </p>
-            <p className="text-faint text-xs mt-1 leading-5 break-words print:text-[11px] print:leading-4">
-              Need help with delivery, installation, or after-sales support? Call or WhatsApp us on{" "}
-              <span className="font-semibold text-ink sm:whitespace-nowrap">{business.phone}</span>.
-            </p>
-            <p className="text-faint text-[11px] mt-1 print:text-[10px] print:mt-0.5">
-              <span className="break-all">{business.website}</span>
-              <span className="mx-2">|</span>
-              Maridadi Plaza
-            </p>
-          </div>
+        </>
+      ) : (
+        <div className="col-span-full min-w-0">
+          {renderHistoryPanel()}
         </div>
-      </div>
+      )}
 
       <style jsx global>{`
         @media print {
