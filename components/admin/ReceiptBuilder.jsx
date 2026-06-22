@@ -108,6 +108,7 @@ export default function ReceiptBuilder() {
   const [historyQuery, setHistoryQuery] = useState("");
   const [historyPage, setHistoryPage] = useState(0);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
   const printRef = useRef();
 
@@ -147,7 +148,7 @@ export default function ReceiptBuilder() {
         .from("receipts")
         .select("id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes")
         .order("created_at", { ascending: false })
-        .limit(1000);
+        .limit(5000);
       if (error) throw error;
       const rows = data || [];
       setHistory(rows);
@@ -378,10 +379,15 @@ export default function ReceiptBuilder() {
   async function handleSave() {
     setSaving(true);
     try {
-      const normalizedReceiptNumber =
-        parseReceiptNumber(receiptNumber) ?? Number(getNextReceiptNumber(history));
+      const nextReceiptNumber = getNextReceiptNumber(history);
+      const parsedReceiptNumber = parseReceiptNumber(receiptNumber);
+      const receiptNumberForSave =
+        parsedReceiptNumber && parsedReceiptNumber >= Number(nextReceiptNumber)
+          ? parsedReceiptNumber
+          : Number(nextReceiptNumber);
+
       const payload = {
-        receipt_number: normalizedReceiptNumber,
+        receipt_number: receiptNumberForSave,
         customer_name: customerName || null,
         customer_phone: customerPhone || null,
         items: lines.map((l) => ({
@@ -400,7 +406,11 @@ export default function ReceiptBuilder() {
         .single();
       if (error) throw error;
       setSavedId(data.id);
-      loadHistory();
+      setSelectedReceipt(data);
+      setIsReceiptModalOpen(true);
+      await loadHistory();
+      setActivePanel("history");
+      setHistoryPage(0);
     } catch (e) {
       alert(e.message || "Could not save receipt");
     } finally {
@@ -511,6 +521,42 @@ export default function ReceiptBuilder() {
     );
   }
 
+  function renderReceiptModal(receipt) {
+    if (!receipt || !isReceiptModalOpen) {
+      return null;
+    }
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-950/70 px-4 py-8"
+        onClick={() => setIsReceiptModalOpen(false)}
+      >
+        <div
+          className="w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+          onClick={(event) => event.stopPropagation()}
+        >
+          <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4">
+            <div>
+              <p className="text-xs uppercase tracking-[0.22em] text-brand-500 font-semibold">Receipt details</p>
+              <h3 className="mt-1 text-2xl font-bold">Receipt #{receipt.receipt_number}</h3>
+              <p className="text-sm text-sub">{formatReceiptDate(receipt.created_at)}</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsReceiptModalOpen(false)}
+              className="btn-ghost p-2 text-sub"
+            >
+              <X size={20} />
+            </button>
+          </div>
+          <div className="p-5">
+            {renderReceiptDetails(receipt)}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   function renderHistoryPanel() {
     const totalMatches = filteredHistory.length;
     const showingStart = totalMatches === 0 ? 0 : historyPage * historyPageSize + 1;
@@ -584,7 +630,10 @@ export default function ReceiptBuilder() {
                     <button
                       key={r.id}
                       type="button"
-                      onClick={() => setSelectedReceipt(r)}
+                      onClick={() => {
+                        setSelectedReceipt(r);
+                        setIsReceiptModalOpen(true);
+                      }}
                       className={`rounded-3xl border p-4 text-left shadow-sm transition ${
                         isActive
                           ? "border-brand-400 bg-brand-50 ring-2 ring-brand-100"
@@ -975,6 +1024,8 @@ export default function ReceiptBuilder() {
           {renderHistoryPanel()}
         </div>
       )}
+
+      {renderReceiptModal(selectedReceipt)}
 
       <style jsx global>{`
         @media print {
