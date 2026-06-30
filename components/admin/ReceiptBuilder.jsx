@@ -76,31 +76,50 @@ function summarizeItems(items) {
   return remaining > 0 ? `${first}, ${second} +${remaining} more` : `${first}, ${second}`;
 }
 
-function getHistoryRangeStart(range) {
+function getHistoryRangeBounds(range) {
   const start = new Date();
+  const end = new Date();
 
-  if (range === "week") {
+  if (range === "today") {
+    start.setHours(0, 0, 0, 0);
+    end.setDate(end.getDate() + 1);
+    end.setHours(0, 0, 0, 0);
+  } else if (range === "yesterday") {
+    start.setDate(start.getDate() - 1);
+    start.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+  } else if (range === "week") {
     const dayIndex = (start.getDay() + 6) % 7;
     start.setDate(start.getDate() - dayIndex);
+    start.setHours(0, 0, 0, 0);
+    end.setDate(end.getDate() + 1);
+    end.setHours(0, 0, 0, 0);
   } else if (range === "month") {
     start.setDate(1);
+    start.setHours(0, 0, 0, 0);
+    end.setDate(end.getDate() + 1);
+    end.setHours(0, 0, 0, 0);
   } else if (range === "year") {
     start.setMonth(0, 1);
+    start.setHours(0, 0, 0, 0);
+    end.setDate(end.getDate() + 1);
+    end.setHours(0, 0, 0, 0);
   } else {
     return null;
   }
 
-  start.setHours(0, 0, 0, 0);
-  return start;
+  return { start, end };
 }
 
-function isWithinHistoryRange(row, start) {
-  if (!start) return true;
+function isWithinHistoryRange(row, bounds) {
+  if (!bounds) return true;
 
   const createdAt = new Date(row?.created_at);
   if (Number.isNaN(createdAt.getTime())) return false;
 
-  return createdAt >= start;
+  if (bounds.start && createdAt < bounds.start) return false;
+  if (bounds.end && createdAt >= bounds.end) return false;
+  return true;
 }
 
 export default function ReceiptBuilder() {
@@ -196,6 +215,8 @@ export default function ReceiptBuilder() {
 
   const historyPeriodStats = useMemo(() => {
     const windows = [
+      { key: "today", label: "Today" },
+      { key: "yesterday", label: "Yesterday" },
       { key: "week", label: "This week" },
       { key: "month", label: "This month" },
       { key: "year", label: "This year" },
@@ -203,8 +224,8 @@ export default function ReceiptBuilder() {
     ];
 
     return windows.map((window) => {
-      const start = getHistoryRangeStart(window.key);
-      const rows = history.filter((row) => isWithinHistoryRange(row, start));
+      const bounds = getHistoryRangeBounds(window.key);
+      const rows = history.filter((row) => isWithinHistoryRange(row, bounds));
       const totalSales = rows.reduce((sum, row) => sum + (Number(row?.total) || 0), 0);
 
       return {
@@ -216,8 +237,8 @@ export default function ReceiptBuilder() {
   }, [history]);
 
   const rangeFilteredHistory = useMemo(() => {
-    const start = getHistoryRangeStart(historyRange);
-    return history.filter((row) => isWithinHistoryRange(row, start));
+    const bounds = getHistoryRangeBounds(historyRange);
+    return history.filter((row) => isWithinHistoryRange(row, bounds));
   }, [history, historyRange]);
 
   const filteredHistory = useMemo(() => {
@@ -781,6 +802,8 @@ export default function ReceiptBuilder() {
           <div className="mt-4 flex flex-wrap gap-2">
             {[
               { key: "all", label: "All receipts" },
+              { key: "today", label: "Today" },
+              { key: "yesterday", label: "Yesterday" },
               { key: "week", label: "This week" },
               { key: "month", label: "This month" },
               { key: "year", label: "This year" },
