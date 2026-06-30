@@ -20,7 +20,7 @@ export default function Footer() {
             </div>
 
             <p className="text-sm leading-relaxed mb-5">
-              Water heaters, pumps, solar and electrical solutions built for
+              Instant showers, pumps, solar and electrical solutions built for
               Kenyan homes, borehole water, and low-pressure plumbing.
             </p>
 
@@ -57,7 +57,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-2 text-sm">
               {[
                 { label: "All Products", slug: "all" },
-                { label: "Water Heaters", slug: "water_heaters" },
+                { label: "Instant Showers", slug: "water_heaters" },
                 { label: "Bulbs & Lighting", slug: "bulbs_lighting" },
                 { label: "Switches & Sockets", slug: "switches_sockets" },
                 { label: "Solar Solutions", slug: "solar_solutions" },

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 const categories = [
-  { key: "water_heaters", label: "Water Heaters" },
+  { key: "water_heaters", label: "Instant Showers" },
   { key: "bulbs_lighting", label: "Bulbs & Lighting" },
   { key: "switches_sockets", label: "Switches & Sockets" },
   { key: "solar_solutions", label: "Solar Solutions" },
@@ -87,7 +87,7 @@ export default function SearchProducts() {
           }
         }}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 180)}
-        placeholder="Search products"
+        placeholder="Search products, instant showers"
         className="w-full border border-border rounded-full py-2.5 pl-10 pr-4 text-sm bg-muted placeholder:text-sub focus:outline-none focus:border-brand-300 focus:bg-white transition-all"
       />
 

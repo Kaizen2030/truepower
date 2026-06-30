@@ -35,7 +35,7 @@ import { getProducts } from "@/lib/products";
 export const metadata = createSeo({
   title: "About TruePower Kenya",
   description:
-    "TruePower Kenya supplies water heaters, pumps, solar, and electrical solutions from our Nyamakima showroom in Nairobi.",
+    "TruePower Kenya supplies instant showers, pumps, solar, and electrical solutions from our Nyamakima showroom in Nairobi.",
   path: "/about",
 });
 
@@ -77,9 +77,9 @@ const DEFAULT_STATS = [
 const DEFAULT_SERVICES = [
   {
     icon: "Droplets",
-    title: "Water heaters",
+    title: "Instant showers",
     description:
-      "Instant and storage heaters for Kenyan homes, low pressure, and borehole use.",
+      "Instant and storage shower systems for Kenyan homes, low pressure, and borehole use.",
     chips: ["Instant showers", "Storage tanks", "Low pressure"],
   },
   {
@@ -184,7 +184,7 @@ export default async function AboutPage() {
   const storyParagraphs = story.paragraphs?.length
     ? story.paragraphs
     : [
-        "Most water heaters on the market are designed for European water quality and pressure standards. They fail fast in Nairobi's borehole-heavy, variable-pressure environment.",
+        "Most instant shower systems on the market are designed for European water quality and pressure standards. They fail fast in Nairobi's borehole-heavy, variable-pressure environment.",
         "We visit factories, test products, and only stock units we'd put in our own homes. Our Nyamakima showroom means you can see and touch every product before buying.",
         "Every sale comes with real advice — we help you pick the right heater for your building, tank position, and water source.",
       ];
@@ -278,7 +278,7 @@ export default async function AboutPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4">
                   <p className="text-[10px] uppercase tracking-wider text-white/70">Featured product</p>
-                  <p className="text-base font-semibold text-white">Tankless water heater</p>
+                  <p className="text-base font-semibold text-white">Tankless instant shower</p>
                 </div>
                 <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2.5 py-1 text-[10px] font-semibold text-blue-600 shadow-sm">
                   40+ products

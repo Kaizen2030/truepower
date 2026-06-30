@@ -48,12 +48,12 @@ import { useRouter, usePathname } from "next/navigation";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
-// Water Heaters group + new categories
+// Instant Showers group + new categories
 const CATS = [
-  { value: "standard", label: "Wall Heaters", group: "Water Heaters" },
-  { value: "pump", label: "With Pump", group: "Water Heaters" },
-  { value: "showerhead", label: "Shower Heads", group: "Water Heaters" },
-  { value: "accessory", label: "Accessories", group: "Water Heaters" },
+  { value: "standard", label: "Instant Shower", group: "Instant Showers" },
+  { value: "pump", label: "With Pump", group: "Instant Showers" },
+  { value: "showerhead", label: "Shower Heads", group: "Instant Showers" },
+  { value: "accessory", label: "Accessories", group: "Instant Showers" },
   { value: "bulbs_lighting", label: "Bulbs & Lighting", group: "Electrical" },
   {
     value: "switches_sockets",
@@ -107,7 +107,7 @@ const EMPTY_PRODUCT = {
   model: "",
   cat: "standard",
   catLabel: "Wall Heaters",
-  group: "Water Heaters",
+  group: "Instant Showers",
   price: "",
   desc: "",
   badge: "",
@@ -351,7 +351,7 @@ export default function AdminPage() {
     const found = CATS.find((c) => c.value === p.cat);
     setEditing({
       ...p,
-      group: found?.group || "Water Heaters",
+      group: found?.group || "Instant Showers",
       features: p.features || [],
       specs: p.specs || {},
       images: p.images || [],

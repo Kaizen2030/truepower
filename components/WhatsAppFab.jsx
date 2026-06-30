@@ -1,7 +1,7 @@
 export default function WhatsAppFab({ number = '254701039256' }) {
   return (
     <a
-      href={`https://wa.me/${number}?text=Hi%20TruePower!%20I%20need%20help%20choosing%20a%20water%20heater.`}
+      href={`https://wa.me/${number}?text=Hi%20TruePower!%20I%20need%20help%20choosing%20an%20instant%20shower.`}
       target="_blank"
       rel="noreferrer"
       className="fixed bottom-6 right-6 z-[90] w-14 h-14 bg-[#25D366] hover:bg-[#1fb85b] rounded-full flex items-center justify-center shadow-pop transition-all hover:scale-110 active:scale-95"

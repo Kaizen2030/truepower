@@ -6,9 +6,9 @@ import ShopContent from "@/ui/ShopContent";
 
 // ✅ SEO metadata (SERVER SIDE)
 export const metadata = createSeo({
-  title: "Shop Water Heaters, Pumps, Solar & Electrical Solutions",
+  title: "Shop Instant Showers, Pumps, Solar & Electrical Solutions",
   description:
-    "Shop water heaters, pumps, solar solutions, lighting, and electrical gear from TruePower Kenya.",
+    "Shop instant showers, pumps, solar solutions, lighting, and electrical gear from TruePower Kenya.",
   path: "/shop",
 });
 

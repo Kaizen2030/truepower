@@ -5,9 +5,9 @@ import ProductCard from "../components/ProductCard";
 import { createSeo, SITE_URL, DEFAULT_IMAGE } from "../components/Seo";
 
 export const metadata = createSeo({
-  title: "Water Heaters, Solar & Electrical Solutions",
+  title: "Instant Showers, Solar & Electrical Solutions",
   description:
-    "Shop water heaters, pumps, solar solutions, lighting and electrical gear for Kenyan homes.",
+    "Shop instant showers, pumps, solar solutions, lighting and electrical gear for Kenyan homes.",
   path: "/",
 });
 
@@ -30,7 +30,7 @@ export default async function HomePage() {
     image: DEFAULT_IMAGE,
     logo: `${SITE_URL}/logo.png`,
     description:
-      "Water heaters, pumps, solar solutions, lighting and electrical gear for Kenyan homes.",
+      "Instant showers, pumps, solar solutions, lighting and electrical gear for Kenyan homes.",
     telephone: "+254701039256",
     priceRange: "KSh 80 - KSh 30000",
     address: {

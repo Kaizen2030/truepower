@@ -11,7 +11,7 @@ export function createSeo({
 }) {
   const fullTitle = title
     ? `${title} | TruePower Kenya`
-    : "TruePower Kenya | Water Heaters, Solar & Electrical Solutions";
+    : "TruePower Kenya | Instant Showers, Solar & Electrical Solutions";
 
   const url = new URL(path, SITE_URL).toString();
 

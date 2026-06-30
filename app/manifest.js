@@ -3,7 +3,7 @@ export default function manifest() {
     name: "TruePower Kenya",
     short_name: "TruePower",
     description:
-      "Water heaters, solar, pumps, and electrical solutions for Kenyan homes.",
+      "Instant showers, solar, pumps, and electrical solutions for Kenyan homes.",
     start_url: "/",
     scope: "/",
     display: "standalone",

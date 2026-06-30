@@ -76,6 +76,33 @@ function summarizeItems(items) {
   return remaining > 0 ? `${first}, ${second} +${remaining} more` : `${first}, ${second}`;
 }
 
+function getHistoryRangeStart(range) {
+  const start = new Date();
+
+  if (range === "week") {
+    const dayIndex = (start.getDay() + 6) % 7;
+    start.setDate(start.getDate() - dayIndex);
+  } else if (range === "month") {
+    start.setDate(1);
+  } else if (range === "year") {
+    start.setMonth(0, 1);
+  } else {
+    return null;
+  }
+
+  start.setHours(0, 0, 0, 0);
+  return start;
+}
+
+function isWithinHistoryRange(row, start) {
+  if (!start) return true;
+
+  const createdAt = new Date(row?.created_at);
+  if (Number.isNaN(createdAt.getTime())) return false;
+
+  return createdAt >= start;
+}
+
 export default function ReceiptBuilder() {
   const [products, setProducts] = useState([]);
   const [productQuery, setProductQuery] = useState("");
@@ -106,6 +133,7 @@ export default function ReceiptBuilder() {
   const [history, setHistory] = useState([]);
   const [activePanel, setActivePanel] = useState("builder");
   const [historyQuery, setHistoryQuery] = useState("");
+  const [historyRange, setHistoryRange] = useState("all");
   const [historyPage, setHistoryPage] = useState(0);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
@@ -166,11 +194,37 @@ export default function ReceiptBuilder() {
     return products.filter((p) => p.name?.toLowerCase().includes(q)).slice(0, 30);
   }, [productQuery, products]);
 
+  const historyPeriodStats = useMemo(() => {
+    const windows = [
+      { key: "week", label: "This week" },
+      { key: "month", label: "This month" },
+      { key: "year", label: "This year" },
+      { key: "all", label: "All time" },
+    ];
+
+    return windows.map((window) => {
+      const start = getHistoryRangeStart(window.key);
+      const rows = history.filter((row) => isWithinHistoryRange(row, start));
+      const totalSales = rows.reduce((sum, row) => sum + (Number(row?.total) || 0), 0);
+
+      return {
+        ...window,
+        count: rows.length,
+        totalSales,
+      };
+    });
+  }, [history]);
+
+  const rangeFilteredHistory = useMemo(() => {
+    const start = getHistoryRangeStart(historyRange);
+    return history.filter((row) => isWithinHistoryRange(row, start));
+  }, [history, historyRange]);
+
   const filteredHistory = useMemo(() => {
     const q = historyQuery.trim().toLowerCase();
-    if (!q) return history;
+    if (!q) return rangeFilteredHistory;
 
-    return history.filter((row) => {
+    return rangeFilteredHistory.filter((row) => {
       const fields = [
         row?.receipt_number,
         row?.customer_name,
@@ -184,11 +238,21 @@ export default function ReceiptBuilder() {
 
       return fields.some((value) => value.includes(q));
     });
-  }, [history, historyQuery]);
+  }, [rangeFilteredHistory, historyQuery]);
 
   const historyPageSize = 12;
   const historyPageCount = Math.max(1, Math.ceil(filteredHistory.length / historyPageSize));
   const visibleHistory = filteredHistory.slice(historyPage * historyPageSize, (historyPage + 1) * historyPageSize);
+
+  useEffect(() => {
+    setHistoryPage(0);
+    setSelectedReceipt((current) => {
+      if (!current) return current;
+      return filteredHistory.some((row) => String(row.id) === String(current.id))
+        ? current
+        : filteredHistory[0] || null;
+    });
+  }, [historyQuery, historyRange, filteredHistory]);
 
   function addLine() {
     setLines((ls) => [...ls, emptyLine()]);
@@ -263,12 +327,15 @@ export default function ReceiptBuilder() {
   async function saveReceipt({ openHistory = false, openModal = false } = {}) {
     setSaving(true);
     try {
+      const wasEditing = Boolean(savedId);
       const nextReceiptNumber = getNextReceiptNumber(history);
       const parsedReceiptNumber = parseReceiptNumber(receiptNumber);
       const receiptNumberForSave =
-        parsedReceiptNumber && parsedReceiptNumber >= Number(nextReceiptNumber)
-          ? parsedReceiptNumber
-          : Number(nextReceiptNumber);
+        wasEditing
+          ? parsedReceiptNumber || Number(nextReceiptNumber)
+          : parsedReceiptNumber && parsedReceiptNumber >= Number(nextReceiptNumber)
+            ? parsedReceiptNumber
+            : Number(nextReceiptNumber);
 
       const payload = {
         receipt_number: receiptNumberForSave,
@@ -308,6 +375,9 @@ export default function ReceiptBuilder() {
         setIsReceiptModalOpen(true);
       }
       await loadHistory();
+      if (wasEditing) {
+        setReceiptNumber(String(data.receipt_number || receiptNumberForSave));
+      }
       if (openHistory) {
         setActivePanel("history");
         setHistoryPage(0);
@@ -443,6 +513,36 @@ export default function ReceiptBuilder() {
     window.addEventListener("afterprint", restoreTitle, { once: true });
   }
 
+  function startEditingReceipt(receipt) {
+    if (!receipt) return;
+
+    const nextLines =
+      Array.isArray(receipt.items) && receipt.items.length
+        ? receipt.items.map((item) => ({
+            id: crypto.randomUUID(),
+            description: item?.description || item?.product_name || item?.name || "",
+            qty: item?.qty ?? 1,
+            price: item?.price ?? 0,
+          }))
+        : [emptyLine()];
+
+    setSavedId(receipt.id);
+    setReceiptNumber(String(receipt.receipt_number || ""));
+    setReceiptDate(
+      receipt.created_at
+        ? new Date(receipt.created_at).toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10),
+    );
+    setCustomerName(receipt.customer_name || "");
+    setCustomerPhone(receipt.customer_phone || "");
+    setLines(nextLines);
+    setNotes(receipt.notes || "");
+    setSelectedReceipt(receipt);
+    setIsReceiptModalOpen(false);
+    setShowProductPicker(false);
+    setActivePanel("builder");
+  }
+
   async function handleSave() {
     try {
       await saveReceipt({ openHistory: true, openModal: true });
@@ -488,7 +588,10 @@ export default function ReceiptBuilder() {
     window.open(url, "_blank");
   }
 
-  function renderReceiptDetails(receipt) {
+  function renderReceiptDetails(
+    receipt,
+    { showActions = false, showOpenDetails = true } = {},
+  ) {
     if (!receipt) {
       return (
         <div className="rounded-3xl border border-dashed border-border bg-slate-50 p-6 text-sm text-sub">
@@ -499,6 +602,29 @@ export default function ReceiptBuilder() {
 
     return (
       <div className="space-y-4">
+        {showActions && (
+          <div className="flex flex-wrap justify-end gap-2">
+            <button
+              type="button"
+              className="btn-ghost px-3 py-2 text-xs sm:text-sm"
+              onClick={() => startEditingReceipt(receipt)}
+            >
+              Edit in builder
+            </button>
+            {showOpenDetails && (
+              <button
+                type="button"
+                className="btn-outline px-3 py-2 text-xs sm:text-sm"
+                onClick={() => {
+                  setSelectedReceipt(receipt);
+                  setIsReceiptModalOpen(true);
+                }}
+              >
+                Open details
+              </button>
+            )}
+          </div>
+        )}
         <div className="rounded-3xl border border-brand-100 bg-brand-50/60 p-4">
           <div className="text-[11px] uppercase tracking-[0.22em] text-brand-600 font-semibold">Selected sale</div>
           <div className="mt-1 text-lg font-semibold">Receipt #{receipt.receipt_number}</div>
@@ -583,7 +709,7 @@ export default function ReceiptBuilder() {
             </button>
           </div>
           <div className="p-5">
-            {renderReceiptDetails(receipt)}
+            {renderReceiptDetails(receipt, { showActions: true, showOpenDetails: false })}
           </div>
         </div>
       </div>
@@ -643,6 +769,36 @@ export default function ReceiptBuilder() {
               </div>
             </div>
           </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            {historyPeriodStats.map((stat) => (
+              <div key={stat.key} className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+                <div className="text-[11px] uppercase tracking-[0.18em] text-sub">{stat.label}</div>
+                <div className="mt-1 text-lg font-semibold text-ink">{stat.count}</div>
+                <div className="mt-1 text-xs text-sub">KSh {formatMoney(stat.totalSales)}</div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {[
+              { key: "all", label: "All receipts" },
+              { key: "week", label: "This week" },
+              { key: "month", label: "This month" },
+              { key: "year", label: "This year" },
+            ].map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                onClick={() => setHistoryRange(option.key)}
+                className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
+                  historyRange === option.key
+                    ? "bg-brand-500 text-white shadow-sm"
+                    : "border border-border bg-white text-sub hover:border-brand-300 hover:text-brand-600"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {loadError && (
@@ -660,13 +816,8 @@ export default function ReceiptBuilder() {
                 {visibleHistory.map((r) => {
                   const isActive = String(selectedReceipt?.id || "") === String(r.id);
                   return (
-                    <button
+                    <article
                       key={r.id}
-                      type="button"
-                      onClick={() => {
-                        setSelectedReceipt(r);
-                        setIsReceiptModalOpen(true);
-                      }}
                       className={`rounded-3xl border p-4 text-left shadow-sm transition ${
                         isActive
                           ? "border-brand-400 bg-brand-50 ring-2 ring-brand-100"
@@ -687,7 +838,26 @@ export default function ReceiptBuilder() {
                         <span>{formatReceiptDate(r.created_at)}</span>
                         <span className="truncate">{summarizeItems(r.items)}</span>
                       </div>
-                    </button>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          className="btn-ghost px-3 py-2 text-xs"
+                          onClick={() => {
+                            setSelectedReceipt(r);
+                            setIsReceiptModalOpen(true);
+                          }}
+                        >
+                          View
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-outline px-3 py-2 text-xs"
+                          onClick={() => startEditingReceipt(r)}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </article>
                   );
                 })}
               </div>
@@ -731,7 +901,7 @@ export default function ReceiptBuilder() {
           </div>
 
           <div className="rounded-3xl border border-border bg-white p-4 sm:p-5">
-            {renderReceiptDetails(selectedHistoryReceipt)}
+            {renderReceiptDetails(selectedHistoryReceipt, { showActions: true })}
           </div>
         </div>
       </div>

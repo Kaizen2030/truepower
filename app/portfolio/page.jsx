@@ -109,7 +109,7 @@ export default async function PortfolioPage() {
     pageData?.cta || {
       title: "Let's get you the right product — fast.",
       subtitle:
-        "Tell us your setup on WhatsApp and we'll match you with the right water heater, pump, or solar solution the same day.",
+        "Tell us your setup on WhatsApp and we'll match you with the right instant shower, pump, or solar solution the same day.",
       button_text: "Start on WhatsApp",
       button_link: "https://wa.me/254701039256",
     };
@@ -209,7 +209,7 @@ export default async function PortfolioPage() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              {["Water heaters", "Solar", "Pumps", "Showroom · Nyamakima"].map((pill) => (
+              {["Instant showers", "Solar", "Pumps", "Showroom · Nyamakima"].map((pill) => (
                 <span
                   key={pill}
                   className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-sub shadow-sm"
@@ -489,7 +489,7 @@ export default async function PortfolioPage() {
             </h2>
             <p className="mt-4 max-w-xl text-sub leading-7">
               {cta.subtitle ||
-                "Tell us your setup on WhatsApp and we'll match you with the right water heater, pump, or solar solution the same day."}
+                "Tell us your setup on WhatsApp and we'll match you with the right instant shower, pump, or solar solution the same day."}
             </p>
 
             <div className="mt-8 grid grid-cols-2 gap-3">

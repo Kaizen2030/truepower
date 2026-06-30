@@ -27,7 +27,7 @@ import {
 export const metadata = createSeo({
   title: "Services",
   description:
-    "Expert installation and repair services for water heaters, solar systems, inverters, CCTV, electric fences, and more across Nairobi.",
+    "Expert installation and repair services for instant showers, solar systems, inverters, CCTV, electric fences, and more across Nairobi.",
   path: "/services",
 });
 
@@ -75,7 +75,7 @@ export default async function ServicesPage() {
               <span className="text-yellow-300">Installation & Repair</span>
             </h1>
             <p className="text-white/90 text-base sm:text-lg lg:text-xl mb-8 max-w-xl leading-relaxed">
-              From electric fence and CCTV to water heaters, solar systems,
+              From electric fence and CCTV to instant showers, solar systems,
               inverters, and appliance repair - Nairobi&apos;s most trusted service
               team.
             </p>

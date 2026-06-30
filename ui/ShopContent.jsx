@@ -7,14 +7,14 @@ import { getProducts } from "@/lib/products";
 
 const CATS = [
   { key: "all", label: "All Products" },
-  { key: "water_heaters", label: "Water Heaters" },
+  { key: "water_heaters", label: "Instant Showers" },
   { key: "bulbs_lighting", label: "Bulbs & Lighting" },
   { key: "switches_sockets", label: "Switches & Sockets" },
   { key: "solar_solutions", label: "Solar Solutions" },
   { key: "water_pumps", label: "Water Pumps" },
 ];
 const CAT_LABELS = {
-  standard: "Wall Heater",
+  standard: "Instant Shower",
   pump: "With Pump",
   showerhead: "Shower Head",
   accessory: "Accessory",

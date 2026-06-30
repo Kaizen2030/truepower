@@ -28,7 +28,7 @@ export default function ServicesClient({ services }) {
   const filters = [
     { key: "all", label: "All Services", icon: Sparkles },
     { key: "Security", label: "Security", icon: ShieldCheck },
-    { key: "Water", label: "Water Heaters", icon: Droplets },
+    { key: "Water", label: "Instant Showers", icon: Droplets },
     { key: "Solar", label: "Solar", icon: Sun },
     { key: "Electrical", label: "Electrical", icon: ToggleRight },
     { key: "Pumps", label: "Pumps", icon: Zap },

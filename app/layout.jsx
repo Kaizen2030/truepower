@@ -10,7 +10,7 @@ export const metadata = {
     template: "%s | TruePower Kenya",
   },
   description:
-    "Water heaters, solar, pumps, and electrical solutions for Kenyan homes.",
+    "Instant showers, solar, pumps, and electrical solutions for Kenyan homes.",
   applicationName: "TruePower Kenya",
   authors: [{ name: "TruePower Kenya" }],
   creator: "TruePower Kenya",

@@ -29,7 +29,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const categories = [
-    { key: "water_heaters", label: "Water Heaters" },
+    { key: "water_heaters", label: "Instant Showers" },
     { key: "bulbs_lighting", label: "Bulbs & Lighting" },
     { key: "switches_sockets", label: "Switches & Sockets" },
     { key: "solar_solutions", label: "Solar Solutions" },
@@ -47,7 +47,7 @@ export default function Navbar() {
 
   const CATS = [
     { to: "/shop", label: "All Products" },
-    { to: "/shop?category=water_heaters", label: "Water Heaters" },
+    { to: "/shop?category=water_heaters", label: "Instant Showers" },
     { to: "/shop?category=bulbs_lighting", label: "Bulbs & Lighting" },
     { to: "/shop?category=switches_sockets", label: "Switches & Sockets" },
     { to: "/shop?category=solar_solutions", label: "Solar Solutions" },
