@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { trackSelectItem } from "@/lib/analytics";
 
 const CAT_LABELS = {
-  standard: "Wall Heater",
+  standard: "Instant Shower",
   pump: "With Pump",
   showerhead: "Shower Head",
   accessory: "Accessory",
@@ -70,7 +70,7 @@ export default function ProductCard({
           href={`/shop?subcategory=${product.cat}`}
           className="absolute top-3 right-12 hidden md:inline-block bg-white/80 backdrop-blur-sm text-sub text-[10px] font-display font-semibold px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm"
         >
-          {product.catLabel || CAT_LABELS[product.cat] || product.cat}
+          {CAT_LABELS[product.cat] || product.catLabel || product.cat}
         </Link>
 
         {/* Wishlist */}
@@ -90,7 +90,7 @@ export default function ProductCard({
       <div className="p-3 pt-2 md:hidden flex gap-2 items-center flex-wrap">
         <Link href={`/shop?subcategory=${product.cat}`} className="block">
           <span className="bg-white text-sub text-[8px] font-display font-semibold px-3 py-1 rounded-full uppercase tracking-wider border border-border">
-            {product.catLabel || CAT_LABELS[product.cat] || product.cat}
+            {CAT_LABELS[product.cat] || product.catLabel || product.cat}
           </span>
         </Link>
       </div>

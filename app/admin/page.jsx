@@ -106,7 +106,7 @@ const EMPTY_PRODUCT = {
   name: "",
   model: "",
   cat: "standard",
-  catLabel: "Wall Heaters",
+  catLabel: "",
   group: "Instant Showers",
   price: "",
   desc: "",
@@ -115,6 +115,10 @@ const EMPTY_PRODUCT = {
   features: [],
   specs: {},
 };
+
+function getCategoryLabel(cat, fallback = "") {
+  return CATS.find((c) => c.value === cat)?.label || fallback || cat;
+}
 
 function moveProduct(products, draggedId, targetId) {
   const fromIndex = products.findIndex((p) => p.id === draggedId);
@@ -352,6 +356,7 @@ export default function AdminPage() {
     setEditing({
       ...p,
       group: found?.group || "Instant Showers",
+      catLabel: getCategoryLabel(p.cat, p.catLabel),
       features: p.features || [],
       specs: p.specs || {},
       images: p.images || [],
@@ -1278,7 +1283,7 @@ export default function AdminPage() {
                       {p.name}
                     </p>
                     <p className="text-sub text-xs capitalize">
-                      {p.catLabel || p.cat} · KSh{" "}
+                      {getCategoryLabel(p.cat, p.catLabel)} · KSh{" "}
                       {Number(p.price).toLocaleString()}
                     </p>
                   </div>

@@ -69,10 +69,10 @@
 
   /* ── Layout ── */
   .section {
-    @apply px-4 sm:px-6 lg:px-12 py-16 lg:py-24 max-w-7xl mx-auto;
+    @apply px-4 sm:px-6 lg:px-10 xl:px-12 py-16 lg:py-24 max-w-[1520px] mx-auto;
   }
   .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-12;
+    @apply max-w-[1520px] mx-auto px-4 sm:px-6 lg:px-10 xl:px-12;
   }
 
   /* ── Badges ── */

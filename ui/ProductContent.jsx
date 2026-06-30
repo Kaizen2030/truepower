@@ -19,7 +19,7 @@ import Seo, { SITE_URL, DEFAULT_IMAGE } from "@/components/Seo";
 import { trackBeginCheckout, trackViewItem } from "@/lib/analytics";
 
 const CAT_LABELS = {
-  standard: "Wall Heater",
+  standard: "Instant Shower",
   pump: "With Pump",
   showerhead: "Shower Head",
   accessory: "Accessory",
@@ -155,7 +155,7 @@ export default function ProductContent({ product, related }) {
             <div>
               <div className="badge mb-3 w-auto capitalize">
                 <Link href={`/shop?subcategory=${product.cat}`}>
-                  {product.catLabel || CAT_LABELS[product.cat] || product.cat}
+                  {CAT_LABELS[product.cat] || product.catLabel || product.cat}
                 </Link>
               </div>
             </div>
