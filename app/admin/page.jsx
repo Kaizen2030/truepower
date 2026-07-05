@@ -663,7 +663,7 @@ export default function AdminPage() {
       featured_image_url: "",
       status: "Draft",
       published_at: new Date().toISOString(),
-      author: user?.email || "Admin",
+      author: "",
       order_index: blogs.length || 0,
     });
 
@@ -720,7 +720,7 @@ export default function AdminPage() {
         featured_image_url: editingBlog.featured_image_url || "",
         status: editingBlog.status || "Draft",
         published_at: editingBlog.published_at || new Date().toISOString(),
-        author: editingBlog.author || user?.email || "Admin",
+        author: editingBlog.author?.trim() || "TruePower Team",
         order_index: editingBlog.order_index ?? blogs.length ?? 0,
         updated_at: new Date().toISOString(),
       };
@@ -1838,6 +1838,23 @@ export default function AdminPage() {
                         }
                         placeholder="e.g. Solar, Installation, Guides"
                       />
+                    </div>
+                    <div>
+                      <label className="label">Author Name</label>
+                      <input
+                        className="input"
+                        value={editingBlog.author || ""}
+                        onChange={(e) =>
+                          setEditingBlog((prev) => ({
+                            ...prev,
+                            author: e.target.value,
+                          }))
+                        }
+                        placeholder="TruePower Team or a writer name"
+                      />
+                      <p className="mt-2 text-xs text-sub">
+                        Leave blank and the public blog will show TruePower Team.
+                      </p>
                     </div>
                     <div>
                       <label className="label">Tags (comma separated)</label>

@@ -9,6 +9,7 @@ import {
   getBlogCoverFallback,
   getBlogExcerpt,
   getBlogReadTime,
+  getBlogAuthorLabel,
 } from "@/lib/blogs.js";
 import BlogCard from "@/components/BlogCard";
 import BlogContentRenderer from "@/components/BlogContentRenderer";
@@ -74,7 +75,7 @@ export default async function BlogPostPage({ params }) {
 
   const relatedPosts = await getRelatedPosts(post, 3);
   const categoryLabel = post.category || "General";
-  const authorName = post.author || post.author_name || "TruePower Team";
+  const authorName = getBlogAuthorLabel(post.author || post.author_name);
   const publishedDate = formatBlogDate(post.published_at || post.created_at, {
     day: "numeric",
     month: "long",
@@ -163,6 +164,13 @@ export default async function BlogPostPage({ params }) {
                 {post.excerpt || getBlogExcerpt(post) || "A practical article from the TruePower team."}
               </p>
 
+              {authorName ? (
+                <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-slate-50 px-3 py-1.5 text-sm text-sub">
+                  <User size={14} />
+                  <span className="font-semibold text-ink">{authorName}</span>
+                </div>
+              ) : null}
+
               {post.tags?.length > 0 ? (
                 <div className="mt-6 flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
@@ -177,13 +185,13 @@ export default async function BlogPostPage({ params }) {
                 </div>
               ) : null}
 
-              <div className="mt-8 rounded-[1.5rem] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-slate-50 p-5">
+              <div className="mt-8 rounded-[1.5rem] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-slate-50 p-4 sm:p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">
                   Author
                 </p>
-                <p className="mt-2 text-base font-semibold text-ink">{authorName}</p>
+                <p className="mt-2 text-base font-semibold text-ink">{authorName || "TruePower Team"}</p>
                 <p className="mt-2 text-sm leading-6 text-sub">
-                  {authorName} shares practical product guidance, installation notes, and field-tested advice for TruePower readers.
+                  Practical product guidance, installation notes, and field-tested advice from the TruePower editorial team.
                 </p>
               </div>
             </div>
