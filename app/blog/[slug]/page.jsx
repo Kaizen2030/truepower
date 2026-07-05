@@ -46,7 +46,7 @@ function RelatedPostCard({ post }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group rounded-[1.5rem] border border-border bg-gradient-to-br from-white to-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-pop"
+      className="group rounded-[1.35rem] border border-border bg-gradient-to-br from-white to-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-pop"
     >
       <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-600">
         <span className="rounded-full bg-brand-50 px-2.5 py-1 text-[10px] tracking-[0.24em]">
@@ -95,7 +95,7 @@ export default async function BlogPostPage({ params }) {
           Back to blog
         </Link>
 
-        <section className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-stretch">
+        <section className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.88fr)] lg:items-stretch">
           <div className="relative isolate overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 shadow-pop">
             {heroImage ? (
               <>
@@ -114,7 +114,7 @@ export default async function BlogPostPage({ params }) {
                 className="flex aspect-[4/3] items-end p-8 sm:aspect-square lg:min-h-full"
                 style={{ background: getBlogCoverFallback(categoryLabel) }}
               >
-                <p className="max-w-xl text-3xl font-bold leading-tight text-white sm:text-4xl">
+                <p className="max-w-xl text-2xl font-bold leading-tight text-white sm:text-3xl">
                   {post.title}
                 </p>
               </div>
@@ -142,13 +142,13 @@ export default async function BlogPostPage({ params }) {
                 </span>
               </div>
 
-              <h1 className="max-w-3xl font-display text-2xl font-bold leading-tight text-white drop-shadow-md sm:text-4xl lg:text-[2.9rem]">
+              <h1 className="max-w-3xl font-display text-2xl font-bold leading-tight text-white drop-shadow-md sm:text-[2.7rem] lg:text-[2.65rem]">
                 {post.title}
               </h1>
             </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8 lg:p-10">
+          <div className="relative overflow-hidden rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8 lg:p-9">
             <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-brand-100/70 blur-3xl" />
 
             <div className="relative">
@@ -165,14 +165,14 @@ export default async function BlogPostPage({ params }) {
               </p>
 
               {authorName ? (
-                <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-border bg-slate-50 px-3 py-1.5 text-sm text-sub">
+                <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-border bg-slate-50 px-3 py-1.5 text-sm text-sub">
                   <User size={14} />
-                  <span className="font-semibold text-ink">{authorName}</span>
+                  <span className="font-semibold text-ink">By {authorName}</span>
                 </div>
               ) : null}
 
               {post.tags?.length > 0 ? (
-                <div className="mt-6 flex flex-wrap gap-2">
+                <div className="mt-5 flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
                     <span
                       key={tag}
@@ -185,20 +185,21 @@ export default async function BlogPostPage({ params }) {
                 </div>
               ) : null}
 
-              <div className="mt-8 rounded-[1.5rem] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-slate-50 p-4 sm:p-5">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">
+              <div className="mt-7 rounded-[1.35rem] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-slate-50 p-4">
+                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-600">
+                  <User size={13} />
                   Author
-                </p>
-                <p className="mt-2 text-base font-semibold text-ink">{authorName || "TruePower Team"}</p>
-                <p className="mt-2 text-sm leading-6 text-sub">
-                  Practical product guidance, installation notes, and field-tested advice from the TruePower editorial team.
+                </div>
+                <p className="mt-2 text-sm font-semibold text-ink">{authorName || "TruePower Team"}</p>
+                <p className="mt-1 text-sm leading-6 text-sub">
+                  Editorial notes, installation guidance, and practical product updates from TruePower.
                 </p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
           <article className="rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8 lg:p-10">
             <BlogContentRenderer
               content={post.body || post.content || ""}
