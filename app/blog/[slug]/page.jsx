@@ -53,10 +53,10 @@ function RelatedPostCard({ post }) {
           {post.category || "General"}
         </span>
       </div>
-      <h3 className="mt-3 font-display text-base font-bold leading-snug text-ink">
+      <h3 className="mt-3 font-display text-[0.98rem] font-bold leading-snug text-ink">
         {post.title}
       </h3>
-      <p className="mt-2 line-clamp-3 text-sm leading-6 text-sub">
+      <p className="mt-2 line-clamp-2 text-sm leading-6 text-sub">
         {getBlogExcerpt(post, 96)}
       </p>
       <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3 text-xs text-sub">
@@ -141,10 +141,6 @@ export default async function BlogPostPage({ params }) {
                   {authorName}
                 </span>
               </div>
-
-              <h1 className="max-w-3xl font-display text-2xl font-bold leading-tight text-white drop-shadow-md sm:text-[2.7rem] lg:text-[2.65rem]">
-                {post.title}
-              </h1>
             </div>
           </div>
 
@@ -159,6 +155,10 @@ export default async function BlogPostPage({ params }) {
                 <span>{publishedDate || "Latest update"}</span>
                 <span>{readTime} min read</span>
               </div>
+
+              <h1 className="mt-4 max-w-2xl font-display text-3xl font-bold leading-tight text-ink sm:text-4xl lg:text-[2.65rem]">
+                {post.title}
+              </h1>
 
               <p className="mt-5 max-w-2xl text-base leading-relaxed text-sub sm:text-lg">
                 {post.excerpt || getBlogExcerpt(post) || "A practical article from the TruePower team."}
