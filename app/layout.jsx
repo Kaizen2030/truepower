@@ -40,6 +40,7 @@ import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
+import WhatsAppFab from "@/components/WhatsAppFab";
 import RouteAnalytics from "@/components/RouteAnalytics";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import InstallPrompt from "@/components/InstallPrompt";
@@ -63,6 +64,7 @@ export default function RootLayout({ children }) {
             <CartDrawer></CartDrawer>
             {children}
             <Footer></Footer>
+            <WhatsAppFab />
           </CartProvider>
         </AuthProvider>
       </body>
