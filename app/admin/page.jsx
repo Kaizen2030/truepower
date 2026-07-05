@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import dynamic from "next/dynamic";
 import {
   Plus,
   Trash2,
@@ -40,13 +39,16 @@ import {
   demoteAdmin,
   supabase,
 } from "@/lib/supabase";
+import {
+  getBlogExcerpt,
+  hasBlogBodyContent,
+} from "@/lib/blogs.js";
 import PageContentEditor from "@/components/PageContentEditor";
+import BlogRichTextEditor from "@/components/admin/BlogRichTextEditor";
 import AnalyticsDashboard from "@/components/admin/AnalyticsDashboard";
 import ReceiptBuilder from "@/components/admin/ReceiptBuilder";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter, usePathname } from "next/navigation";
-
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 // Instant Showers group + new categories
 const CATS = [
@@ -696,7 +698,7 @@ export default function AdminPage() {
   };
 
   const saveBlogPost = async () => {
-    if (!editingBlog?.title || !editingBlog?.body)
+    if (!editingBlog?.title || !hasBlogBodyContent(editingBlog?.body))
       return alert("Title and body are required.");
     setBlogSaving(true);
     try {
@@ -788,11 +790,6 @@ export default function AdminPage() {
       return;
     }
     await loadBlogs();
-  };
-
-  const getBlogExcerpt = (post) => {
-    const raw = post.excerpt || post.body || post.content || "";
-    return raw.replace(/<[^>]+>/g, "").slice(0, 90) || "No summary";
   };
 
   const persistBlogOrder = async (next) => {
@@ -1963,36 +1960,13 @@ export default function AdminPage() {
 
                   <div>
                     <label className="label">Full Article Body *</label>
-                    <div className="rounded-3xl border border-border bg-white overflow-hidden">
-                      <ReactQuill
-                        theme="snow"
-                        value={editingBlog.body}
-                        onChange={(value) =>
-                          setEditingBlog((prev) => ({ ...prev, body: value }))
-                        }
-                        modules={{
-                          toolbar: [
-                            [{ header: [1, 2, 3, false] }],
-                            ["bold", "italic", "underline", "strike"],
-                            [{ list: "ordered" }, { list: "bullet" }],
-                            ["link", "blockquote", "code-block"],
-                            ["clean"],
-                          ],
-                        }}
-                        formats={[
-                          "header",
-                          "bold",
-                          "italic",
-                          "underline",
-                          "strike",
-                          "list",
-                          "bullet",
-                          "link",
-                          "blockquote",
-                          "code-block",
-                        ]}
-                      />
-                    </div>
+                    <BlogRichTextEditor
+                      value={editingBlog.body}
+                      onChange={(value) =>
+                        setEditingBlog((prev) => ({ ...prev, body: value }))
+                      }
+                      description="Build the article with formatted text, links, and inline image uploads. The image button inserts photos into the story wherever your cursor is."
+                    />
                   </div>
                 </div>
 
@@ -2073,7 +2047,7 @@ export default function AdminPage() {
                             {post.title}
                           </p>
                           <p className="text-sub text-xs truncate max-w-[240px]">
-                            {getBlogExcerpt(post)}
+                            {getBlogExcerpt(post, 90) || "No summary"}
                           </p>
                         </td>
                         <td className="px-4 py-4 align-top text-sub">

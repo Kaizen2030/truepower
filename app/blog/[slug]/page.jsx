@@ -1,17 +1,21 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, CalendarDays, Clock3, Tag, User } from "lucide-react";
 
 import {
   getBlogPostBySlug,
   getRelatedPosts,
+  formatBlogDate,
+  getBlogCoverFallback,
+  getBlogExcerpt,
+  getBlogReadTime,
 } from "@/lib/blogs.js";
-import { ArrowLeft, CalendarDays, Clock3, Tag } from "lucide-react";
-import Link from "next/link";
 import BlogCard from "@/components/BlogCard";
+import BlogContentRenderer from "@/components/BlogContentRenderer";
 import { createSeo, DEFAULT_IMAGE } from "@/components/Seo";
 
 export const dynamic = "force-dynamic";
 
-// 🔥 SEO metadata
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   const post = await getBlogPostBySlug(slug);
@@ -27,113 +31,139 @@ export async function generateMetadata({ params }) {
 
   return createSeo({
     title: post.title,
-    description: post.excerpt || post.summary || `Read ${post.title} on TruePower Kenya.`,
+    description:
+      post.excerpt ||
+      getBlogExcerpt(post) ||
+      `Read ${post.title} on TruePower Kenya.`,
     path: `/blog/${slug}`,
-    image: post.featured_image_url || DEFAULT_IMAGE,
+    image: post.featured_image_url || post.cover_image_url || DEFAULT_IMAGE,
     type: "article",
   });
 }
 
+function RelatedPostCard({ post }) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className="group rounded-[1.5rem] border border-border bg-gradient-to-br from-white to-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-pop"
+    >
+      <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-600">
+        <span className="rounded-full bg-brand-50 px-2.5 py-1 text-[10px] tracking-[0.24em]">
+          {post.category || "General"}
+        </span>
+      </div>
+      <h3 className="mt-3 font-display text-base font-bold leading-snug text-ink">
+        {post.title}
+      </h3>
+      <p className="mt-2 line-clamp-3 text-sm leading-6 text-sub">
+        {getBlogExcerpt(post, 96)}
+      </p>
+      <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3 text-xs text-sub">
+        <span>{formatBlogDate(post.published_at || post.created_at)}</span>
+        <span className="font-semibold text-brand-600">Read article</span>
+      </div>
+    </Link>
+  );
+}
+
 export default async function BlogPostPage({ params }) {
   const { slug } = await params;
-  // ✅ 1. Get current post
   const post = await getBlogPostBySlug(slug);
 
   if (!post) return notFound();
 
-  // 🔥 Related posts logic (server-side)
-  const relatedPosts = await getRelatedPosts(post);
-
-  const bodyText = (post?.body || post?.content || "")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const readTime = Math.max(
-    1,
-    Math.ceil((bodyText.split(" ").filter(Boolean).length || 120) / 180),
-  );
-
-  const publishedDate = post?.published_at
-    ? new Date(post.published_at).toLocaleDateString("en-KE", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
-    : "";
-
-  const isHtml = (post.body || post.content || "").trim().startsWith("<");
+  const relatedPosts = await getRelatedPosts(post, 3);
+  const categoryLabel = post.category || "General";
+  const authorName = post.author || post.author_name || "TruePower Team";
+  const publishedDate = formatBlogDate(post.published_at || post.created_at, {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+  const readTime = getBlogReadTime(post);
+  const heroImage = post.featured_image_url || post.cover_image_url || "";
 
   return (
-    <main className="min-h-screen bg-white container">
-      <div className="mx-auto max-w-6xl px-4 pb-10">
+    <main className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,rgba(27,79,216,0.09),transparent_26%),radial-gradient(circle_at_top_right,rgba(15,110,86,0.09),transparent_24%),linear-gradient(180deg,#f8fbff_0%,#ffffff_36%)]">
+      <div className="container py-8 lg:py-12">
         <Link
           href="/blog"
-          className="flex items-center gap-2 text-sm font-semibold text-blue-600 mb-3"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-brand-600 transition-colors hover:text-brand-700"
         >
           <ArrowLeft size={16} />
           Back to blog
         </Link>
 
-        {/* HERO */}
-        <section className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.9fr)] lg:items-stretch">
+        <section className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,0.92fr)] lg:items-stretch">
           <div className="relative isolate overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-950 shadow-pop">
-            {post.featured_image_url ? (
+            {heroImage ? (
               <>
-                <div className="aspect-square">
+                <div className="aspect-[4/3] sm:aspect-square lg:aspect-auto lg:min-h-full">
                   <img
-                    src={post.featured_image_url}
+                    src={heroImage}
                     alt={post.title}
                     className="h-full w-full object-cover"
                   />
                 </div>
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.16),transparent_38%)]" />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/56 via-slate-950/8 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent" />
               </>
             ) : (
-              <div className="flex aspect-square items-end bg-[linear-gradient(135deg,#0f172a_0%,#1B4FD8_52%,#7dd3fc_100%)] p-8">
-                <p className="max-w-xs text-3xl font-bold leading-tight text-white">
+              <div
+                className="flex aspect-[4/3] items-end p-8 sm:aspect-square lg:min-h-full"
+                style={{ background: getBlogCoverFallback(categoryLabel) }}
+              >
+                <p className="max-w-xl text-3xl font-bold leading-tight text-white sm:text-4xl">
                   {post.title}
                 </p>
               </div>
             )}
+
+            <div className="absolute left-4 top-4 z-10">
+              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white backdrop-blur-md">
+                {categoryLabel}
+              </span>
+            </div>
+
+            <div className="absolute inset-x-0 bottom-0 z-10 p-4 sm:p-6">
+              <div className="mb-3 flex flex-wrap gap-2 text-[11px] text-white/85 sm:text-xs">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-950/35 px-3 py-1.5 backdrop-blur-sm">
+                  <CalendarDays size={13} />
+                  {publishedDate || "Latest update"}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-950/35 px-3 py-1.5 backdrop-blur-sm">
+                  <Clock3 size={13} />
+                  {readTime} min read
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-950/35 px-3 py-1.5 backdrop-blur-sm">
+                  <User size={13} />
+                  {authorName}
+                </span>
+              </div>
+
+              <h1 className="max-w-3xl font-display text-2xl font-bold leading-tight text-white drop-shadow-md sm:text-4xl lg:text-[2.9rem]">
+                {post.title}
+              </h1>
+            </div>
           </div>
 
-          <div className="relative overflow-hidden rounded-[2rem] border border-border bg-white p-7 shadow-card sm:p-8 lg:p-10">
+          <div className="relative overflow-hidden rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8 lg:p-10">
             <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-brand-100/70 blur-3xl" />
 
             <div className="relative">
               <div className="flex flex-wrap items-center gap-3 text-sm text-sub">
-                {post.category && (
-                  <span className="rounded-full bg-brand-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-brand-700">
-                    {post.category}
-                  </span>
-                )}
-                {publishedDate && (
-                  <span className="flex items-center gap-2">
-                    <CalendarDays size={15} />
-                    {publishedDate}
-                  </span>
-                )}
-                <span className="flex items-center gap-2">
-                  <Clock3 size={15} />
-                  {readTime} min read
+                <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-brand-700">
+                  {categoryLabel}
                 </span>
+                <span>{publishedDate || "Latest update"}</span>
+                <span>{readTime} min read</span>
               </div>
 
-              <h1 className="mt-5 font-display text-3xl font-bold leading-tight text-ink sm:text-4xl lg:text-[2.8rem]">
-                {post.title}
-              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-relaxed text-sub sm:text-lg">
+                {post.excerpt || getBlogExcerpt(post) || "A practical article from the TruePower team."}
+              </p>
 
-              {post.excerpt && (
-                <div className="mt-6 rounded-[1.5rem] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-slate-50 p-5">
-                  <p className="text-base leading-relaxed text-sub sm:text-lg">
-                    {post.excerpt}
-                  </p>
-                </div>
-              )}
-
-              {post.tags?.length > 0 && (
+              {post.tags?.length > 0 ? (
                 <div className="mt-6 flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
                     <span
@@ -145,44 +175,78 @@ export default async function BlogPostPage({ params }) {
                     </span>
                   ))}
                 </div>
-              )}
+              ) : null}
+
+              <div className="mt-8 rounded-[1.5rem] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-slate-50 p-5">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">
+                  Author
+                </p>
+                <p className="mt-2 text-base font-semibold text-ink">{authorName}</p>
+                <p className="mt-2 text-sm leading-6 text-sub">
+                  {authorName} shares practical product guidance, installation notes, and field-tested advice for TruePower readers.
+                </p>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* CONTENT */}
-        <section className="mx-auto mt-10 max-w-4xl rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8 lg:p-10">
-          <article className="max-w-none text-[1.02rem] leading-8 text-ink [&_a]:text-brand-600 [&_a]:underline [&_blockquote]:border-l-4 [&_blockquote]:border-brand-200 [&_blockquote]:bg-brand-50/60 [&_blockquote]:px-5 [&_blockquote]:py-4 [&_blockquote]:italic [&_h2]:mt-10 [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-ink [&_h3]:mt-8 [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:text-ink [&_li]:my-2 [&_ol]:my-6 [&_ol]:pl-6 [&_p]:my-5 [&_strong]:text-ink [&_ul]:my-6 [&_ul]:list-disc [&_ul]:pl-6">
-            {(post.body || post.content || "").trim().startsWith("<") ? (
-              <div
-                dangerouslySetInnerHTML={{ __html: post.body || post.content }}
-              />
-            ) : (
-              <div className="whitespace-pre-line">
-                {post.body || post.content}
-              </div>
-            )}
+        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <article className="rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8 lg:p-10">
+            <BlogContentRenderer
+              content={post.body || post.content || ""}
+              className="blog-rich-content"
+            />
           </article>
+
+          <aside className="space-y-6">
+            <div className="rounded-[2rem] border border-border bg-white p-5 shadow-card">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-brand-600">
+                Related posts
+              </p>
+              <h2 className="mt-2 font-display text-xl font-bold text-ink">
+                More from the blog
+              </h2>
+
+              <div className="mt-5 space-y-3">
+                {relatedPosts.length > 0 ? (
+                  relatedPosts.map((related) => (
+                    <RelatedPostCard key={related.id} post={related} />
+                  ))
+                ) : (
+                  <p className="text-sm leading-6 text-sub">
+                    No related posts are available yet.
+                  </p>
+                )}
+              </div>
+
+              <Link
+                href="/blog"
+                className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full border border-brand-500 px-4 py-3 text-sm font-semibold text-brand-600 transition-all hover:bg-brand-500 hover:text-white"
+              >
+                Browse all posts
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+          </aside>
         </section>
 
-        {/* RELATED */}
-        {relatedPosts.length > 0 && (
-          <section className="mt-16">
-            <div className="mb-6">
-              <p className="text-xs uppercase tracking-[0.3em] text-brand-600">
-                More from the blog
+        {relatedPosts.length > 0 ? (
+          <section className="mt-8">
+            <div className="mb-5">
+              <p className="text-xs font-semibold uppercase tracking-[0.32em] text-brand-600">
+                Continue exploring
               </p>
               <h2 className="mt-2 font-display text-2xl font-bold text-ink">
                 Related articles
               </h2>
             </div>
             <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-              {relatedPosts.map((related) => (
-                <BlogCard key={related.id} post={related} />
+              {relatedPosts.map((relatedPost) => (
+                <BlogCard key={relatedPost.id} post={relatedPost} />
               ))}
             </div>
           </section>
-        )}
+        ) : null}
       </div>
     </main>
   );
