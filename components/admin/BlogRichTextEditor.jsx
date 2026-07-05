@@ -186,15 +186,18 @@ function SectionEditor({
 
   return (
     <section
-      className={`blog-section-editor rounded-[1.5rem] border border-border bg-white shadow-sm ${
+      className={`blog-section-editor overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm ${
         uploading ? "ring-2 ring-brand-100" : ""
       }`}
       onDrop={handleDrop}
       onDragOver={(event) => event.preventDefault()}
     >
-      <div className="flex flex-col gap-3 border-b border-border bg-gradient-to-r from-slate-50 to-white p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 border-b border-border bg-[linear-gradient(135deg,rgba(248,251,255,0.98),rgba(255,255,255,0.98))] p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex-1">
-          <label className="label">Section {index + 1} Title</label>
+          <div className="mb-3 inline-flex rounded-full bg-brand-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-brand-700">
+            Section {index + 1}
+          </div>
+          <label className="label">Section Heading</label>
           <input
             className="input min-h-[46px]"
             value={section.title}
@@ -236,8 +239,8 @@ function SectionEditor({
 
       <div className="p-4">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-[1.25rem] border border-border bg-gradient-to-br from-slate-50 via-white to-brand-50/30 p-3">
-          <p className="text-sm leading-relaxed text-sub">
-            Write this section in rich text. You can drop images into this block or use the insert image button.
+          <p className="max-w-2xl text-sm leading-relaxed text-sub">
+            Write this section in rich text. Drop images into the block or use the insert image button to place your own visuals inline.
           </p>
           <button
             type="button"

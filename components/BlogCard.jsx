@@ -19,12 +19,14 @@ export default function BlogCard({ post, featured = false }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className={`group flex h-full flex-col overflow-hidden rounded-[1.9rem] border border-slate-200 bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-pop ${
+      className={`group flex h-full flex-col overflow-hidden rounded-[1.9rem] border border-border bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-pop ${
         featured ? "lg:col-span-2" : ""
       }`}
     >
       <div
-        className={`relative overflow-hidden ${featured ? "min-h-[360px] sm:min-h-[460px]" : "min-h-[260px] sm:min-h-[320px]"}`}
+        className={`relative overflow-hidden ${
+          featured ? "min-h-[360px] sm:min-h-[460px]" : "min-h-[220px] sm:min-h-[260px]"
+        }`}
       >
         {cardImage ? (
           <img
@@ -65,38 +67,45 @@ export default function BlogCard({ post, featured = false }) {
             </span>
           </div>
 
-          <h2
-            className={`font-display font-bold leading-tight text-white drop-shadow-md ${
-              featured
-                ? "max-w-3xl text-2xl sm:text-4xl lg:text-[2.8rem]"
-                : "max-w-2xl text-[1.08rem] sm:text-xl"
+          <div className="inline-flex rounded-full border border-white/18 bg-white/12 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.24em] text-white/95 backdrop-blur-md">
+            Read article
+          </div>
+        </div>
+      </div>
+
+      <div className={`flex flex-1 flex-col gap-4 p-4 sm:p-5 ${featured ? "lg:p-6" : ""}`}>
+        <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-sub">
+          <span className="rounded-full bg-brand-50 px-3 py-1 text-brand-700">
+            {categoryLabel}
+          </span>
+          <span>{publishedDate || "Latest update"}</span>
+          <span>{readTime} min read</span>
+        </div>
+
+        <h3
+          className={`font-display font-bold leading-tight text-ink ${
+            featured ? "text-xl sm:text-2xl" : "text-lg sm:text-[1.15rem]"
+          }`}
+        >
+          {post.title}
+        </h3>
+
+        {excerpt ? (
+          <p
+            className={`text-sm leading-relaxed text-sub ${
+              featured ? "line-clamp-3 sm:text-base" : "line-clamp-4"
             }`}
           >
-            {post.title}
-          </h2>
+            {excerpt}
+          </p>
+        ) : null}
 
-          {excerpt ? (
-            <p
-              className={`mt-3 max-w-2xl text-sm leading-relaxed text-white/82 drop-shadow-sm ${
-                featured ? "line-clamp-3 sm:text-base" : "line-clamp-2"
-              }`}
-            >
-              {excerpt}
-            </p>
-          ) : null}
-
-          <div className="mt-4 flex items-center justify-between gap-3 text-white">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/75">
-              Read story
-            </span>
-            <span className="inline-flex items-center gap-2 text-xs font-semibold sm:text-sm">
-              Open article
-              <ArrowRight
-                size={15}
-                className="transition-transform duration-300 group-hover:translate-x-1"
-              />
-            </span>
-          </div>
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-border pt-4 text-sm font-semibold text-brand-600">
+          <span>{featured ? "Featured article" : "Read article"}</span>
+          <span className="inline-flex items-center gap-1.5">
+            Open
+            <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+          </span>
         </div>
       </div>
     </Link>
