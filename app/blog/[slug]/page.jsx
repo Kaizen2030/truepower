@@ -164,13 +164,6 @@ export default async function BlogPostPage({ params }) {
                 {post.excerpt || getBlogExcerpt(post) || "A practical article from the TruePower team."}
               </p>
 
-              {authorName ? (
-                <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-border bg-slate-50 px-3 py-1.5 text-sm text-sub">
-                  <User size={14} />
-                  <span className="font-semibold text-ink">By {authorName}</span>
-                </div>
-              ) : null}
-
               {post.tags?.length > 0 ? (
                 <div className="mt-5 flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
