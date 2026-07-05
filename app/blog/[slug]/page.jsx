@@ -13,6 +13,7 @@ import {
 } from "@/lib/blogs.js";
 import BlogCard from "@/components/BlogCard";
 import BlogContentRenderer from "@/components/BlogContentRenderer";
+import BlogEngagementBar from "@/components/BlogEngagementBar";
 import { createSeo, DEFAULT_IMAGE } from "@/components/Seo";
 
 export const dynamic = "force-dynamic";
@@ -225,6 +226,15 @@ export default async function BlogPostPage({ params }) {
               </Link>
             </div>
           </aside>
+        </section>
+
+        <section className="mt-6">
+          <BlogEngagementBar
+            postId={post.id}
+            slug={post.slug}
+            initialViewCount={post.view_count || 0}
+            initialLikeCount={post.like_count || 0}
+          />
         </section>
 
         {relatedPosts.length > 0 ? (
