@@ -1961,6 +1961,7 @@ export default function AdminPage() {
                   <div>
                     <label className="label">Full Article Body *</label>
                     <BlogRichTextEditor
+                      key={editingBlog.id || editingBlog.slug || "new-blog"}
                       value={editingBlog.body}
                       onChange={(value) =>
                         setEditingBlog((prev) => ({ ...prev, body: value }))

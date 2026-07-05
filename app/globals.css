@@ -193,6 +193,33 @@
     color: #64748b;
   }
 
+  .blog-rich-content .blog-article-section {
+    margin-bottom: 2rem;
+    padding: 1.25rem 0;
+    border-top: 1px solid rgba(148, 163, 184, 0.18);
+  }
+
+  .blog-rich-content .blog-article-section:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .blog-rich-content .blog-article-section h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(27, 79, 216, 0.12);
+  }
+
+  .blog-rich-content .blog-article-section-body {
+    display: grid;
+    gap: 0.85rem;
+  }
+
+  .blog-rich-content .blog-article-section-body > :last-child {
+    margin-bottom: 0;
+  }
+
   .blog-rich-content .ql-align-center {
     text-align: center;
   }
