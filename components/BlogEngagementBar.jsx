@@ -57,27 +57,37 @@ export default function BlogEngagementBar({
   }, []);
 
   useEffect(() => {
-    if (!visitorKey || !hasSupabaseConfig()) return;
+    if (!visitorKey || !hasSupabaseConfig() || !slug) return;
 
     let active = true;
 
     async function loadEngagement() {
-      const { data, error } = await supabase.rpc("get_blog_post_engagement", {
-        post_slug: slug,
-        visitor_key: visitorKey,
-      });
+      try {
+        const { data, error } = await supabase.rpc("get_blog_post_engagement", {
+          post_slug: slug,
+          visitor_key: visitorKey,
+        });
 
-      if (!active) return;
+        if (!active) return;
 
-      if (!error && data) {
-        const snapshot = Array.isArray(data) ? data[0] : data;
-        if (snapshot) {
-          setViewCount(Number(snapshot.view_count ?? initialViewCount) || 0);
-          setLikeCount(Number(snapshot.like_count ?? initialLikeCount) || 0);
-          setViewerLiked(Boolean(snapshot.viewer_liked));
+        if (error) {
+          console.warn("Failed to load engagement:", error);
           setLoading(false);
           return;
         }
+
+        if (!error && data) {
+          const snapshot = Array.isArray(data) ? data[0] : data;
+          if (snapshot) {
+            setViewCount(Number(snapshot.view_count ?? initialViewCount) || 0);
+            setLikeCount(Number(snapshot.like_count ?? initialLikeCount) || 0);
+            setViewerLiked(Boolean(snapshot.viewer_liked));
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Error loading engagement:", error);
       }
 
       setViewerLiked(readFlag(storageKeys.liked));
@@ -92,24 +102,33 @@ export default function BlogEngagementBar({
   }, [initialLikeCount, initialViewCount, slug, storageKeys.liked, visitorKey]);
 
   useEffect(() => {
-    if (!visitorKey || !hasSupabaseConfig()) return;
+    if (!visitorKey || !hasSupabaseConfig() || !slug) return;
     if (readFlag(storageKeys.viewed)) return;
 
     let cancelled = false;
     const timer = window.setTimeout(async () => {
       if (cancelled) return;
 
-      const { data, error } = await supabase.rpc("record_blog_post_view", {
-        post_slug: slug,
-        visitor_key: visitorKey,
-      });
+      try {
+        const { data, error } = await supabase.rpc("record_blog_post_view", {
+          post_slug: slug,
+          visitor_key: visitorKey,
+        });
 
-      if (cancelled) return;
+        if (cancelled) return;
 
-      if (!error && data) {
-        const snapshot = Array.isArray(data) ? data[0] : data;
-        setViewCount(Number(snapshot?.view_count ?? viewCount + 1) || viewCount + 1);
-        writeFlag(storageKeys.viewed);
+        if (error) {
+          console.warn("Failed to record view:", error);
+          return;
+        }
+
+        if (!error && data) {
+          const snapshot = Array.isArray(data) ? data[0] : data;
+          setViewCount(Number(snapshot?.view_count ?? viewCount + 1) || viewCount + 1);
+          writeFlag(storageKeys.viewed);
+        }
+      } catch (error) {
+        console.error("Error recording view:", error);
       }
     }, 900);
 
@@ -145,7 +164,7 @@ export default function BlogEngagementBar({
   }, [postId]);
 
   const handleLike = async () => {
-    if (!visitorKey || viewerLiked || liking || !hasSupabaseConfig()) return;
+    if (!visitorKey || !slug || viewerLiked || liking || !hasSupabaseConfig()) return;
 
     setLiking(true);
     setStatusMessage("");
@@ -164,6 +183,7 @@ export default function BlogEngagementBar({
       writeFlag(storageKeys.liked);
       setStatusMessage(snapshot?.viewer_liked ? "Liked" : "Saved");
     } catch (error) {
+      console.error("Error liking post:", error);
       setStatusMessage(error?.message || "Unable to like this article.");
     } finally {
       setLiking(false);

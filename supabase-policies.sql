@@ -101,11 +101,11 @@ declare
   v_inserted_rows integer := 0;
   v_view_count integer := 0;
 begin
-  select id::text, coalesce(view_count, 0)
+  select id::text, coalesce(p.view_count, 0)
     into v_post_id, v_view_count
-  from public.blog_posts
-  where slug = post_slug
-    and status = 'Published';
+  from public.blog_posts p
+  where p.slug = post_slug
+    and p.status = 'Published';
 
   if v_post_id is null then
     return query select 0::integer, false;
@@ -148,11 +148,11 @@ declare
   v_inserted_rows integer := 0;
   v_like_count integer := 0;
 begin
-  select id::text, coalesce(like_count, 0)
+  select id::text, coalesce(p.like_count, 0)
     into v_post_id, v_like_count
-  from public.blog_posts
-  where slug = post_slug
-    and status = 'Published';
+  from public.blog_posts p
+  where p.slug = post_slug
+    and p.status = 'Published';
 
   if v_post_id is null then
     return query select 0::integer, false;

@@ -33,8 +33,8 @@ export default function InstallPrompt({ onVisibilityChange }) {
     if (dismissed || standalone) return;
 
     const onBeforeInstallPrompt = (event) => {
-      event.preventDefault();
       if (window.localStorage.getItem(DISMISS_KEY)) return;
+      event.preventDefault();
       setDeferredPrompt(event);
     };
 
@@ -118,23 +118,7 @@ export default function InstallPrompt({ onVisibilityChange }) {
                 <Share2 size={14} /> Got it
               </button>
             </>
-          ) : showBanner ? (
-            <>
-              <p className="text-sub text-xs mt-0.5">
-                Open your browser menu and choose{" "}
-                <span className="font-semibold">Install app</span> or{" "}
-                <span className="font-semibold">Add to Home screen</span>.
-              </p>
-              <p className="mt-2 text-[11px] leading-5 text-faint">
-                Some private or incognito browsers hide native install prompts,
-                so this banner is the fallback.
-              </p>
-            </>
-          ) : (
-            <p className="text-sub text-xs mt-0.5">
-              Loading install options...
-            </p>
-          )}
+          ) : null}
         </div>
         <button
           type="button"
