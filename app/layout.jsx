@@ -40,11 +40,10 @@ import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CartDrawer from "@/components/CartDrawer";
-import WhatsAppFab from "@/components/WhatsAppFab";
 import RouteAnalytics from "@/components/RouteAnalytics";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
-import InstallPrompt from "@/components/InstallPrompt";
 import RouteResume from "@/components/RouteResume";
+import FloatingActions from "@/components/FloatingActions";
 
 export default function RootLayout({ children }) {
   return (
@@ -60,11 +59,10 @@ export default function RootLayout({ children }) {
               <RouteResume />
             </Suspense>
             <ServiceWorkerRegistration />
-            <InstallPrompt />
             <CartDrawer></CartDrawer>
+            <FloatingActions />
             {children}
             <Footer></Footer>
-            <WhatsAppFab />
           </CartProvider>
         </AuthProvider>
       </body>

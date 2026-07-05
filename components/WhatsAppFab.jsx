@@ -1,10 +1,13 @@
-export default function WhatsAppFab({ number = '254701039256' }) {
+export default function WhatsAppFab({
+  number = '254701039256',
+  positionClassName = 'bottom-6',
+}) {
   return (
     <a
       href={`https://wa.me/${number}?text=Hi%20TruePower!%20I%20need%20help%20choosing%20an%20instant%20shower.`}
       target="_blank"
       rel="noreferrer"
-      className="fixed bottom-6 right-6 z-[90] w-14 h-14 bg-[#25D366] hover:bg-[#1fb85b] rounded-full flex items-center justify-center shadow-pop transition-all hover:scale-110 active:scale-95"
+      className={`fixed ${positionClassName} right-6 z-[90] w-14 h-14 bg-[#25D366] hover:bg-[#1fb85b] rounded-full flex items-center justify-center shadow-pop transition-all hover:scale-110 active:scale-95`}
       aria-label="Chat on WhatsApp"
     >
       <svg viewBox="0 0 24 24" className="w-7 h-7 fill-white">

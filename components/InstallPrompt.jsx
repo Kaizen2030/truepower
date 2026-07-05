@@ -15,10 +15,11 @@ function isIosSafari() {
   return isIos && isSafari;
 }
 
-export default function InstallPrompt() {
+export default function InstallPrompt({ onVisibilityChange }) {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [showBanner, setShowBanner] = useState(false);
   const [showIos, setShowIos] = useState(false);
+  const isVisible = showBanner || showIos || !!deferredPrompt;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -53,6 +54,10 @@ export default function InstallPrompt() {
     };
   }, []);
 
+  useEffect(() => {
+    onVisibilityChange?.(isVisible);
+  }, [isVisible, onVisibilityChange]);
+
   function dismiss() {
     window.localStorage.setItem(DISMISS_KEY, "1");
     setShowBanner(false);
@@ -70,10 +75,10 @@ export default function InstallPrompt() {
     }
   }
 
-  if (!showBanner && !showIos && !deferredPrompt) return null;
+  if (!isVisible) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:w-[22rem] z-[999]">
+    <div className="fixed bottom-4 left-4 right-4 sm:left-4 sm:right-auto sm:w-[22rem] z-[999]">
       <div className="rounded-2xl border border-border bg-white shadow-lg p-4 flex items-start gap-3">
         <Image
           src="/icons/icon-192.png"
