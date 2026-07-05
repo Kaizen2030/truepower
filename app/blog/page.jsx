@@ -1,8 +1,5 @@
 import { createSeo, SITE_URL, DEFAULT_IMAGE } from "@/components/Seo";
 import { getPublishedBlogs, getBlogCategories } from "@/lib/blogs.js";
-import Link from "next/link";
-import BlogCard from "@/components/BlogCard";
-import { Search } from "lucide-react";
 import BlogPosts from "@/components/BlogPosts";
 import { Suspense } from "react";
 import Loading from "@/components/Loading";
