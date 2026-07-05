@@ -204,6 +204,14 @@
   .blog-rich-content .ql-align-justify {
     text-align: justify;
   }
+
+  .blog-preview-shell .blog-rich-content {
+    font-size: 0.95rem;
+  }
+
+  .blog-preview-shell .blog-rich-content img {
+    margin-block: 1rem;
+  }
 }
 
 /* ── Custom scrollbar ── */
