@@ -164,6 +164,12 @@ export default async function BlogPostPage({ params }) {
                 {post.excerpt || getBlogExcerpt(post) || "A practical article from the TruePower team."}
               </p>
 
+              {authorName ? (
+                <p className="mt-4 text-sm font-medium text-sub">
+                  Written by <span className="font-semibold text-ink">{authorName}</span>
+                </p>
+              ) : null}
+
               {post.tags?.length > 0 ? (
                 <div className="mt-5 flex flex-wrap gap-2">
                   {post.tags.map((tag) => (
@@ -177,17 +183,6 @@ export default async function BlogPostPage({ params }) {
                   ))}
                 </div>
               ) : null}
-
-              <div className="mt-7 rounded-[1.35rem] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-slate-50 p-4">
-                <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-600">
-                  <User size={13} />
-                  Author
-                </div>
-                <p className="mt-2 text-sm font-semibold text-ink">{authorName || "TruePower Team"}</p>
-                <p className="mt-1 text-sm leading-6 text-sub">
-                  Editorial notes, installation guidance, and practical product updates from TruePower.
-                </p>
-              </div>
             </div>
           </div>
         </section>
