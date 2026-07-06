@@ -609,6 +609,46 @@ export default function ReceiptBuilder() {
     window.open(url, "_blank");
   }
 
+  async function deleteReceipt(receiptId) {
+    if (!confirm("Are you sure you want to delete this receipt? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const { error } = await supabase
+        .from("receipts")
+        .delete()
+        .eq("id", receiptId);
+
+      if (error) throw error;
+
+      // Remove from local history
+      setHistory((prev) => prev.filter((r) => r.id !== receiptId));
+
+      // Clear selected receipt if it was deleted
+      if (String(selectedReceipt?.id) === String(receiptId)) {
+        setSelectedReceipt(null);
+      }
+
+      // If editing a deleted receipt, reset the form
+      if (String(savedId) === String(receiptId)) {
+        setSavedId(null);
+        setReceiptNumber(getNextReceiptNumber(history.filter((r) => r.id !== receiptId)));
+        setCustomerName("");
+        setCustomerPhone("");
+        setLines([emptyLine()]);
+        setNotes("Payment after installation\nPochi la Biashara: 0701 039256\n2 years warranty");
+      }
+
+      setIsReceiptModalOpen(false);
+    } catch (error) {
+      alert(error.message || "Could not delete receipt");
+    } finally {
+      setSaving(false);
+    }
+  }
+
   function renderReceiptDetails(
     receipt,
     { showActions = false, showOpenDetails = true } = {},
@@ -631,6 +671,13 @@ export default function ReceiptBuilder() {
               onClick={() => startEditingReceipt(receipt)}
             >
               Edit in builder
+            </button>
+            <button
+              type="button"
+              className="px-3 py-2 text-xs sm:text-sm rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition"
+              onClick={() => deleteReceipt(receipt.id)}
+            >
+              <Trash2 size={14} className="inline mr-1" /> Delete receipt
             </button>
             {showOpenDetails && (
               <button
@@ -878,6 +925,13 @@ export default function ReceiptBuilder() {
                           onClick={() => startEditingReceipt(r)}
                         >
                           Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="px-3 py-2 text-xs rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition"
+                          onClick={() => deleteReceipt(r.id)}
+                        >
+                          <Trash2 size={14} className="inline mr-1" /> Delete
                         </button>
                       </div>
                     </article>
