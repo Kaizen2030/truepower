@@ -155,7 +155,7 @@ export default function ReceiptBuilder() {
 
   const [business, setBusiness] = useState({
     name: "TruePower Solutions",
-    address: "Maridadi Plaza",
+    address: "",
     phone: "+254 701 039256",
     website: "https://www.truepower.co.ke/",
     logo: "/logo.png",
