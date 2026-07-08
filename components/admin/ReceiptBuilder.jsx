@@ -122,6 +122,31 @@ function isWithinHistoryRange(row, bounds) {
   return true;
 }
 
+const RECYCLE_BIN_STORAGE_KEY = "truepower.receipt.recycle-bin";
+
+function readDeletedReceiptIds() {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const raw = window.localStorage.getItem(RECYCLE_BIN_STORAGE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeDeletedReceiptIds(ids) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(RECYCLE_BIN_STORAGE_KEY, JSON.stringify(ids));
+  } catch {
+  }
+}
+
 export default function ReceiptBuilder() {
   const [products, setProducts] = useState([]);
   const [productQuery, setProductQuery] = useState("");
@@ -150,6 +175,8 @@ export default function ReceiptBuilder() {
   const [savedId, setSavedId] = useState(null);
 
   const [history, setHistory] = useState([]);
+  const [deletedReceiptIds, setDeletedReceiptIds] = useState([]);
+  const [recycleBinNotice, setRecycleBinNotice] = useState(null);
   const [activePanel, setActivePanel] = useState("builder");
   const [historyQuery, setHistoryQuery] = useState("");
   const [historyRange, setHistoryRange] = useState("all");
@@ -160,12 +187,17 @@ export default function ReceiptBuilder() {
   const printRef = useRef();
 
   useEffect(() => {
+    setDeletedReceiptIds(readDeletedReceiptIds());
     getProducts()
       .then(setProducts)
       .catch(() => setProducts([]));
     loadSettings();
     loadHistory();
   }, []);
+
+  useEffect(() => {
+    writeDeletedReceiptIds(deletedReceiptIds);
+  }, [deletedReceiptIds]);
 
   async function loadSettings() {
     try {
@@ -213,6 +245,16 @@ export default function ReceiptBuilder() {
     return products.filter((p) => p.name?.toLowerCase().includes(q)).slice(0, 30);
   }, [productQuery, products]);
 
+  const activeHistory = useMemo(
+    () => history.filter((row) => !deletedReceiptIds.includes(String(row.id))),
+    [history, deletedReceiptIds],
+  );
+
+  const recycleBinHistory = useMemo(
+    () => history.filter((row) => deletedReceiptIds.includes(String(row.id))),
+    [history, deletedReceiptIds],
+  );
+
   const historyPeriodStats = useMemo(() => {
     const windows = [
       { key: "today", label: "Today" },
@@ -225,7 +267,7 @@ export default function ReceiptBuilder() {
 
     return windows.map((window) => {
       const bounds = getHistoryRangeBounds(window.key);
-      const rows = history.filter((row) => isWithinHistoryRange(row, bounds));
+      const rows = activeHistory.filter((row) => isWithinHistoryRange(row, bounds));
       const totalSales = rows.reduce((sum, row) => sum + (Number(row?.total) || 0), 0);
 
       return {
@@ -234,12 +276,12 @@ export default function ReceiptBuilder() {
         totalSales,
       };
     });
-  }, [history]);
+  }, [activeHistory]);
 
   const rangeFilteredHistory = useMemo(() => {
     const bounds = getHistoryRangeBounds(historyRange);
-    return history.filter((row) => isWithinHistoryRange(row, bounds));
-  }, [history, historyRange]);
+    return activeHistory.filter((row) => isWithinHistoryRange(row, bounds));
+  }, [activeHistory, historyRange]);
 
   const filteredHistory = useMemo(() => {
     const q = historyQuery.trim().toLowerCase();
@@ -609,32 +651,35 @@ export default function ReceiptBuilder() {
     window.open(url, "_blank");
   }
 
+  function restoreReceipt(receiptId) {
+    const nextDeletedIds = deletedReceiptIds.filter((id) => String(id) !== String(receiptId));
+    setDeletedReceiptIds(nextDeletedIds);
+    writeDeletedReceiptIds(nextDeletedIds);
+    setRecycleBinNotice(null);
+  }
+
   async function deleteReceipt(receiptId) {
-    if (!confirm("Are you sure you want to delete this receipt? This action cannot be undone.")) {
+    const receiptToDelete = history.find((entry) => String(entry.id) === String(receiptId));
+    if (!receiptToDelete) return;
+
+    if (!window.confirm("Move this receipt to the recycle bin? You can undo it later.")) {
       return;
     }
 
     try {
       setSaving(true);
-      const { error } = await supabase
-        .from("receipts")
-        .delete()
-        .eq("id", receiptId);
+      const nextDeletedIds = Array.from(new Set([...deletedReceiptIds, String(receiptId)]));
+      setDeletedReceiptIds(nextDeletedIds);
+      writeDeletedReceiptIds(nextDeletedIds);
+      setRecycleBinNotice(receiptToDelete);
 
-      if (error) throw error;
-
-      // Remove from local history
-      setHistory((prev) => prev.filter((r) => r.id !== receiptId));
-
-      // Clear selected receipt if it was deleted
       if (String(selectedReceipt?.id) === String(receiptId)) {
         setSelectedReceipt(null);
       }
 
-      // If editing a deleted receipt, reset the form
       if (String(savedId) === String(receiptId)) {
         setSavedId(null);
-        setReceiptNumber(getNextReceiptNumber(history.filter((r) => r.id !== receiptId)));
+        setReceiptNumber(getNextReceiptNumber(activeHistory.filter((row) => String(row.id) !== String(receiptId))));
         setCustomerName("");
         setCustomerPhone("");
         setLines([emptyLine()]);
@@ -643,7 +688,7 @@ export default function ReceiptBuilder() {
 
       setIsReceiptModalOpen(false);
     } catch (error) {
-      alert(error.message || "Could not delete receipt");
+      alert(error.message || "Could not move receipt to the recycle bin");
     } finally {
       setSaving(false);
     }
@@ -674,10 +719,10 @@ export default function ReceiptBuilder() {
             </button>
             <button
               type="button"
-              className="px-3 py-2 text-xs sm:text-sm rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition"
+              className="px-3 py-2 text-xs sm:text-sm rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition"
               onClick={() => deleteReceipt(receipt.id)}
             >
-              <Trash2 size={14} className="inline mr-1" /> Delete receipt
+              <Trash2 size={14} className="inline mr-1" /> Move to recycle bin
             </button>
             {showOpenDetails && (
               <button
@@ -811,6 +856,55 @@ export default function ReceiptBuilder() {
           </button>
         </div>
 
+        {recycleBinNotice && (
+          <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <div className="font-semibold">Receipt #{recycleBinNotice.receipt_number || ""} moved to the recycle bin.</div>
+                <div className="mt-1 text-xs text-amber-700">You can undo this action right here.</div>
+              </div>
+              <button
+                type="button"
+                className="rounded-full border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-700 transition hover:bg-amber-100"
+                onClick={() => restoreReceipt(recycleBinNotice.id)}
+              >
+                Undo
+              </button>
+            </div>
+          </div>
+        )}
+
+        {recycleBinHistory.length > 0 && (
+          <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.22em] text-amber-700 font-semibold">Recycle bin</div>
+                <div className="mt-1 text-sm font-semibold text-amber-800">Deleted receipts stay here until you restore them.</div>
+              </div>
+              <div className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm">
+                {recycleBinHistory.length}
+              </div>
+            </div>
+            <div className="mt-3 grid gap-2">
+              {recycleBinHistory.map((receipt) => (
+                <div key={receipt.id} className="flex flex-col gap-2 rounded-2xl border border-amber-200 bg-white/90 p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <div className="text-sm font-semibold">#{receipt.receipt_number}</div>
+                    <div className="text-xs text-sub">{receipt.customer_name || "Customer"} • {formatReceiptDate(receipt.created_at)}</div>
+                  </div>
+                  <button
+                    type="button"
+                    className="rounded-full border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:bg-amber-100"
+                    onClick={() => restoreReceipt(receipt.id)}
+                  >
+                    Undo
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="rounded-3xl border border-brand-100 bg-gradient-to-r from-brand-50 via-white to-sky-50 p-4 sm:p-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex-1">
@@ -829,7 +923,7 @@ export default function ReceiptBuilder() {
             <div className="grid grid-cols-2 gap-3 lg:min-w-[260px]">
               <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Receipts</div>
-                <div className="mt-1 text-lg font-semibold text-ink">{history.length}</div>
+                <div className="mt-1 text-lg font-semibold text-ink">{activeHistory.length}</div>
               </div>
               <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Results</div>
@@ -928,10 +1022,10 @@ export default function ReceiptBuilder() {
                         </button>
                         <button
                           type="button"
-                          className="px-3 py-2 text-xs rounded-lg border border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300 transition"
+                          className="px-3 py-2 text-xs rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition"
                           onClick={() => deleteReceipt(r.id)}
                         >
-                          <Trash2 size={14} className="inline mr-1" /> Delete
+                          <Trash2 size={14} className="inline mr-1" /> Move to bin
                         </button>
                       </div>
                     </article>
@@ -1292,8 +1386,6 @@ export default function ReceiptBuilder() {
                 </p>
                 <p className="text-faint text-[11px] mt-1 print:text-[10px] print:mt-0.5">
                   <span className="break-all">{business.website}</span>
-                  <span className="mx-2">|</span>
-                  Maridadi Plaza
                 </p>
               </div>
             </div>

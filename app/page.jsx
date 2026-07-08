@@ -35,7 +35,6 @@ export default async function HomePage() {
     priceRange: "KSh 80 - KSh 30000",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Maridadi Business Plaza, 5 Ambala Rd",
       addressLocality: "Nairobi",
       addressRegion: "Nairobi County",
       addressCountry: "KE",
