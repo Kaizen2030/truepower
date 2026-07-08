@@ -179,8 +179,10 @@ export default function ReceiptBuilder() {
   const [recycleBinNotice, setRecycleBinNotice] = useState(null);
   const [activePanel, setActivePanel] = useState("builder");
   const [historyQuery, setHistoryQuery] = useState("");
+  const [binQuery, setBinQuery] = useState("");
   const [historyRange, setHistoryRange] = useState("all");
   const [historyPage, setHistoryPage] = useState(0);
+  const [binPage, setBinPage] = useState(0);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
@@ -307,6 +309,29 @@ export default function ReceiptBuilder() {
   const historyPageCount = Math.max(1, Math.ceil(filteredHistory.length / historyPageSize));
   const visibleHistory = filteredHistory.slice(historyPage * historyPageSize, (historyPage + 1) * historyPageSize);
 
+  const filteredBinHistory = useMemo(() => {
+    const q = binQuery.trim().toLowerCase();
+    if (!q) return recycleBinHistory;
+
+    return recycleBinHistory.filter((row) => {
+      const fields = [
+        row?.receipt_number,
+        row?.customer_name,
+        row?.customer_phone,
+        row?.total,
+        row?.created_at,
+        ...(Array.isArray(row?.items) ? row.items.map((item) => item?.description || item?.product_name || item?.name || "") : []),
+      ]
+        .map((value) => String(value || "").toLowerCase().trim())
+        .filter(Boolean);
+
+      return fields.some((value) => value.includes(q));
+    });
+  }, [recycleBinHistory, binQuery]);
+
+  const binPageCount = Math.max(1, Math.ceil(filteredBinHistory.length / historyPageSize));
+  const visibleBinHistory = filteredBinHistory.slice(binPage * historyPageSize, (binPage + 1) * historyPageSize);
+
   useEffect(() => {
     setHistoryPage(0);
     setSelectedReceipt((current) => {
@@ -316,6 +341,10 @@ export default function ReceiptBuilder() {
         : filteredHistory[0] || null;
     });
   }, [historyQuery, historyRange, filteredHistory]);
+
+  useEffect(() => {
+    setBinPage(0);
+  }, [binQuery, recycleBinHistory]);
 
   function addLine() {
     setLines((ls) => [...ls, emptyLine()]);
@@ -874,37 +903,6 @@ export default function ReceiptBuilder() {
           </div>
         )}
 
-        {recycleBinHistory.length > 0 && (
-          <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
-            <div className="flex items-center justify-between gap-3">
-              <div>
-                <div className="text-[11px] uppercase tracking-[0.22em] text-amber-700 font-semibold">Recycle bin</div>
-                <div className="mt-1 text-sm font-semibold text-amber-800">Deleted receipts stay here until you restore them.</div>
-              </div>
-              <div className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-amber-700 shadow-sm">
-                {recycleBinHistory.length}
-              </div>
-            </div>
-            <div className="mt-3 grid gap-2">
-              {recycleBinHistory.map((receipt) => (
-                <div key={receipt.id} className="flex flex-col gap-2 rounded-2xl border border-amber-200 bg-white/90 p-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <div className="text-sm font-semibold">#{receipt.receipt_number}</div>
-                    <div className="text-xs text-sub">{receipt.customer_name || "Customer"} • {formatReceiptDate(receipt.created_at)}</div>
-                  </div>
-                  <button
-                    type="button"
-                    className="rounded-full border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:bg-amber-100"
-                    onClick={() => restoreReceipt(receipt.id)}
-                  >
-                    Undo
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="rounded-3xl border border-brand-100 bg-gradient-to-r from-brand-50 via-white to-sky-50 p-4 sm:p-5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex-1">
@@ -1079,6 +1077,179 @@ export default function ReceiptBuilder() {
     );
   }
 
+  function renderBinPanel() {
+    const totalMatches = filteredBinHistory.length;
+    const showingStart = totalMatches === 0 ? 0 : binPage * historyPageSize + 1;
+    const showingEnd = Math.min((binPage + 1) * historyPageSize, totalMatches);
+    const selectedBinReceipt =
+      selectedReceipt && filteredBinHistory.some((row) => String(row.id) === String(selectedReceipt.id))
+        ? selectedReceipt
+        : visibleBinHistory[0] || filteredBinHistory[0] || null;
+
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-amber-700">Recycle Bin</p>
+            <h2 className="font-display font-bold text-2xl sm:text-3xl text-ink">Deleted receipts</h2>
+            <p className="text-sub text-sm">Restore deleted receipts or keep them in the recycle bin.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setActivePanel("builder")}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50"
+            >
+              <X size={16} /> Back to Builder
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActivePanel("history");
+                setHistoryPage(0);
+                setSelectedReceipt(filteredHistory[0] || null);
+              }}
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700"
+            >
+              <History size={16} /> View Sales History
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label className="label">Search deleted receipts</label>
+              <input
+                className="input bg-white"
+                value={binQuery}
+                onChange={(e) => {
+                  setBinQuery(e.target.value);
+                  setBinPage(0);
+                  setSelectedReceipt(null);
+                }}
+                placeholder="Search receipt number, customer, phone or item..."
+              />
+            </div>
+            <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Deleted receipts</div>
+              <div className="mt-1 text-lg font-semibold text-ink">{totalMatches}</div>
+            </div>
+            <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
+              <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Page</div>
+              <div className="mt-1 text-lg font-semibold text-ink">{binPage + 1} / {binPageCount}</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
+          <div className="rounded-3xl border border-border bg-white p-4 sm:p-5">
+            {totalMatches === 0 ? (
+              <p className="text-sub text-sm">No deleted receipts in the recycle bin.</p>
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2">
+                {visibleBinHistory.map((r) => {
+                  const isActive = String(selectedReceipt?.id || "") === String(r.id);
+                  return (
+                    <article
+                      key={r.id}
+                      className={`rounded-3xl border p-4 text-left shadow-sm transition ${
+                        isActive
+                          ? "border-amber-400 bg-amber-50 ring-2 ring-amber-100"
+                          : "border-border bg-white hover:border-amber-300 hover:bg-amber-50"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-sm font-semibold">#{r.receipt_number}</div>
+                          <div className="text-xs text-sub mt-1">{r.customer_name || "Customer"}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-sm font-semibold text-amber-700">KSh {formatMoney(r.total)}</div>
+                          <div className="text-xs text-sub mt-1">{r.customer_phone || "No phone"}</div>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-faint">
+                        <span>{formatReceiptDate(r.created_at)}</span>
+                        <span className="truncate">{summarizeItems(r.items)}</span>
+                      </div>
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          className="btn-ghost px-3 py-2 text-xs"
+                          onClick={() => {
+                            setSelectedReceipt(r);
+                            setIsReceiptModalOpen(true);
+                          }}
+                        >
+                          View
+                        </button>
+                        <button
+                          type="button"
+                          className="btn-outline px-3 py-2 text-xs"
+                          onClick={() => startEditingReceipt(r)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          type="button"
+                          className="px-3 py-2 text-xs rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition"
+                          onClick={() => restoreReceipt(r.id)}
+                        >
+                          Undo
+                        </button>
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+
+            {binPageCount > 1 && (
+              <div className="mt-5 flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-xs text-sub">
+                  Showing {showingStart}-{showingEnd} of {totalMatches} deleted receipts
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    className="btn-ghost px-3 py-2 text-sm disabled:opacity-50"
+                    disabled={binPage === 0}
+                    onClick={() => {
+                      setBinPage((page) => Math.max(0, page - 1));
+                      setSelectedReceipt(visibleBinHistory[0] || filteredBinHistory[0] || null);
+                    }}
+                  >
+                    Prev
+                  </button>
+                  <span className="text-xs font-semibold text-sub">
+                    Page {binPage + 1} of {binPageCount}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn-ghost px-3 py-2 text-sm disabled:opacity-50"
+                    disabled={binPage + 1 >= binPageCount}
+                    onClick={() => {
+                      setBinPage((page) => Math.min(binPageCount - 1, page + 1));
+                      const nextStart = Math.min((binPage + 1) * historyPageSize, Math.max(0, filteredBinHistory.length - 1));
+                      setSelectedReceipt(filteredBinHistory[nextStart] || filteredBinHistory[0] || null);
+                    }}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-3xl border border-border bg-white p-4 sm:p-5">
+            {renderReceiptDetails(selectedBinReceipt, { showActions: true })}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const receiptNotes = notes?.trim()
     ? notes.trim()
     : "Payment after installation";
@@ -1090,17 +1261,30 @@ export default function ReceiptBuilder() {
           <div className="space-y-6 print:hidden min-w-0">
             <div className="flex items-center justify-between gap-3">
               <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
-              <button
-                type="button"
-                onClick={() => {
-                  setActivePanel("history");
-                  setSelectedReceipt(filteredHistory[0] || null);
-                  setHistoryPage(0);
-                }}
-                className="inline-flex items-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700"
-              >
-                <History size={16} /> Sales History
-              </button>
+              <div className="flex gap-2 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActivePanel("history");
+                    setSelectedReceipt(filteredHistory[0] || null);
+                    setHistoryPage(0);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700"
+                >
+                  <History size={16} /> Sales History
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActivePanel("bin");
+                    setBinPage(0);
+                    setSelectedReceipt(null);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full border border-amber-500 bg-amber-50 px-4 py-2 text-xs sm:text-sm font-semibold text-amber-700 shadow-sm transition hover:bg-amber-100 hover:border-amber-600"
+                >
+                  <Trash2 size={16} /> Recycle Bin
+                </button>
+              </div>
             </div>
 
             {loadError && (
@@ -1391,9 +1575,13 @@ export default function ReceiptBuilder() {
             </div>
           </div>
         </>
-      ) : (
+      ) : activePanel === "history" ? (
         <div className="col-span-full min-w-0">
           {renderHistoryPanel()}
+        </div>
+      ) : (
+        <div className="col-span-full min-w-0">
+          {renderBinPanel()}
         </div>
       )}
 
