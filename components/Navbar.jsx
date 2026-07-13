@@ -64,9 +64,12 @@ export default function Navbar() {
   const [showInstall, setShowInstall] = useState(false);
   const [isIos, setIsIos] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [categoryScrollable, setCategoryScrollable] = useState(false);
   const accountRef = useRef(null);
   const accountBtnRef = useRef(null);
   const accountMenuRef = useRef(null);
+  const categoryRef = useRef(null);
   const [menuPos, setMenuPos] = useState(null);
 
   useEffect(() => {
@@ -98,6 +101,31 @@ export default function Navbar() {
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
     };
   }, []);
+
+  useEffect(() => {
+    const container = categoryRef.current;
+    if (!container) return;
+
+    const updateScroll = () => {
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      if (maxScroll <= 0) {
+        setCategoryScrollable(false);
+        setScrollProgress(0);
+        return;
+      }
+      setCategoryScrollable(true);
+      setScrollProgress((container.scrollLeft / maxScroll) * 100);
+    };
+
+    updateScroll();
+    container.addEventListener("scroll", updateScroll);
+    window.addEventListener("resize", updateScroll);
+
+    return () => {
+      container.removeEventListener("scroll", updateScroll);
+      window.removeEventListener("resize", updateScroll);
+    };
+  }, [categoryRef.current]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -269,15 +297,21 @@ export default function Navbar() {
               <ShoppingTagButton />
 
               {/* Menu button open */}
-              <button onClick={() => setOpen(!open)}>
+              <button
+                type="button"
+                onClick={() => setOpen(!open)}
+                aria-label={open ? "Close menu" : "Open menu"}
+                title={open ? "Close menu" : "Open menu"}
+                className="inline-flex items-center justify-center rounded-full bg-slate-100 p-2 text-slate-700 transition-colors hover:bg-slate-200 md:hidden"
+              >
                 <Menu />
               </button>
             </div>
           </div>
         </div>
-        <div className="relative">
-          <div className="w-full mx-auto container overflow-x-auto scrollbar-hide border-b border-t border-border py-3 md:py-2 -mx-4 px-4 md:-mx-0 md:px-0">
-            <div className="flex gap-2 min-w-max whitespace-nowrap snap-x snap-mandatory px-1">
+        <div className="relative border-b border-border">
+          <div className="w-full mx-auto container overflow-x-auto scrollbar-hide border-t border-border py-3 md:py-2 -mx-4 px-4 md:-mx-0 md:px-0 bg-white">
+            <div className="flex gap-2 min-w-max whitespace-nowrap snap-x snap-mandatory px-1" ref={categoryRef}>
               {CATS.map((cat) => {
                 const isActive = activeCategory === cat.key;
                 return (
@@ -299,6 +333,12 @@ export default function Navbar() {
           </div>
           <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent md:hidden" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent md:hidden" />
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-slate-100 md:hidden">
+            <div
+              className="h-full rounded-full bg-brand-500 transition-all duration-200"
+              style={{ width: `${Math.max(16, Math.min(84, 100 - scrollProgress))}%`, transform: `translateX(${scrollProgress}% )` }}
+            />
+          </div>
         </div>
         {/* SEARCH (UPGRADED ONLY) */}
         <div className="px-4 pt-3 sm:px-6 lg:px-10 xl:px-1 md:hidden block">
