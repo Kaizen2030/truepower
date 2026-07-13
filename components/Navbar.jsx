@@ -23,7 +23,7 @@ import SearchProducts from "./SearchProducts";
 import ShoppingTagButton from "@/components/product/ShoppingTagButton";
 import WishListCountLink from "@/components/product/WishListCountLink";
 import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -46,14 +46,17 @@ export default function Navbar() {
   ];
 
   const CATS = [
-    { to: "/shop", label: "All Products" },
-    { to: "/shop?category=water_heaters", label: "Instant Showers" },
-    { to: "/shop?category=bulbs_lighting", label: "Bulbs & Lighting" },
-    { to: "/shop?category=switches_sockets", label: "Switches & Sockets" },
-    { to: "/shop?category=solar_solutions", label: "Solar Solutions" },
-    { to: "/shop?category=water_pumps", label: "Water Pumps" },
+    { key: "all_products", to: "/shop", label: "All Products" },
+    { key: "water_heaters", to: "/shop?category=water_heaters", label: "Instant Showers" },
+    { key: "bulbs_lighting", to: "/shop?category=bulbs_lighting", label: "Bulbs & Lighting" },
+    { key: "switches_sockets", to: "/shop?category=switches_sockets", label: "Switches & Sockets" },
+    { key: "solar_solutions", to: "/shop?category=solar_solutions", label: "Solar Solutions" },
+    { key: "water_pumps", to: "/shop?category=water_pumps", label: "Water Pumps" },
   ];
   const auth = useAuth();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const activeCategory = pathname === "/shop" ? searchParams.get("category") || "all_products" : "";
   const { user, isAdmin, signOut = async () => {}, profile } = auth ?? {};
 
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
@@ -270,16 +273,22 @@ export default function Navbar() {
           </div>
         </div>
         <div className=" w-full mx-auto container flex  gap-2 flex-wrap py-2 border-b border-t border-border md:justify-between">
-          {CATS.map((cat) => (
-            <Link
-              key={cat.to}
-              href={cat.to}
-              className="text-[12px] font-extrabold
-            "
-            >
-              {cat.label}
-            </Link>
-          ))}
+          {CATS.map((cat) => {
+            const isActive = activeCategory === cat.key;
+            return (
+              <Link
+                key={cat.key}
+                href={cat.to}
+                className={`text-[12px] font-extrabold rounded-full px-3 py-2 transition-colors ${
+                  isActive
+                    ? "bg-brand-500 text-white"
+                    : "text-ink hover:bg-brand-50 hover:text-brand-600"
+                }`}
+              >
+                {cat.label}
+              </Link>
+            );
+          })}
         </div>
         {/* SEARCH (UPGRADED ONLY) */}
         <div className="px-4 pt-3 sm:px-6 lg:px-10 xl:px-1 md:hidden block">
