@@ -254,7 +254,10 @@ export default function Navbar() {
                   )}
                 </>
               ) : (
-                <Link href="/login" className="btn-primary btn-login">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition duration-200 hover:bg-brand-600"
+                >
                   <User size={16} className="hidden md:inline-flex" />
                   Login
                 </Link>
@@ -272,23 +275,30 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-        <div className=" w-full mx-auto container flex  gap-2 flex-wrap py-2 border-b border-t border-border md:justify-between">
-          {CATS.map((cat) => {
-            const isActive = activeCategory === cat.key;
-            return (
-              <Link
-                key={cat.key}
-                href={cat.to}
-                className={`text-[12px] font-extrabold rounded-full px-3 py-2 transition-colors ${
-                  isActive
-                    ? "bg-brand-500 text-white"
-                    : "text-ink hover:bg-brand-50 hover:text-brand-600"
-                }`}
-              >
-                {cat.label}
-              </Link>
-            );
-          })}
+        <div className="relative">
+          <div className="w-full mx-auto container overflow-x-auto scrollbar-hide border-b border-t border-border py-3 md:py-2 -mx-4 px-4 md:-mx-0 md:px-0">
+            <div className="flex gap-2 min-w-max whitespace-nowrap snap-x snap-mandatory px-1">
+              {CATS.map((cat) => {
+                const isActive = activeCategory === cat.key;
+                return (
+                  <Link
+                    key={cat.key}
+                    href={cat.to}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`inline-flex items-center justify-center snap-center whitespace-nowrap rounded-full px-4 py-2 text-[12px] font-extrabold transition duration-200 ease-in-out ${
+                      isActive
+                        ? "bg-brand-500 text-white shadow-sm border border-brand-500"
+                        : "bg-white text-ink border border-border hover:border-brand-300 hover:bg-brand-50 hover:text-brand-600"
+                    }`}
+                  >
+                    {cat.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-12 bg-gradient-to-r from-white to-transparent md:hidden" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-white to-transparent md:hidden" />
         </div>
         {/* SEARCH (UPGRADED ONLY) */}
         <div className="px-4 pt-3 sm:px-6 lg:px-10 xl:px-1 md:hidden block">

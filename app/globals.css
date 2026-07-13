@@ -96,6 +96,14 @@
     @apply border-t border-border;
   }
 
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Blog editor and content */
   .blog-quill .ql-toolbar {
     @apply border-0 border-b border-border bg-gradient-to-r from-slate-50 to-white px-3 py-2;

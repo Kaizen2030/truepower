@@ -36,12 +36,22 @@ export default function ResetPasswordPage() {
           searchParams.has("access_token") ||
           searchParams.get("type") === "recovery";
 
-        const code = searchParams.get("code");
+        if (hasRecoveryLink) {
+          const code = searchParams.get("code");
 
-        if (code) {
-          const { error: exchangeError } =
-            await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError) throw exchangeError;
+          if (code) {
+            const { error: exchangeError } =
+              await supabase.auth.exchangeCodeForSession(code);
+            if (exchangeError) throw exchangeError;
+          } else {
+            const { data, error: urlError } =
+              await supabase.auth.getSessionFromUrl({ storeSession: true });
+            if (urlError) throw urlError;
+            if (!data?.session) {
+              throw new Error("Unable to restore reset session from the URL.");
+            }
+          }
+
           window.history.replaceState({}, document.title, "/reset-password");
         }
 
@@ -52,8 +62,12 @@ export default function ResetPasswordPage() {
         if (!active) return;
         setReady(Boolean(session));
 
-        if (!session && !hasRecoveryLink) {
-          setError("Open the password reset link from your email first.");
+        if (!session) {
+          setError(
+            hasRecoveryLink
+              ? "This reset link is invalid or expired. Request a new one and try again."
+              : "Open the password reset link from your email first.",
+          );
         }
       } catch (err) {
         if (!active) return;
