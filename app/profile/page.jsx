@@ -17,14 +17,14 @@ function ProfileEditor({ user, initialProfile = {}, setAuthProfile }) {
   const saveMsgTimerRef = useRef(null);
   const avatarMsgTimerRef = useRef(null);
 
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    return () => {
       if (saveMsgTimerRef.current) window.clearTimeout(saveMsgTimerRef.current);
       if (avatarMsgTimerRef.current)
         window.clearTimeout(avatarMsgTimerRef.current);
-    },
-    [],
-  );
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
+    };
+  }, [avatarPreview]);
 
   const flashSaveMessage = (message) => {
     if (saveMsgTimerRef.current) window.clearTimeout(saveMsgTimerRef.current);
@@ -66,6 +66,7 @@ function ProfileEditor({ user, initialProfile = {}, setAuthProfile }) {
   const handleAvatarSelect = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (avatarPreview) URL.revokeObjectURL(avatarPreview);
     setAvatarPreview(URL.createObjectURL(file));
     setAvatarFile(file);
     setAvatarMsg("");
@@ -76,6 +77,8 @@ function ProfileEditor({ user, initialProfile = {}, setAuthProfile }) {
     setSavingAvatar(true);
     setAvatarMsg("");
     try {
+      // NOTE: verify "products" is really the intended storage bucket for
+      // user avatars, not left over from product-image upload code.
       const publicUrl = await uploadImage(avatarFile, "products");
       const payload = {
         id: user.id,
@@ -87,6 +90,7 @@ function ProfileEditor({ user, initialProfile = {}, setAuthProfile }) {
       const nextProfile = savedProfile || payload;
       setProfile(nextProfile);
       setAuthProfile?.(nextProfile);
+      if (avatarPreview) URL.revokeObjectURL(avatarPreview);
       setAvatarFile(null);
       setAvatarPreview(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -226,7 +230,7 @@ export default function ProfilePage() {
 
   return (
     <ProfileEditor
-      key={user.id}
+      key={`${user.id}-${authProfile?.id || "nouser"}`}
       user={user}
       initialProfile={authProfile || {}}
       setAuthProfile={setAuthProfile}

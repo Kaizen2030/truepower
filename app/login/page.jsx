@@ -156,7 +156,7 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   className="input pr-10"
                   placeholder="••••••••"
-                  required={!resetMode}
+                  required
                 />
                 <button
                   type="button"
@@ -202,12 +202,28 @@ export default function LoginPage() {
                 type="button"
                 onClick={() => {
                   setIsLogin(!isLogin);
+                  setResetMode(false);
                   setError("");
                   setPassword("");
                 }}
                 className="text-brand-500 font-semibold hover:underline"
               >
                 {isLogin ? "Create account" : "Sign in"}
+              </button>
+            </div>
+          )}
+
+          {resetMode && (
+            <div className="flex items-center justify-center text-sm text-sub">
+              <button
+                type="button"
+                onClick={() => {
+                  setResetMode(false);
+                  setError("");
+                }}
+                className="hover:text-brand-500 transition-colors"
+              >
+                Back to sign in
               </button>
             </div>
           )}
