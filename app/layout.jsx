@@ -51,7 +51,9 @@ export default function RootLayout({ children }) {
       <body>
         <AuthProvider>
           <CartProvider>
-            <Navbar></Navbar>
+            <Suspense fallback={null}>
+              <Navbar />
+            </Suspense>
             <Suspense fallback={null}>
               <RouteAnalytics />
             </Suspense>
