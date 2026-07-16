@@ -132,12 +132,18 @@
     color: #334155;
     font-size: 1.03rem;
     line-height: 1.9;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    -webkit-hyphens: auto;
+    hyphens: auto;
   }
 
   .blog-rich-content > :first-child {
     margin-top: 0;
   }
 
+  .blog-rich-content h1,
   .blog-rich-content h2,
   .blog-rich-content h3 {
     margin-top: 2rem;
@@ -145,18 +151,28 @@
     color: #0f172a;
     font-family: "Inter", sans-serif;
     font-weight: 800;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .blog-rich-content h1 {
+    font-size: clamp(1.65rem, 4vw, 2.25rem);
   }
 
   .blog-rich-content h2 {
-    font-size: clamp(1.45rem, 2vw, 1.95rem);
+    font-size: clamp(1.35rem, 3vw, 1.95rem);
   }
 
   .blog-rich-content h3 {
-    font-size: clamp(1.2rem, 1.5vw, 1.45rem);
+    font-size: clamp(1.1rem, 2.5vw, 1.45rem);
   }
 
   .blog-rich-content p {
     margin: 0 0 1rem;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .blog-rich-content ul,
@@ -165,6 +181,13 @@
     padding-left: 1.4rem;
     display: grid;
     gap: 0.55rem;
+    overflow-x: hidden;
+  }
+
+  .blog-rich-content li {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
   }
 
   .blog-rich-content blockquote {
@@ -174,20 +197,28 @@
     border-radius: 0 1rem 1rem 0;
     background: linear-gradient(135deg, rgba(27, 79, 216, 0.06), rgba(15, 110, 86, 0.05));
     color: #334155;
+    overflow-x: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .blog-rich-content a {
     color: #1b4fd8;
     text-decoration: underline;
     text-underline-offset: 0.18em;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
   }
 
   .blog-rich-content img {
     display: block;
     max-width: 100%;
+    width: 100%;
+    height: auto;
     margin: 1.35rem auto;
     border-radius: 1.25rem;
     box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    object-fit: contain;
   }
 
   .blog-rich-content figure {

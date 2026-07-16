@@ -189,7 +189,7 @@ export default async function BlogPostPage({ params }) {
         </section>
 
         <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-          <article className="rounded-[2rem] border border-border bg-white p-6 shadow-card sm:p-8 lg:p-10">
+          <article className="rounded-[2rem] border border-border bg-white p-4 shadow-card sm:p-6 lg:p-10 overflow-hidden">
             <BlogContentRenderer
               content={post.body || post.content || ""}
               className="blog-rich-content"
