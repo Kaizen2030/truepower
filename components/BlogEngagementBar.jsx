@@ -192,15 +192,17 @@ export default function BlogEngagementBar({
 
   return (
     <div className="flex flex-col gap-3 rounded-[1.2rem] border border-border bg-gradient-to-br from-slate-50 via-white to-brand-50/20 p-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-wrap items-center gap-2 text-sm text-sub">
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 font-semibold text-ink shadow-sm">
-          <Eye size={14} />
-          {viewCount} views
-        </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 font-semibold text-ink shadow-sm">
-          <Heart size={14} />
-          {likeCount} likes
-        </span>
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-sub">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 font-semibold text-ink shadow-sm">
+            <Eye size={14} />
+            {viewCount} views
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 font-semibold text-ink shadow-sm">
+            <Heart size={14} />
+            {likeCount} likes
+          </span>
+        </div>
         {statusMessage ? (
           <span className="text-xs font-medium text-sub">{statusMessage}</span>
         ) : null}
@@ -210,7 +212,7 @@ export default function BlogEngagementBar({
         type="button"
         onClick={handleLike}
         disabled={viewerLiked || liking || loading}
-        className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
+        className={`w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
           viewerLiked
             ? "border border-brand-200 bg-brand-50 text-brand-700"
             : "border border-brand-600 bg-brand-600 text-white hover:bg-brand-700"
