@@ -76,6 +76,21 @@ function summarizeItems(items) {
   return remaining > 0 ? `${first}, ${second} +${remaining} more` : `${first}, ${second}`;
 }
 
+const MONTH_LABELS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+];
+
 function getHistoryRangeBounds(range) {
   const start = new Date();
   const end = new Date();
@@ -113,6 +128,22 @@ function getHistoryRangeBounds(range) {
     return null;
   }
 
+  return { start, end };
+}
+
+function getMonthRangeBounds(year, monthIndex) {
+  const start = new Date(year, monthIndex, 1);
+  const end = new Date(year, monthIndex + 1, 1);
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+  return { start, end };
+}
+
+function getYearRangeBounds(year) {
+  const start = new Date(year, 0, 1);
+  const end = new Date(year + 1, 0, 1);
+  start.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
   return { start, end };
 }
 
@@ -185,7 +216,9 @@ export default function ReceiptBuilder() {
   const [activePanel, setActivePanel] = useState("builder");
   const [historyQuery, setHistoryQuery] = useState("");
   const [binQuery, setBinQuery] = useState("");
-  const [historyRange, setHistoryRange] = useState("last12months");
+  const [historyRange, setHistoryRange] = useState("month");
+  const [historyMonth, setHistoryMonth] = useState(() => new Date().getMonth());
+  const [historyYear, setHistoryYear] = useState(() => new Date().getFullYear());
   const [historyPage, setHistoryPage] = useState(0);
   const [binPage, setBinPage] = useState(0);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
@@ -239,6 +272,11 @@ export default function ReceiptBuilder() {
       const rows = data || [];
       setHistory(rows);
       setReceiptNumber(getNextReceiptNumber(rows));
+      const latestDate = new Date(rows[0]?.created_at);
+      if (!Number.isNaN(latestDate.getTime())) {
+        setHistoryMonth(latestDate.getMonth());
+        setHistoryYear(latestDate.getFullYear());
+      }
     } catch (e) {
       setHistory([]);
       setLoadError(describeRlsError(e));
@@ -262,19 +300,38 @@ export default function ReceiptBuilder() {
     [history, deletedReceiptIds],
   );
 
+  const availableHistoryYears = useMemo(() => {
+    const years = new Set(
+      history
+        .map((row) => {
+          const date = new Date(row?.created_at);
+          return Number.isNaN(date.getTime()) ? null : date.getFullYear();
+        })
+        .filter((year) => Number.isFinite(year)),
+    );
+
+    years.add(new Date().getFullYear());
+
+    return Array.from(years).sort((a, b) => b - a);
+  }, [history]);
+
   const historyPeriodStats = useMemo(() => {
     const windows = [
       { key: "today", label: "Today" },
       { key: "yesterday", label: "Yesterday" },
       { key: "week", label: "This week" },
-      { key: "month", label: "This month" },
-      { key: "last12months", label: "Last 12 months" },
-      { key: "year", label: "This year" },
+      { key: "month", label: `${MONTH_LABELS[historyMonth]} ${historyYear}` },
+      { key: "year", label: `${historyYear}` },
       { key: "all", label: "All time" },
     ];
 
     return windows.map((window) => {
-      const bounds = getHistoryRangeBounds(window.key);
+      const bounds =
+        window.key === "month"
+          ? getMonthRangeBounds(historyYear, historyMonth)
+          : window.key === "year"
+            ? getYearRangeBounds(historyYear)
+            : getHistoryRangeBounds(window.key);
       const rows = activeHistory.filter((row) => isWithinHistoryRange(row, bounds));
       const totalSales = rows.reduce((sum, row) => sum + (Number(row?.total) || 0), 0);
 
@@ -284,12 +341,17 @@ export default function ReceiptBuilder() {
         totalSales,
       };
     });
-  }, [activeHistory]);
+  }, [activeHistory, historyMonth, historyYear]);
 
   const rangeFilteredHistory = useMemo(() => {
-    const bounds = getHistoryRangeBounds(historyRange);
+    const bounds =
+      historyRange === "month"
+        ? getMonthRangeBounds(historyYear, historyMonth)
+        : historyRange === "year"
+          ? getYearRangeBounds(historyYear)
+          : getHistoryRangeBounds(historyRange);
     return activeHistory.filter((row) => isWithinHistoryRange(row, bounds));
-  }, [activeHistory, historyRange]);
+  }, [activeHistory, historyRange, historyMonth, historyYear]);
 
   const filteredHistory = useMemo(() => {
     const q = historyQuery.trim().toLowerCase();
@@ -346,7 +408,7 @@ export default function ReceiptBuilder() {
         ? current
         : filteredHistory[0] || null;
     });
-  }, [historyQuery, historyRange, filteredHistory]);
+  }, [historyQuery, historyRange, historyMonth, historyYear, filteredHistory]);
 
   useEffect(() => {
     setBinPage(0);
@@ -950,8 +1012,7 @@ export default function ReceiptBuilder() {
               { key: "today", label: "Today" },
               { key: "yesterday", label: "Yesterday" },
               { key: "week", label: "This week" },
-              { key: "month", label: "This month" },
-              { key: "last12months", label: "Last 12 months" },
+              { key: "month", label: "By month" },
               { key: "year", label: "This year" },
             ].map((option) => (
               <button
@@ -963,11 +1024,52 @@ export default function ReceiptBuilder() {
                     ? "bg-brand-500 text-white shadow-sm"
                     : "border border-border bg-white text-sub hover:border-brand-300 hover:text-brand-600"
                 }`}
-              >
+                >
                 {option.label}
               </button>
             ))}
           </div>
+          {historyRange === "month" && (
+            <div className="mt-4 flex flex-wrap items-end gap-3 rounded-2xl border border-brand-100 bg-white px-4 py-3 shadow-sm">
+              <div className="min-w-[150px] flex-1 sm:flex-none">
+                <label className="label">Month</label>
+                <select
+                  className="input bg-white"
+                  value={historyMonth}
+                  onChange={(e) => {
+                    setHistoryMonth(Number(e.target.value));
+                    setHistoryPage(0);
+                  }}
+                >
+                  {MONTH_LABELS.map((label, index) => (
+                    <option key={label} value={index}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="min-w-[140px] flex-1 sm:flex-none">
+                <label className="label">Year</label>
+                <select
+                  className="input bg-white"
+                  value={historyYear}
+                  onChange={(e) => {
+                    setHistoryYear(Number(e.target.value));
+                    setHistoryPage(0);
+                  }}
+                >
+                  {availableHistoryYears.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">
+                Showing {MONTH_LABELS[historyMonth]} {historyYear}
+              </div>
+            </div>
+          )}
         </div>
 
         {loadError && (
