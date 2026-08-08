@@ -1030,43 +1030,50 @@ export default function ReceiptBuilder() {
             ))}
           </div>
           {historyRange === "month" && (
-            <div className="mt-4 flex flex-wrap items-end gap-3 rounded-2xl border border-brand-100 bg-white px-4 py-3 shadow-sm">
-              <div className="min-w-[150px] flex-1 sm:flex-none">
-                <label className="label">Month</label>
-                <select
-                  className="input bg-white"
-                  value={historyMonth}
-                  onChange={(e) => {
-                    setHistoryMonth(Number(e.target.value));
-                    setHistoryPage(0);
-                  }}
-                >
-                  {MONTH_LABELS.map((label, index) => (
-                    <option key={label} value={index}>
+            <div className="mt-4 rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div className="min-w-[140px]">
+                  <label className="label">Year</label>
+                  <select
+                    className="input bg-white"
+                    value={historyYear}
+                    onChange={(e) => {
+                      setHistoryYear(Number(e.target.value));
+                      setHistoryPage(0);
+                    }}
+                  >
+                    {availableHistoryYears.map((year) => (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">
+                  Showing {MONTH_LABELS[historyMonth]} {historyYear}
+                </div>
+              </div>
+              <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12">
+                {MONTH_LABELS.map((label, index) => {
+                  const isActive = historyMonth === index;
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => {
+                        setHistoryMonth(index);
+                        setHistoryPage(0);
+                      }}
+                      className={`rounded-xl px-3 py-2 text-xs font-semibold transition ${
+                        isActive
+                          ? "bg-brand-500 text-white shadow-sm"
+                          : "border border-border bg-white text-sub hover:border-brand-300 hover:text-brand-600"
+                      }`}
+                    >
                       {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="min-w-[140px] flex-1 sm:flex-none">
-                <label className="label">Year</label>
-                <select
-                  className="input bg-white"
-                  value={historyYear}
-                  onChange={(e) => {
-                    setHistoryYear(Number(e.target.value));
-                    setHistoryPage(0);
-                  }}
-                >
-                  {availableHistoryYears.map((year) => (
-                    <option key={year} value={year}>
-                      {year}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="pb-1 text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">
-                Showing {MONTH_LABELS[historyMonth]} {historyYear}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
