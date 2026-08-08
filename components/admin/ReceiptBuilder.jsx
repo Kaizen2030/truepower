@@ -1310,7 +1310,7 @@ export default function ReceiptBuilder() {
         </div>
 
         <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
             <div>
               <label className="label">Search deleted receipts</label>
               <input
@@ -1459,7 +1459,7 @@ export default function ReceiptBuilder() {
                   Build the receipt on the left and preview it on the right.
                 </p>
               </div>
-              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
+              <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
                   onClick={() => {
