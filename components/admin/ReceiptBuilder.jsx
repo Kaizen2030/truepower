@@ -1452,9 +1452,14 @@ export default function ReceiptBuilder() {
       {activePanel === "builder" ? (
         <>
           <div className="space-y-6 print:hidden min-w-0">
-            <div className="flex items-center justify-between gap-3">
-              <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
-              <div className="flex gap-2 flex-wrap">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
+                <p className="mt-1 text-xs text-sub sm:text-sm">
+                  Build the receipt on the left and preview it on the right.
+                </p>
+              </div>
+              <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap">
                 <button
                   type="button"
                   onClick={() => {
@@ -1462,7 +1467,7 @@ export default function ReceiptBuilder() {
                     setSelectedReceipt(filteredHistory[0] || null);
                     setHistoryPage(0);
                   }}
-                  className="inline-flex items-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-xs sm:text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-xs sm:w-auto sm:text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700"
                 >
                   <History size={16} /> Sales History
                 </button>
@@ -1473,7 +1478,7 @@ export default function ReceiptBuilder() {
                     setBinPage(0);
                     setSelectedReceipt(null);
                   }}
-                  className="inline-flex items-center gap-2 rounded-full border border-amber-500 bg-amber-50 px-4 py-2 text-xs sm:text-sm font-semibold text-amber-700 shadow-sm transition hover:bg-amber-100 hover:border-amber-600"
+                  className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-amber-500 bg-amber-50 px-4 py-2 text-xs sm:w-auto sm:text-sm font-semibold text-amber-700 shadow-sm transition hover:bg-amber-100 hover:border-amber-600"
                 >
                   <Trash2 size={16} /> Recycle Bin
                 </button>
@@ -1530,7 +1535,12 @@ export default function ReceiptBuilder() {
 
             <div className="card p-4 sm:p-5 overflow-hidden">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-                <label className="label mb-0">Items</label>
+                <div>
+                  <label className="label mb-0">Items</label>
+                  <p className="mt-1 text-xs text-sub">
+                    Each line becomes one row on the receipt preview.
+                  </p>
+                </div>
                 <div className="relative w-full sm:w-auto min-w-0">
                   <button
                     onClick={() => setShowProductPicker((s) => !s)}
@@ -1555,7 +1565,10 @@ export default function ReceiptBuilder() {
                             value={productQuery}
                             onChange={(e) => setProductQuery(e.target.value)}
                           />
-                          <button onClick={() => setShowProductPicker(false)} className="btn-ghost p-2">
+                          <button
+                            onClick={() => setShowProductPicker(false)}
+                            className="inline-flex items-center justify-center rounded-full border border-border bg-white p-2 text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
+                          >
                             <X size={20} />
                           </button>
                         </div>
@@ -1564,9 +1577,9 @@ export default function ReceiptBuilder() {
                             <button
                               key={p.id}
                               onClick={() => addProductLine(p)}
-                              className="w-full text-left py-3 px-3 hover:bg-muted rounded-2xl flex items-start justify-between gap-3"
+                              className="flex w-full items-start justify-between gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-muted"
                             >
-                              <span className="text-sm min-w-0 flex-1 whitespace-normal break-words leading-snug">
+                              <span className="min-w-0 flex-1 whitespace-normal break-words text-sm leading-snug">
                                 {p.name}
                               </span>
                               <span className="text-sm font-semibold text-brand-500 whitespace-nowrap shrink-0">
@@ -1588,7 +1601,7 @@ export default function ReceiptBuilder() {
                 {lines.map((l) => (
                   <div
                     key={l.id}
-                    className="grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_70px_110px_36px] gap-2 sm:items-center"
+                    className="rounded-2xl border border-border bg-white p-3 shadow-sm grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_70px_110px_36px] gap-2 sm:items-center"
                   >
                     <input
                       className="input py-2.5 sm:py-3"
@@ -1614,7 +1627,7 @@ export default function ReceiptBuilder() {
                     />
                     <button
                       onClick={() => removeLine(l.id)}
-                      className="btn-ghost text-red-500 p-2 justify-self-end sm:justify-self-center"
+                      className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 p-2 text-red-500 justify-self-end transition hover:border-red-300 hover:bg-red-100 sm:justify-self-center"
                       title="Remove line"
                     >
                       <Trash2 size={16} />
