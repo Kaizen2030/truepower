@@ -1007,7 +1007,7 @@ export default function ReceiptBuilder() {
               </div>
             </div>
           </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-4 grid grid-cols-2 gap-3 xl:grid-cols-4">
             {[
               {
                 label: "Selected period",
@@ -1036,11 +1036,11 @@ export default function ReceiptBuilder() {
             ].map((card) => (
               <div
                 key={card.label}
-                className="overflow-hidden rounded-3xl border border-white/70 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.06)]"
+                className="overflow-hidden rounded-3xl border border-white/70 bg-white p-3 shadow-[0_16px_40px_rgba(15,23,42,0.06)] sm:p-4"
               >
                 <div className={`h-1.5 w-14 rounded-full bg-gradient-to-r ${card.accent}`} />
                 <div className="mt-3 text-[11px] uppercase tracking-[0.22em] text-sub">{card.label}</div>
-                <div className="mt-2 text-lg font-semibold text-ink sm:text-xl">{card.value}</div>
+                <div className="mt-2 text-base font-semibold text-ink sm:text-xl">{card.value}</div>
                 <div className="mt-1 text-xs text-sub">{card.note}</div>
               </div>
             ))}
