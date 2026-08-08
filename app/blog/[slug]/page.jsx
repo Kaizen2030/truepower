@@ -47,22 +47,27 @@ function RelatedPostCard({ post }) {
   return (
     <Link
       href={`/blog/${post.slug}`}
-      className="group rounded-[1.35rem] border border-border bg-gradient-to-br from-white to-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-pop"
+      className="group block rounded-[1.35rem] border border-border bg-gradient-to-br from-white to-slate-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:border-brand-200 hover:shadow-pop sm:p-5"
     >
       <div className="flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand-600">
         <span className="rounded-full bg-brand-50 px-2.5 py-1 text-[10px] tracking-[0.24em]">
           {post.category || "General"}
         </span>
       </div>
-      <h3 className="mt-3 font-display text-[0.98rem] font-bold leading-snug text-ink">
+      <h3 className="mt-3 font-display text-[0.98rem] font-bold leading-snug text-ink sm:text-[1.02rem]">
         {post.title}
       </h3>
       <p className="mt-2 line-clamp-2 text-sm leading-6 text-sub">
         {getBlogExcerpt(post, 96)}
       </p>
-      <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3 text-xs text-sub">
-        <span>{formatBlogDate(post.published_at || post.created_at)}</span>
-        <span className="font-semibold text-brand-600">Read article</span>
+      <div className="mt-4 flex flex-col gap-2 border-t border-border pt-3 text-xs text-sub sm:flex-row sm:items-center sm:justify-between">
+        <span className="shrink-0 text-[0.72rem] sm:text-xs">
+          {formatBlogDate(post.published_at || post.created_at)}
+        </span>
+        <span className="inline-flex items-center gap-1 font-semibold text-brand-600 sm:justify-end">
+          Read article
+          <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
+        </span>
       </div>
     </Link>
   );
@@ -247,7 +252,7 @@ export default async function BlogPostPage({ params }) {
                 Related articles
               </h2>
             </div>
-            <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {relatedPosts.map((relatedPost) => (
                 <BlogCard key={relatedPost.id} post={relatedPost} />
               ))}

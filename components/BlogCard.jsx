@@ -83,7 +83,7 @@ export default function BlogCard({ post, featured = false }) {
           </p>
         ) : null}
 
-        <div className="mt-auto flex flex-wrap items-center gap-2 pt-2">
+        <div className="mt-auto flex flex-col gap-2 pt-2 sm:flex-row sm:flex-wrap sm:items-center">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-600">
             <Eye size={11} />
             {viewCount} views
@@ -92,7 +92,7 @@ export default function BlogCard({ post, featured = false }) {
             <Heart size={11} />
             {likeCount} likes
           </span>
-          <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-brand-600">
+          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-600 sm:ml-auto">
             Read article
             <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
           </span>
