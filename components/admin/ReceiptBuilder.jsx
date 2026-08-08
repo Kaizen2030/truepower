@@ -811,17 +811,17 @@ export default function ReceiptBuilder() {
     return (
       <div className="space-y-4">
         {showActions && (
-          <div className="flex flex-wrap justify-end gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
             <button
               type="button"
-              className="rounded-full border border-border bg-white px-3 py-2 text-xs sm:text-sm font-semibold text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
+              className="w-full rounded-full border border-border bg-white px-3 py-2 text-xs sm:w-auto sm:text-sm font-semibold text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
               onClick={() => startEditingReceipt(receipt)}
             >
               Edit in builder
             </button>
             <button
               type="button"
-              className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs sm:text-sm font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100"
+              className="w-full rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs sm:w-auto sm:text-sm font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100"
               onClick={() => deleteReceipt(receipt.id)}
             >
               <Trash2 size={14} className="inline mr-1" /> Move to recycle bin
@@ -829,7 +829,7 @@ export default function ReceiptBuilder() {
             {showOpenDetails && (
               <button
                 type="button"
-                className="rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs sm:text-sm font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
+                className="w-full rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs sm:w-auto sm:text-sm font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
                 onClick={() => {
                   setSelectedReceipt(receipt);
                   setIsReceiptModalOpen(true);
@@ -996,7 +996,7 @@ export default function ReceiptBuilder() {
                 placeholder="Search by receipt number, customer, phone, product..."
               />
             </div>
-            <div className="grid grid-cols-2 gap-3 lg:min-w-[260px]">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:min-w-[260px]">
               <div className="rounded-2xl bg-white px-4 py-3 shadow-sm">
                 <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Receipts</div>
                 <div className="mt-1 text-lg font-semibold text-ink">{activeHistory.length}</div>
@@ -1193,10 +1193,10 @@ export default function ReceiptBuilder() {
                         <span className="rounded-full bg-slate-50 px-2 py-1">{formatReceiptDate(r.created_at)}</span>
                         <span className="truncate">{summarizeItems(r.items)}</span>
                       </div>
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                         <button
                           type="button"
-                          className="rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-sub transition hover:border-brand-300 hover:text-brand-600"
+                          className="w-full rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-sub transition hover:border-brand-300 hover:text-brand-600 sm:w-auto"
                           onClick={() => {
                             setSelectedReceipt(r);
                             setIsReceiptModalOpen(true);
@@ -1206,14 +1206,14 @@ export default function ReceiptBuilder() {
                         </button>
                         <button
                           type="button"
-                          className="rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
+                          className="w-full rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100 sm:w-auto"
                           onClick={() => startEditingReceipt(r)}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
-                          className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100"
+                          className="w-full rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100 sm:w-auto"
                           onClick={() => deleteReceipt(r.id)}
                         >
                           <Trash2 size={14} className="inline mr-1" /> Move to bin
@@ -1366,10 +1366,10 @@ export default function ReceiptBuilder() {
                         <span>{formatReceiptDate(r.created_at)}</span>
                         <span className="truncate">{summarizeItems(r.items)}</span>
                       </div>
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
                         <button
                           type="button"
-                          className="btn-ghost px-3 py-2 text-xs"
+                          className="w-full rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-sub transition hover:border-amber-300 hover:text-amber-700 sm:w-auto"
                           onClick={() => {
                             setSelectedReceipt(r);
                             setIsReceiptModalOpen(true);
@@ -1379,14 +1379,14 @@ export default function ReceiptBuilder() {
                         </button>
                         <button
                           type="button"
-                          className="btn-outline px-3 py-2 text-xs"
+                          className="w-full rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100 sm:w-auto"
                           onClick={() => startEditingReceipt(r)}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
-                          className="px-3 py-2 text-xs rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition"
+                          className="w-full rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100 sm:w-auto"
                           onClick={() => restoreReceipt(r.id)}
                         >
                           Undo
