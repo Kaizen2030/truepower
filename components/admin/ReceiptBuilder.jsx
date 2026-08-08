@@ -185,7 +185,7 @@ export default function ReceiptBuilder() {
   const [activePanel, setActivePanel] = useState("builder");
   const [historyQuery, setHistoryQuery] = useState("");
   const [binQuery, setBinQuery] = useState("");
-  const [historyRange, setHistoryRange] = useState("all");
+  const [historyRange, setHistoryRange] = useState("last12months");
   const [historyPage, setHistoryPage] = useState(0);
   const [binPage, setBinPage] = useState(0);
   const [selectedReceipt, setSelectedReceipt] = useState(null);
