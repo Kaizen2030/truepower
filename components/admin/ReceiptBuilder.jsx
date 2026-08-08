@@ -1117,27 +1117,25 @@ export default function ReceiptBuilder() {
                   </select>
                   <p className="mt-2 text-xs text-sub">Receipts grouped by exact calendar month.</p>
                 </div>
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-                  {MONTH_LABELS.map((label, index) => {
-                    const isActive = historyMonth === index;
-                    return (
-                      <button
-                        key={label}
-                        type="button"
-                        onClick={() => {
-                          setHistoryMonth(index);
-                          setHistoryPage(0);
-                        }}
-                        className={`rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
-                          isActive
-                            ? "bg-brand-500 text-white shadow-sm"
-                            : "border border-border bg-white text-sub hover:border-brand-300 hover:text-brand-600"
-                        }`}
-                      >
+                <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
+                  <label className="label">Month</label>
+                  <select
+                    className="input bg-white"
+                    value={historyMonth}
+                    onChange={(e) => {
+                      setHistoryMonth(Number(e.target.value));
+                      setHistoryPage(0);
+                    }}
+                  >
+                    {MONTH_LABELS.map((label, index) => (
+                      <option key={label} value={index}>
                         {label}
-                      </button>
-                    );
-                  })}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-2 text-xs text-sub">
+                    Showing the exact month archive for {selectedMonthLabel}.
+                  </p>
                 </div>
               </div>
             </div>
