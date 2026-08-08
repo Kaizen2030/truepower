@@ -1285,11 +1285,11 @@ export default function ReceiptBuilder() {
             <h2 className="font-display font-bold text-2xl sm:text-3xl text-ink">Deleted receipts</h2>
             <p className="text-sub text-sm">Restore deleted receipts or keep them in the recycle bin.</p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-wrap">
             <button
               type="button"
               onClick={() => setActivePanel("builder")}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-2 text-sm font-semibold text-brand-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-brand-200 bg-white px-4 py-2 text-xs font-semibold text-brand-700 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 sm:w-auto sm:text-sm"
             >
               <X size={16} /> Back to Builder
             </button>
@@ -1300,7 +1300,7 @@ export default function ReceiptBuilder() {
                 setHistoryPage(0);
                 setSelectedReceipt(filteredHistory[0] || null);
               }}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-blue-600 bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 hover:border-blue-700 sm:w-auto sm:text-sm"
             >
               <History size={16} /> View Sales History
             </button>
@@ -1309,7 +1309,7 @@ export default function ReceiptBuilder() {
 
         <div className="rounded-3xl border border-amber-200 bg-amber-50 p-4 sm:p-5">
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-            <div>
+            <div className="col-span-2 sm:col-span-1">
               <label className="label">Search deleted receipts</label>
               <input
                 className="input bg-white"
@@ -1336,7 +1336,9 @@ export default function ReceiptBuilder() {
         <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="rounded-3xl border border-border bg-white p-4 sm:p-5">
             {totalMatches === 0 ? (
-              <p className="text-sub text-sm">No deleted receipts in the recycle bin.</p>
+              <div className="rounded-[28px] border border-dashed border-amber-200 bg-gradient-to-br from-amber-50 via-white to-orange-50 p-6 text-sm text-amber-800">
+                No deleted receipts in the recycle bin.
+              </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 {visibleBinHistory.map((r) => {
@@ -1344,24 +1346,38 @@ export default function ReceiptBuilder() {
                   return (
                     <article
                       key={r.id}
-                      className={`rounded-3xl border p-4 text-left shadow-sm transition ${
+                      className={`group relative overflow-hidden rounded-3xl border p-4 text-left shadow-[0_16px_40px_rgba(15,23,42,0.07)] transition ${
                         isActive
-                          ? "border-amber-400 bg-amber-50 ring-2 ring-amber-100"
-                          : "border-border bg-white hover:border-amber-300 hover:bg-amber-50"
+                          ? "border-amber-400 bg-gradient-to-br from-amber-50 via-white to-orange-50 ring-2 ring-amber-100"
+                          : "border-border bg-white hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-[0_20px_50px_rgba(15,23,42,0.10)]"
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-sm font-semibold">#{r.receipt_number}</div>
-                          <div className="text-xs text-sub mt-1">{r.customer_name || "Customer"}</div>
+                      <div
+                        className={`absolute inset-x-0 top-0 h-1 ${
+                          isActive
+                            ? "bg-gradient-to-r from-amber-500 via-orange-400 to-rose-400"
+                            : "bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200"
+                        }`}
+                      />
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm font-semibold text-ink">#{r.receipt_number}</div>
+                            {isActive && (
+                              <span className="rounded-full bg-amber-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-amber-700">
+                                Deleted
+                              </span>
+                            )}
+                          </div>
+                          <div className="mt-1 truncate text-xs text-sub">{r.customer_name || "Customer"}</div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-semibold text-amber-700">KSh {formatMoney(r.total)}</div>
-                          <div className="text-xs text-sub mt-1">{r.customer_phone || "No phone"}</div>
+                        <div className="shrink-0 text-right">
+                          <div className="text-base font-semibold text-amber-700">KSh {formatMoney(r.total)}</div>
+                          <div className="mt-1 text-xs text-sub">{r.customer_phone || "No phone"}</div>
                         </div>
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-faint">
-                        <span>{formatReceiptDate(r.created_at)}</span>
+                        <span className="rounded-full bg-amber-50 px-2 py-1">{formatReceiptDate(r.created_at)}</span>
                         <span className="truncate">{summarizeItems(r.items)}</span>
                       </div>
                       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
