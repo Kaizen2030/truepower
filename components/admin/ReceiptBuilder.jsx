@@ -1149,7 +1149,9 @@ export default function ReceiptBuilder() {
         <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
           <div className="rounded-3xl border border-border bg-white p-4 sm:p-5">
             {totalMatches === 0 ? (
-              <p className="text-sub text-sm">No sales found for that search.</p>
+              <div className="rounded-[28px] border border-dashed border-brand-200 bg-gradient-to-br from-brand-50 via-white to-sky-50 p-6 text-sm text-brand-800">
+                No sales found for that search.
+              </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2">
                 {visibleHistory.map((r) => {
@@ -1188,7 +1190,7 @@ export default function ReceiptBuilder() {
                         </div>
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-faint">
-                        <span className="rounded-full bg-slate-50 px-2 py-1">{formatReceiptDate(r.created_at)}</span>
+                        <span className="rounded-full bg-brand-50 px-2 py-1">{formatReceiptDate(r.created_at)}</span>
                         <span className="truncate">{summarizeItems(r.items)}</span>
                       </div>
                       <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
