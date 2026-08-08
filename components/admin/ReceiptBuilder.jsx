@@ -801,8 +801,9 @@ export default function ReceiptBuilder() {
   ) {
     if (!receipt) {
       return (
-        <div className="rounded-3xl border border-dashed border-border bg-slate-50 p-6 text-sm text-sub">
-          Pick a sale on the left to see the full receipt breakdown here.
+        <div className="rounded-[28px] border border-dashed border-brand-200 bg-gradient-to-br from-slate-50 to-white p-6 text-sm text-sub">
+          Pick a sale on the left to see the full receipt breakdown here. The selected receipt will open with customer,
+          totals, notes, and item lines.
         </div>
       );
     }
@@ -813,14 +814,14 @@ export default function ReceiptBuilder() {
           <div className="flex flex-wrap justify-end gap-2">
             <button
               type="button"
-              className="btn-ghost px-3 py-2 text-xs sm:text-sm"
+              className="rounded-full border border-border bg-white px-3 py-2 text-xs sm:text-sm font-semibold text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
               onClick={() => startEditingReceipt(receipt)}
             >
               Edit in builder
             </button>
             <button
               type="button"
-              className="px-3 py-2 text-xs sm:text-sm rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition"
+              className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs sm:text-sm font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100"
               onClick={() => deleteReceipt(receipt.id)}
             >
               <Trash2 size={14} className="inline mr-1" /> Move to recycle bin
@@ -828,7 +829,7 @@ export default function ReceiptBuilder() {
             {showOpenDetails && (
               <button
                 type="button"
-                className="btn-outline px-3 py-2 text-xs sm:text-sm"
+                className="rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs sm:text-sm font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
                 onClick={() => {
                   setSelectedReceipt(receipt);
                   setIsReceiptModalOpen(true);
@@ -839,31 +840,31 @@ export default function ReceiptBuilder() {
             )}
           </div>
         )}
-        <div className="rounded-3xl border border-brand-100 bg-brand-50/60 p-4">
-          <div className="text-[11px] uppercase tracking-[0.22em] text-brand-600 font-semibold">Selected sale</div>
-          <div className="mt-1 text-lg font-semibold">Receipt #{receipt.receipt_number}</div>
+        <div className="overflow-hidden rounded-[28px] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-sky-50 p-4 shadow-sm">
+          <div className="text-[11px] uppercase tracking-[0.24em] text-brand-600 font-semibold">Selected sale</div>
+          <div className="mt-1 text-2xl font-display font-bold text-ink">Receipt #{receipt.receipt_number}</div>
           <div className="mt-1 text-sm text-sub">{formatReceiptDate(receipt.created_at)}</div>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl bg-slate-50 p-3">
+          <div className="rounded-2xl border border-brand-100 bg-white p-3 shadow-sm">
             <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Customer</div>
-            <div className="mt-1 font-semibold">{receipt.customer_name || "N/A"}</div>
+            <div className="mt-1 font-semibold text-ink">{receipt.customer_name || "N/A"}</div>
             <div className="text-xs text-sub">{receipt.customer_phone || "No phone"}</div>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-3">
-            <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Subtotal</div>
-            <div className="mt-1 font-semibold">KSh {formatMoney(receipt.subtotal ?? receipt.total)}</div>
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-3 shadow-sm">
+            <div className="text-[11px] uppercase tracking-[0.18em] text-emerald-700">Subtotal</div>
+            <div className="mt-1 font-semibold text-emerald-950">KSh {formatMoney(receipt.subtotal ?? receipt.total)}</div>
           </div>
-          <div className="rounded-2xl bg-slate-50 p-3">
+          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
             <div className="text-[11px] uppercase tracking-[0.18em] text-sub">Total</div>
-            <div className="mt-1 font-semibold">KSh {formatMoney(receipt.total)}</div>
+            <div className="mt-1 font-semibold text-slate-950">KSh {formatMoney(receipt.total)}</div>
           </div>
         </div>
 
         <div>
           <div className="text-xs uppercase tracking-[0.18em] text-sub">Notes</div>
-          <p className="mt-2 rounded-2xl border border-border bg-white p-3 text-sm whitespace-pre-line">
+          <p className="mt-2 rounded-2xl border border-border bg-white p-4 text-sm leading-6 whitespace-pre-line shadow-sm">
             {receipt.notes || "None"}
           </p>
         </div>
@@ -872,13 +873,18 @@ export default function ReceiptBuilder() {
           <div className="text-xs uppercase tracking-[0.18em] text-sub">Items</div>
           <div className="mt-2 grid gap-2">
             {(receipt.items || []).map((item, index) => (
-              <div key={`${receipt.id}-item-${index}`} className="rounded-2xl border border-border bg-white p-3">
+              <div
+                key={`${receipt.id}-item-${index}`}
+                className="rounded-2xl border border-border bg-white p-3 shadow-sm transition hover:border-brand-200 hover:shadow-md"
+              >
                 <div className="flex items-center justify-between gap-3">
-                  <div className="font-medium">{item.description || item.product_name || "Item"}</div>
-                  <div className="text-sm text-sub">KSh {formatMoney(item.price)}</div>
+                  <div className="font-medium text-ink">{item.description || item.product_name || "Item"}</div>
+                  <div className="rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
+                    KSh {formatMoney(item.price)}
+                  </div>
                 </div>
-                <div className="mt-1 flex items-center justify-between gap-3 text-xs text-sub">
-                  <span>Qty: {item.qty || 0}</span>
+                <div className="mt-2 flex items-center justify-between gap-3 text-xs text-sub">
+                  <span className="rounded-full border border-border px-2 py-1">Qty: {item.qty || 0}</span>
                   <span>Line total: KSh {formatMoney((Number(item.qty) || 0) * (Number(item.price) || 0))}</span>
                 </div>
               </div>
@@ -1112,26 +1118,26 @@ export default function ReceiptBuilder() {
                   <p className="mt-2 text-xs text-sub">Receipts grouped by exact calendar month.</p>
                 </div>
                 <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
-                {MONTH_LABELS.map((label, index) => {
-                  const isActive = historyMonth === index;
-                  return (
-                    <button
-                      key={label}
-                      type="button"
-                      onClick={() => {
-                        setHistoryMonth(index);
-                        setHistoryPage(0);
-                      }}
-                      className={`rounded-xl px-3 py-2 text-xs font-semibold transition ${
-                        isActive
-                          ? "bg-brand-500 text-white shadow-sm"
-                          : "border border-border bg-white text-sub hover:border-brand-300 hover:text-brand-600"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
+                  {MONTH_LABELS.map((label, index) => {
+                    const isActive = historyMonth === index;
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        onClick={() => {
+                          setHistoryMonth(index);
+                          setHistoryPage(0);
+                        }}
+                        className={`rounded-xl px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] transition ${
+                          isActive
+                            ? "bg-brand-500 text-white shadow-sm"
+                            : "border border-border bg-white text-sub hover:border-brand-300 hover:text-brand-600"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -1155,30 +1161,44 @@ export default function ReceiptBuilder() {
                   return (
                     <article
                       key={r.id}
-                      className={`rounded-3xl border p-4 text-left shadow-sm transition ${
+                      className={`group relative overflow-hidden rounded-3xl border p-4 text-left shadow-[0_16px_40px_rgba(15,23,42,0.07)] transition ${
                         isActive
-                          ? "border-brand-400 bg-brand-50 ring-2 ring-brand-100"
-                          : "border-border bg-white hover:border-brand-300 hover:bg-brand-50"
+                          ? "border-brand-400 bg-gradient-to-br from-brand-50 via-white to-sky-50 ring-2 ring-brand-100"
+                          : "border-border bg-white hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-[0_20px_50px_rgba(15,23,42,0.10)]"
                       }`}
                     >
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-sm font-semibold">#{r.receipt_number}</div>
-                          <div className="text-xs text-sub mt-1">{r.customer_name || "Customer"}</div>
+                      <div
+                        className={`absolute inset-x-0 top-0 h-1 ${
+                          isActive
+                            ? "bg-gradient-to-r from-brand-500 via-sky-400 to-cyan-400"
+                            : "bg-gradient-to-r from-slate-200 via-slate-100 to-slate-200"
+                        }`}
+                      />
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <div className="text-sm font-semibold text-ink">#{r.receipt_number}</div>
+                            {isActive && (
+                              <span className="rounded-full bg-brand-500/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-700">
+                                Active
+                              </span>
+                            )}
+                          </div>
+                          <div className="mt-1 truncate text-xs text-sub">{r.customer_name || "Customer"}</div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-sm font-semibold text-brand-700">KSh {formatMoney(r.total)}</div>
-                          <div className="text-xs text-sub mt-1">{r.customer_phone || "No phone"}</div>
+                        <div className="shrink-0 text-right">
+                          <div className="text-base font-semibold text-brand-700">KSh {formatMoney(r.total)}</div>
+                          <div className="mt-1 text-xs text-sub">{r.customer_phone || "No phone"}</div>
                         </div>
                       </div>
                       <div className="mt-3 flex items-center justify-between gap-3 text-[11px] text-faint">
-                        <span>{formatReceiptDate(r.created_at)}</span>
+                        <span className="rounded-full bg-slate-50 px-2 py-1">{formatReceiptDate(r.created_at)}</span>
                         <span className="truncate">{summarizeItems(r.items)}</span>
                       </div>
                       <div className="mt-4 flex flex-wrap gap-2">
                         <button
                           type="button"
-                          className="btn-ghost px-3 py-2 text-xs"
+                          className="rounded-full border border-border bg-white px-3 py-2 text-xs font-semibold text-sub transition hover:border-brand-300 hover:text-brand-600"
                           onClick={() => {
                             setSelectedReceipt(r);
                             setIsReceiptModalOpen(true);
@@ -1188,14 +1208,14 @@ export default function ReceiptBuilder() {
                         </button>
                         <button
                           type="button"
-                          className="btn-outline px-3 py-2 text-xs"
+                          className="rounded-full border border-brand-200 bg-brand-50 px-3 py-2 text-xs font-semibold text-brand-700 transition hover:border-brand-300 hover:bg-brand-100"
                           onClick={() => startEditingReceipt(r)}
                         >
                           Edit
                         </button>
                         <button
                           type="button"
-                          className="px-3 py-2 text-xs rounded-lg border border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition"
+                          className="rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-700 transition hover:border-amber-300 hover:bg-amber-100"
                           onClick={() => deleteReceipt(r.id)}
                         >
                           <Trash2 size={14} className="inline mr-1" /> Move to bin
