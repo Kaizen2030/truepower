@@ -1051,7 +1051,7 @@ export default function ReceiptBuilder() {
               { key: "today", label: "Today" },
               { key: "yesterday", label: "Yesterday" },
               { key: "week", label: "This week" },
-              { key: "month", label: "Exact month" },
+              { key: "month", label: "Monthly archive" },
               { key: "year", label: "This year" },
             ].map((option) => (
               <button
@@ -1073,12 +1073,12 @@ export default function ReceiptBuilder() {
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-500">
-                    Exact month picker
+                    Month archive
                   </div>
                   <h3 className="mt-2 text-2xl font-display font-bold text-ink">{selectedMonthLabel}</h3>
                   <p className="mt-1 max-w-xl text-sm text-sub">
-                    Jump across receipts like a real monthly archive. Tap a month, change the year, or step backward and
-                    forward one month at a time.
+                    Browse receipts by month like a timeline. Pick a year, switch the month, or move through the archive
+                    one snapshot at a time.
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -1087,20 +1087,20 @@ export default function ReceiptBuilder() {
                     onClick={() => shiftHistoryMonth(-1)}
                     className="rounded-full border border-border bg-white px-4 py-2 text-xs font-semibold text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
                   >
-                    Previous month
+                    Back one month
                   </button>
                   <button
                     type="button"
                     onClick={() => shiftHistoryMonth(1)}
                     className="rounded-full border border-border bg-white px-4 py-2 text-xs font-semibold text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
                   >
-                    Next month
+                    Forward one month
                   </button>
                 </div>
               </div>
-              <div className="mt-5 grid gap-4 lg:grid-cols-[180px_1fr]">
-                <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
-                  <label className="label">Year</label>
+              <div className="mt-5 grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="rounded-2xl border border-border bg-white p-3 shadow-sm sm:p-4">
+                  <label className="label text-[11px] sm:text-xs">Year</label>
                   <select
                     className="input bg-white"
                     value={historyYear}
@@ -1115,10 +1115,10 @@ export default function ReceiptBuilder() {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-xs text-sub">Receipts grouped by exact calendar month.</p>
+                  <p className="mt-2 text-[11px] text-sub sm:text-xs">Choose the year you want to revisit.</p>
                 </div>
-                <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
-                  <label className="label">Month</label>
+                <div className="rounded-2xl border border-border bg-white p-3 shadow-sm sm:p-4">
+                  <label className="label text-[11px] sm:text-xs">Month</label>
                   <select
                     className="input bg-white"
                     value={historyMonth}
@@ -1133,9 +1133,7 @@ export default function ReceiptBuilder() {
                       </option>
                     ))}
                   </select>
-                  <p className="mt-2 text-xs text-sub">
-                    Showing the exact month archive for {selectedMonthLabel}.
-                  </p>
+                  <p className="mt-2 text-[11px] text-sub sm:text-xs">Open the monthly snapshot for {selectedMonthLabel}.</p>
                 </div>
               </div>
             </div>
@@ -1670,26 +1668,26 @@ export default function ReceiptBuilder() {
             <div
               ref={printRef}
               id="receipt-print-area"
-              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
+              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-3 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
             >
-              <div className="flex items-start justify-between gap-4 pb-4 sm:pb-5 border-b-2 border-ink print:pb-4">
+              <div className="flex flex-col gap-4 pb-4 border-b-2 border-ink sm:flex-row sm:items-start sm:justify-between sm:pb-5 print:pb-4">
                 <div className="flex items-start gap-3 sm:gap-4">
-                  <div className="w-1.5 h-24 rounded-full bg-brand-500/15 print:bg-brand-500" />
-                  <div className="rounded-3xl bg-brand-50 p-2.5 sm:p-4 shadow-sm print:bg-white print:p-0 print:shadow-none">
+                  <div className="h-16 w-1.5 rounded-full bg-brand-500/15 print:bg-brand-500 sm:h-24" />
+                  <div className="rounded-3xl bg-brand-50 p-2.5 shadow-sm print:bg-white print:p-0 print:shadow-none sm:p-4">
                     <Image
                       src={business.logo}
                       alt="TruePower Solutions logo"
-                      className="h-20 w-20 sm:h-36 sm:w-36 object-contain"
+                      className="h-16 w-16 object-contain sm:h-36 sm:w-36"
                       width={144}
                       height={144}
                     />
                   </div>
                 </div>
-                <div className="text-right shrink-0 pt-1">
-                  <h1 className="font-display font-bold text-xl sm:text-3xl tracking-tight uppercase mb-2">
+                <div className="shrink-0 pt-0 text-left sm:pt-1 sm:text-right">
+                  <h1 className="font-display font-bold text-2xl tracking-tight uppercase mb-2 sm:text-3xl">
                     Receipt
                   </h1>
-                  <div className="space-y-1 text-right">
+                  <div className="space-y-1 text-left sm:text-right">
                     <p className="text-sm leading-6">
                       <span className="text-sub">No. </span>
                       <span className="font-semibold">{receiptNumber}</span>
@@ -1699,7 +1697,7 @@ export default function ReceiptBuilder() {
                       <span className="font-semibold">{receiptDate}</span>
                     </p>
                   </div>
-                  <p className="text-[11px] sm:text-xs text-sub mt-2 max-w-[9rem] sm:max-w-[11rem] ml-auto">
+                  <p className="mt-2 max-w-none text-[11px] text-sub sm:ml-auto sm:max-w-[11rem] sm:text-xs">
                     {buildReceiptSubtitle()}
                   </p>
                 </div>
@@ -1715,6 +1713,35 @@ export default function ReceiptBuilder() {
                 </div>
               )}
 
+              <div className="mt-4 space-y-2 sm:hidden print:hidden">
+                {lines
+                  .filter((l) => l.description.trim())
+                  .map((l) => {
+                    const amount = (Number(l.qty) || 0) * (Number(l.price) || 0);
+                    return (
+                      <div key={l.id} className="rounded-2xl border border-border bg-slate-50 p-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium leading-5 text-ink">{l.description}</p>
+                            <p className="mt-1 text-[11px] text-sub">
+                              Qty {l.qty} • KSh {formatMoney(l.price)} each
+                            </p>
+                          </div>
+                          <div className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-brand-700 whitespace-nowrap shadow-sm">
+                            KSh {formatMoney(amount)}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                {!(lines.filter((l) => l.description.trim()).length) && (
+                  <div className="rounded-2xl border border-dashed border-border bg-white p-3 text-sm text-sub">
+                    No line items added yet.
+                  </div>
+                )}
+              </div>
+
+              <div className="hidden sm:block print:block">
               <table className="w-full mt-4 text-xs sm:text-sm receipt-table">
                 <thead>
                   <tr className="border-b border-border text-left">
@@ -1747,9 +1774,10 @@ export default function ReceiptBuilder() {
                     ))}
                 </tbody>
               </table>
+              </div>
 
-              <div className="flex justify-end mt-4">
-                <div className="w-44 sm:w-56 space-y-1">
+              <div className="mt-4 flex justify-end">
+                <div className="w-full space-y-1 sm:w-56">
                   <div className="flex justify-between text-sm border-t-2 border-ink pt-2 mt-1">
                     <span className="font-display font-bold">Total</span>
                     <span className="font-display font-bold">KSh {formatMoney(total)}</span>
@@ -1766,7 +1794,7 @@ export default function ReceiptBuilder() {
                 </div>
               )}
 
-              <div className="receipt-footer mt-7 pt-4 border-t-2 border-ink/10 text-center print:mt-3 print:pt-3">
+              <div className="receipt-footer mt-6 pt-4 border-t-2 border-ink/10 text-center print:mt-3 print:pt-3">
                 <p className="font-display font-semibold text-sm text-ink print:text-[13px]">
                   Thank you for shopping with us.
                 </p>
