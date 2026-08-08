@@ -99,6 +99,11 @@ function getHistoryRangeBounds(range) {
     start.setHours(0, 0, 0, 0);
     end.setDate(end.getDate() + 1);
     end.setHours(0, 0, 0, 0);
+  } else if (range === "last12months") {
+    start.setMonth(start.getMonth() - 12);
+    start.setHours(0, 0, 0, 0);
+    end.setDate(end.getDate() + 1);
+    end.setHours(0, 0, 0, 0);
   } else if (range === "year") {
     start.setMonth(0, 1);
     start.setHours(0, 0, 0, 0);
@@ -263,6 +268,7 @@ export default function ReceiptBuilder() {
       { key: "yesterday", label: "Yesterday" },
       { key: "week", label: "This week" },
       { key: "month", label: "This month" },
+      { key: "last12months", label: "Last 12 months" },
       { key: "year", label: "This year" },
       { key: "all", label: "All time" },
     ];
@@ -945,6 +951,7 @@ export default function ReceiptBuilder() {
               { key: "yesterday", label: "Yesterday" },
               { key: "week", label: "This week" },
               { key: "month", label: "This month" },
+              { key: "last12months", label: "Last 12 months" },
               { key: "year", label: "This year" },
             ].map((option) => (
               <button
