@@ -301,47 +301,43 @@ export default function ReceiptBuilder() {
   );
 
   const availableHistoryYears = useMemo(() => {
-    const years = new Set(
-      history
-        .map((row) => {
-          const date = new Date(row?.created_at);
-          return Number.isNaN(date.getTime()) ? null : date.getFullYear();
-        })
-        .filter((year) => Number.isFinite(year)),
-    );
+    const years = history
+      .map((row) => {
+        const date = new Date(row?.created_at);
+        return Number.isNaN(date.getTime()) ? null : date.getFullYear();
+      })
+      .filter((year) => Number.isFinite(year));
 
-    years.add(new Date().getFullYear());
+    const currentYear = new Date().getFullYear();
+    const oldestYear = years.length ? Math.min(...years) : currentYear;
+    const latestYear = Math.max(currentYear, ...years, currentYear);
 
-    return Array.from(years).sort((a, b) => b - a);
+    return Array.from({ length: latestYear - oldestYear + 1 }, (_, index) => latestYear - index);
   }, [history]);
 
-  const historyPeriodStats = useMemo(() => {
-    const windows = [
-      { key: "today", label: "Today" },
-      { key: "yesterday", label: "Yesterday" },
-      { key: "week", label: "This week" },
-      { key: "month", label: `${MONTH_LABELS[historyMonth]} ${historyYear}` },
-      { key: "year", label: `${historyYear}` },
-      { key: "all", label: "All time" },
-    ];
+  const selectedMonthStats = useMemo(() => {
+    const bounds = getMonthRangeBounds(historyYear, historyMonth);
+    const rows = activeHistory.filter((row) => isWithinHistoryRange(row, bounds));
+    const totalSales = rows.reduce((sum, row) => sum + (Number(row?.total) || 0), 0);
 
-    return windows.map((window) => {
-      const bounds =
-        window.key === "month"
-          ? getMonthRangeBounds(historyYear, historyMonth)
-          : window.key === "year"
-            ? getYearRangeBounds(historyYear)
-            : getHistoryRangeBounds(window.key);
-      const rows = activeHistory.filter((row) => isWithinHistoryRange(row, bounds));
-      const totalSales = rows.reduce((sum, row) => sum + (Number(row?.total) || 0), 0);
-
-      return {
-        ...window,
-        count: rows.length,
-        totalSales,
-      };
-    });
+    return {
+      count: rows.length,
+      totalSales,
+      averageSale: rows.length ? totalSales / rows.length : 0,
+    };
   }, [activeHistory, historyMonth, historyYear]);
+
+  const selectedYearStats = useMemo(() => {
+    const bounds = getYearRangeBounds(historyYear);
+    const rows = activeHistory.filter((row) => isWithinHistoryRange(row, bounds));
+    const totalSales = rows.reduce((sum, row) => sum + (Number(row?.total) || 0), 0);
+
+    return {
+      count: rows.length,
+      totalSales,
+      averageSale: rows.length ? totalSales / rows.length : 0,
+    };
+  }, [activeHistory, historyYear]);
 
   const rangeFilteredHistory = useMemo(() => {
     const bounds =
@@ -376,6 +372,7 @@ export default function ReceiptBuilder() {
   const historyPageSize = 12;
   const historyPageCount = Math.max(1, Math.ceil(filteredHistory.length / historyPageSize));
   const visibleHistory = filteredHistory.slice(historyPage * historyPageSize, (historyPage + 1) * historyPageSize);
+  const selectedMonthLabel = `${MONTH_LABELS[historyMonth]} ${historyYear}`;
 
   const filteredBinHistory = useMemo(() => {
     const q = binQuery.trim().toLowerCase();
@@ -413,6 +410,13 @@ export default function ReceiptBuilder() {
   useEffect(() => {
     setBinPage(0);
   }, [binQuery, recycleBinHistory]);
+
+  function shiftHistoryMonth(step) {
+    const nextDate = new Date(historyYear, historyMonth + step, 1);
+    setHistoryMonth(nextDate.getMonth());
+    setHistoryYear(nextDate.getFullYear());
+    setHistoryPage(0);
+  }
 
   function addLine() {
     setLines((ls) => [...ls, emptyLine()]);
@@ -998,21 +1002,50 @@ export default function ReceiptBuilder() {
             </div>
           </div>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            {historyPeriodStats.map((stat) => (
-              <div key={stat.key} className="rounded-2xl bg-white px-4 py-3 shadow-sm">
-                <div className="text-[11px] uppercase tracking-[0.18em] text-sub">{stat.label}</div>
-                <div className="mt-1 text-lg font-semibold text-ink">{stat.count}</div>
-                <div className="mt-1 text-xs text-sub">KSh {formatMoney(stat.totalSales)}</div>
+            {[
+              {
+                label: "Selected period",
+                value: selectedMonthLabel,
+                note: "Exact calendar month",
+                accent: "from-brand-500 to-sky-500",
+              },
+              {
+                label: "Receipts in month",
+                value: selectedMonthStats?.count ?? 0,
+                note: `${selectedYearStats?.count ?? 0} receipts this year`,
+                accent: "from-slate-700 to-slate-900",
+              },
+              {
+                label: "Sales total",
+                value: `KSh ${formatMoney(selectedMonthStats?.totalSales ?? 0)}`,
+                note: "Month revenue",
+                accent: "from-emerald-500 to-teal-500",
+              },
+              {
+                label: "Average sale",
+                value: `KSh ${formatMoney(selectedMonthStats?.averageSale ?? 0)}`,
+                note: "Per receipt average",
+                accent: "from-amber-500 to-orange-500",
+              },
+            ].map((card) => (
+              <div
+                key={card.label}
+                className="overflow-hidden rounded-3xl border border-white/70 bg-white p-4 shadow-[0_16px_40px_rgba(15,23,42,0.06)]"
+              >
+                <div className={`h-1.5 w-14 rounded-full bg-gradient-to-r ${card.accent}`} />
+                <div className="mt-3 text-[11px] uppercase tracking-[0.22em] text-sub">{card.label}</div>
+                <div className="mt-2 text-lg font-semibold text-ink sm:text-xl">{card.value}</div>
+                <div className="mt-1 text-xs text-sub">{card.note}</div>
               </div>
             ))}
           </div>
-          <div className="mt-4 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-2 rounded-2xl border border-border bg-white/80 p-2 shadow-sm">
             {[
               { key: "all", label: "All receipts" },
               { key: "today", label: "Today" },
               { key: "yesterday", label: "Yesterday" },
               { key: "week", label: "This week" },
-              { key: "month", label: "By month" },
+              { key: "month", label: "Exact month" },
               { key: "year", label: "This year" },
             ].map((option) => (
               <button
@@ -1024,15 +1057,43 @@ export default function ReceiptBuilder() {
                     ? "bg-brand-500 text-white shadow-sm"
                     : "border border-border bg-white text-sub hover:border-brand-300 hover:text-brand-600"
                 }`}
-                >
+              >
                 {option.label}
               </button>
             ))}
           </div>
           {historyRange === "month" && (
-            <div className="mt-4 rounded-2xl border border-brand-100 bg-white p-4 shadow-sm">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                <div className="min-w-[140px]">
+            <div className="mt-4 rounded-[28px] border border-brand-100 bg-gradient-to-br from-brand-50 via-white to-sky-50 p-4 shadow-sm sm:p-5">
+              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-brand-500">
+                    Exact month picker
+                  </div>
+                  <h3 className="mt-2 text-2xl font-display font-bold text-ink">{selectedMonthLabel}</h3>
+                  <p className="mt-1 max-w-xl text-sm text-sub">
+                    Jump across receipts like a real monthly archive. Tap a month, change the year, or step backward and
+                    forward one month at a time.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => shiftHistoryMonth(-1)}
+                    className="rounded-full border border-border bg-white px-4 py-2 text-xs font-semibold text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
+                  >
+                    Previous month
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => shiftHistoryMonth(1)}
+                    className="rounded-full border border-border bg-white px-4 py-2 text-xs font-semibold text-sub shadow-sm transition hover:border-brand-300 hover:text-brand-600"
+                  >
+                    Next month
+                  </button>
+                </div>
+              </div>
+              <div className="mt-5 grid gap-4 lg:grid-cols-[180px_1fr]">
+                <div className="rounded-2xl border border-border bg-white p-4 shadow-sm">
                   <label className="label">Year</label>
                   <select
                     className="input bg-white"
@@ -1048,12 +1109,9 @@ export default function ReceiptBuilder() {
                       </option>
                     ))}
                   </select>
+                  <p className="mt-2 text-xs text-sub">Receipts grouped by exact calendar month.</p>
                 </div>
-                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-600">
-                  Showing {MONTH_LABELS[historyMonth]} {historyYear}
-                </div>
-              </div>
-              <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6 xl:grid-cols-12">
+                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 lg:grid-cols-6">
                 {MONTH_LABELS.map((label, index) => {
                   const isActive = historyMonth === index;
                   return (
@@ -1074,6 +1132,7 @@ export default function ReceiptBuilder() {
                     </button>
                   );
                 })}
+                </div>
               </div>
             </div>
           )}
