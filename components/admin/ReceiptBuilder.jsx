@@ -1688,8 +1688,8 @@ export default function ReceiptBuilder() {
               id="receipt-print-area"
               className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-3 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
             >
-              <div className="flex flex-col gap-4 pb-4 border-b-2 border-ink sm:flex-row sm:items-start sm:justify-between sm:pb-5 print:pb-4">
-                <div className="flex items-start gap-3 sm:gap-4">
+              <div className="flex flex-col items-center gap-3 pb-3 border-b-2 border-ink text-center sm:flex-row sm:items-start sm:justify-between sm:pb-5 sm:text-left print:gap-2 print:pb-2">
+                <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:gap-4">
                   <div className="h-16 w-1.5 rounded-full bg-brand-500/15 print:bg-brand-500 sm:h-24" />
                   <div className="rounded-3xl bg-brand-50 p-2.5 shadow-sm print:bg-white print:p-0 print:shadow-none sm:p-4">
                     <Image
@@ -1701,11 +1701,11 @@ export default function ReceiptBuilder() {
                     />
                   </div>
                 </div>
-                <div className="shrink-0 pt-0 text-left sm:pt-1 sm:text-right">
+                <div className="shrink-0 pt-0 text-center sm:pt-1 sm:text-right">
                   <h1 className="font-display font-bold text-2xl tracking-tight uppercase mb-2 sm:text-3xl">
                     Receipt
                   </h1>
-                  <div className="space-y-1 text-left sm:text-right">
+                  <div className="space-y-1 text-center sm:text-right">
                     <p className="text-sm leading-6">
                       <span className="text-sub">No. </span>
                       <span className="font-semibold">{receiptNumber}</span>
@@ -1731,7 +1731,7 @@ export default function ReceiptBuilder() {
                 </div>
               )}
 
-              <div className="mt-4 space-y-2 sm:hidden print:hidden">
+              <div className="mt-4 space-y-2 sm:hidden">
                 {lines
                   .filter((l) => l.description.trim())
                   .map((l) => {
@@ -1759,7 +1759,7 @@ export default function ReceiptBuilder() {
                 )}
               </div>
 
-              <div className="hidden sm:block print:block">
+              <div className="hidden sm:block">
               <table className="w-full mt-4 text-xs sm:text-sm receipt-table">
                 <thead>
                   <tr className="border-b border-border text-left">
@@ -1842,8 +1842,8 @@ export default function ReceiptBuilder() {
       <style jsx global>{`
         @media print {
           @page {
-            size: A4 portrait;
-            margin: 4mm;
+            size: 80mm auto;
+            margin: 0;
           }
 
           body * {
@@ -1857,18 +1857,12 @@ export default function ReceiptBuilder() {
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
-            max-width: none;
-            zoom: 0.74;
-            overflow: hidden;
+            width: 80mm;
+            max-width: 80mm;
+            padding: 3mm !important;
+            overflow: visible;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
-          }
-
-          .receipt-table th,
-          .receipt-table td {
-            padding-top: 2px !important;
-            padding-bottom: 2px !important;
           }
 
           .receipt-sheet .label,
@@ -1883,15 +1877,10 @@ export default function ReceiptBuilder() {
             page-break-inside: avoid;
           }
 
-          .receipt-sheet {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-
           .receipt-notes,
           .receipt-footer {
-            margin-top: 0.75rem !important;
-            padding-top: 0.75rem !important;
+            margin-top: 0.4rem !important;
+            padding-top: 0.4rem !important;
           }
 
           .receipt-footer p {
