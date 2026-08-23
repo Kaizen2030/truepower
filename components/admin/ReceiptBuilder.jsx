@@ -2044,6 +2044,8 @@ export default function ReceiptBuilder() {
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             border: none;
+            border-right: 1px dotted rgba(100, 116, 139, 0.42);
+            border-bottom: 1px dotted rgba(100, 116, 139, 0.42);
             box-shadow: none;
           }
 
