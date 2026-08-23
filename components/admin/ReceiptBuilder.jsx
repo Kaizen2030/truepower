@@ -2054,7 +2054,6 @@ export default function ReceiptBuilder() {
           .receipt-company-contact,
           .receipt-subtitle,
           .receipt-table-head,
-          .receipt-item-description small,
           .receipt-terms-text,
           .receipt-footer-support,
           .receipt-footer-link {
@@ -2069,9 +2068,59 @@ export default function ReceiptBuilder() {
           .receipt-row,
           .receipt-total-row,
           .receipt-footer-box {
-            transform: scale(0.96);
-            transform-origin: top left;
-            width: 100%;
+            transform: none;
+          }
+
+          .receipt-table-head,
+          .receipt-row {
+            grid-template-columns: minmax(0, 1fr) 0.28fr 0.68fr 0.75fr;
+            column-gap: 0.2rem;
+          }
+
+          .receipt-row {
+            font-size: 0.58rem;
+            line-height: 1.15;
+            padding-bottom: 0.08rem;
+          }
+
+          .receipt-item-description {
+            display: block;
+            min-width: 0;
+          }
+
+          .receipt-item-description span {
+            display: block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+
+          .receipt-item-description small {
+            display: none;
+          }
+
+          .receipt-item-price,
+          .receipt-item-total {
+            font-size: 0.5rem;
+            letter-spacing: -0.01em;
+          }
+
+          .receipt-lines {
+            gap: 0.22rem;
+          }
+
+          .receipt-divider {
+            margin: 0.28rem 0 0.5rem;
+          }
+
+          .receipt-total-row {
+            margin-top: 0.5rem;
+            padding-top: 0.25rem;
+            font-size: 0.72rem;
+          }
+
+          .receipt-total-row strong {
+            font-size: 0.76rem;
           }
         }
       `}</style>
