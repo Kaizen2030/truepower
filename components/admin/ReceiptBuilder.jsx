@@ -2036,10 +2036,10 @@ export default function ReceiptBuilder() {
           .receipt-sheet {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 80mm;
-            max-width: 80mm;
-            padding: 3mm !important;
+            left: 2mm;
+            width: 76mm;
+            max-width: 76mm;
+            padding: 3mm 3mm 3mm 4mm !important;
             overflow: visible;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -2107,6 +2107,10 @@ export default function ReceiptBuilder() {
 
           .receipt-lines {
             gap: 0.22rem;
+          }
+
+          .receipt-terms-block {
+            text-align: center;
           }
 
           .receipt-divider {
