@@ -1707,7 +1707,6 @@ export default function ReceiptBuilder() {
               <div className="receipt-divider" />
 
               <div className="receipt-meta-block">
-                <div className="receipt-heading-title">RECEIPT</div>
                 <div className="receipt-meta-row">
                   <span>No.</span>
                   <span>{receiptNumber}</span>
