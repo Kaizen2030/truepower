@@ -225,12 +225,12 @@ export default async function PortfolioPage() {
             {heroShots.length > 0 ? (
               <>
                 {/* Main featured image */}
-                <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-white shadow-sm aspect-[16/10]">
+                <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-slate-50 shadow-sm aspect-[4/5] sm:aspect-[16/10]">
                   <Image
                     src={heroShots[0].image_url}
                     alt={heroShots[0].title || "TruePower installation"}
                     fill
-                    className="object-cover"
+                    className="object-contain p-3 sm:object-cover sm:p-0"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -255,17 +255,17 @@ export default async function PortfolioPage() {
 
                 {/* Two smaller images */}
                 {heroShots.length > 1 && (
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-4">
                     {heroShots.slice(1, 3).map((shot, i) => (
                       <div
                         key={shot.image_url}
-                        className="relative overflow-hidden rounded-[1.5rem] border border-border bg-white shadow-sm h-48"
+                        className="relative overflow-hidden rounded-[1.5rem] border border-border bg-slate-50 shadow-sm aspect-[4/5] sm:h-48 sm:aspect-auto"
                       >
                         <Image
                           src={shot.image_url}
                           alt={shot.title || "TruePower installation"}
                           fill
-                          className="object-cover"
+                          className="object-contain p-2 sm:object-cover sm:p-0"
                           sizes="(max-width: 768px) 50vw, 25vw"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/0 to-transparent" />

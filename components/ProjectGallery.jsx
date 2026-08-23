@@ -58,31 +58,33 @@ export default function ProjectGallery({
           </div>
         ) : (
           /* GRID */
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
             {filteredImages.map((img) => (
               <div
                 key={img.id}
-                className="group relative rounded-2xl overflow-hidden cursor-pointer"
+                className="group relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm cursor-pointer"
                 onClick={() => setSelectedImage(img)}
               >
                 <img
                   src={img.image_url}
                   alt={img.title || "Installation"}
-                  className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="h-auto w-full bg-slate-50 object-contain p-2 transition-transform duration-500 group-hover:scale-[1.02] sm:aspect-[4/5] sm:h-full sm:p-3"
                 />
 
                 {/* HOVER OVERLAY */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
                   <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                    <p className="font-display font-semibold">
+                    <p className="font-display font-semibold leading-tight">
                       {img.title || "Installation"}
                     </p>
-                    <p className="text-white/70 text-sm">{img.description}</p>
+                    <p className="text-sm text-white/70 line-clamp-2">
+                      {img.description}
+                    </p>
                   </div>
                 </div>
 
                 {/* CATEGORY BADGE */}
-                <div className="absolute top-3 right-3 bg-black/50 backdrop-blur-sm rounded-full px-2 py-1 text-white text-xs">
+                <div className="absolute right-3 top-3 rounded-full bg-black/50 px-2 py-1 text-xs text-white backdrop-blur-sm">
                   {img.category}
                 </div>
               </div>
