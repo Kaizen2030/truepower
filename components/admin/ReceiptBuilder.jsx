@@ -2036,9 +2036,9 @@ export default function ReceiptBuilder() {
           .receipt-sheet {
             position: absolute;
             top: 0;
-            left: 2mm;
-            width: 76mm;
-            max-width: 76mm;
+            left: 4mm;
+            width: 72mm;
+            max-width: 72mm;
             padding: 3mm 3mm 3mm 4mm !important;
             overflow: visible;
             -webkit-print-color-adjust: exact;
