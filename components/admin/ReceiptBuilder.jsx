@@ -1689,38 +1689,35 @@ export default function ReceiptBuilder() {
               className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-6 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
             >
               <div className="receipt-header">
-                <div className="receipt-brand-block">
-                  <div className="receipt-logo-wrap">
-                    <Image
-                      src={business.logo}
-                      alt="TruePower logo"
-                      className="receipt-logo"
-                      width={60}
-                      height={60}
-                    />
-                  </div>
-
-                  <div className="receipt-company-meta">
-                    <div className="receipt-company-name">{business.name}</div>
-                    <div className="receipt-company-contact">{business.phone}</div>
-                    <div className="receipt-company-contact">{business.website.replace(/^https?:\/\//i, "")}</div>
-                  </div>
+                <div className="receipt-logo-wrap">
+                  <Image
+                    src={business.logo}
+                    alt="TruePower logo"
+                    className="receipt-logo"
+                    width={70}
+                    height={70}
+                  />
                 </div>
-
-                <div className="receipt-heading-block">
-                  <h1>RECEIPT</h1>
-                  <div className="receipt-meta-row">
-                    <span>No.</span>
-                    <span>{receiptNumber}</span>
-                  </div>
-                  <div className="receipt-meta-row">
-                    <span>Date</span>
-                    <span>{receiptDate}</span>
-                  </div>
-                </div>
+                <div className="receipt-company-name">{business.name}</div>
+                <div className="receipt-company-contact">{business.phone}</div>
+                <div className="receipt-company-contact">{business.website.replace(/^https?:\/\//i, "")}</div>
               </div>
 
               <p className="receipt-subtitle">{buildReceiptSubtitle()}</p>
+              <div className="receipt-divider" />
+
+              <div className="receipt-meta-block">
+                <div className="receipt-heading-title">RECEIPT</div>
+                <div className="receipt-meta-row">
+                  <span>No.</span>
+                  <span>{receiptNumber}</span>
+                </div>
+                <div className="receipt-meta-row">
+                  <span>Date</span>
+                  <span>{receiptDate}</span>
+                </div>
+              </div>
+
               <div className="receipt-divider" />
 
               <div className="receipt-table-head">
@@ -1804,22 +1801,16 @@ export default function ReceiptBuilder() {
 
         .receipt-header {
           display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 1rem;
-          margin-bottom: 0.5rem;
-        }
-
-        .receipt-brand-block {
-          display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 0.75rem;
-          min-width: 0;
+          text-align: center;
+          gap: 0.15rem;
+          margin-bottom: 0.25rem;
         }
 
         .receipt-logo-wrap {
-          width: 54px;
-          height: 54px;
+          width: 72px;
+          height: 72px;
           border-radius: 9999px;
           background: #dbeef7;
           display: flex;
@@ -1827,7 +1818,7 @@ export default function ReceiptBuilder() {
           justify-content: center;
           overflow: hidden;
           border: 2px solid rgba(29, 78, 216, 0.12);
-          flex-shrink: 0;
+          margin-bottom: 0.4rem;
         }
 
         .receipt-logo {
@@ -1836,16 +1827,10 @@ export default function ReceiptBuilder() {
           object-fit: contain;
         }
 
-        .receipt-company-meta {
-          display: flex;
-          flex-direction: column;
-          min-width: 0;
-        }
-
         .receipt-company-name {
           font-weight: 800;
           font-size: 1.15rem;
-          line-height: 1.1;
+          line-height: 1.2;
         }
 
         .receipt-company-contact {
@@ -1855,34 +1840,32 @@ export default function ReceiptBuilder() {
           word-break: break-word;
         }
 
-        .receipt-heading-block {
-          text-align: right;
-          flex-shrink: 0;
+        .receipt-meta-block {
+          text-align: center;
+          margin: 0.4rem 0;
         }
 
-        .receipt-heading-block h1 {
-          margin: 0;
-          font-size: 2rem;
+        .receipt-heading-title {
+          font-size: 1.6rem;
           font-weight: 800;
-          letter-spacing: 0.04em;
-          line-height: 1;
+          letter-spacing: 0.06em;
           color: #0f172a;
+          margin-bottom: 0.3rem;
         }
 
         .receipt-meta-row {
           display: flex;
-          justify-content: flex-end;
+          justify-content: center;
           gap: 0.5rem;
           font-size: 0.7rem;
           color: #334155;
-          margin-top: 0.25rem;
         }
 
         .receipt-subtitle {
           margin: 0.75rem 0 0.5rem;
           font-size: 0.68rem;
           color: #475569;
-          text-align: left;
+          text-align: center;
           line-height: 1.5;
         }
 
@@ -2077,7 +2060,7 @@ export default function ReceiptBuilder() {
             font-size: 0.5rem !important;
           }
 
-          .receipt-heading-block h1 {
+          .receipt-heading-title {
             font-size: 1.2rem;
           }
 
