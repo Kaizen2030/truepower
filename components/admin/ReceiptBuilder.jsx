@@ -1686,143 +1686,94 @@ export default function ReceiptBuilder() {
             <div
               ref={printRef}
               id="receipt-print-area"
-              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-3 sm:p-8 sm:pt-8 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
+              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-6 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
             >
-              <div className="flex flex-col items-center gap-3 pb-3 border-b-2 border-ink text-center sm:flex-row sm:items-start sm:justify-between sm:pb-5 sm:text-left print:gap-2 print:pb-2">
-                <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-start sm:gap-4">
-                  <div className="h-16 w-1.5 rounded-full bg-brand-500/15 print:bg-brand-500 sm:h-24" />
-                  <div className="rounded-3xl bg-brand-50 p-2.5 shadow-sm print:bg-white print:p-0 print:shadow-none sm:p-4">
+              <div className="receipt-header">
+                <div className="receipt-brand-block">
+                  <div className="receipt-logo-wrap">
                     <Image
                       src={business.logo}
-                      alt="TruePower Solutions logo"
-                      className="h-16 w-16 object-contain sm:h-36 sm:w-36"
-                      width={144}
-                      height={144}
+                      alt="TruePower logo"
+                      className="receipt-logo"
+                      width={60}
+                      height={60}
                     />
                   </div>
-                </div>
-                <div className="shrink-0 pt-0 text-center sm:pt-1 sm:text-right">
-                  <h1 className="font-display font-bold text-2xl tracking-tight uppercase mb-2 sm:text-3xl">
-                    Receipt
-                  </h1>
-                  <div className="space-y-1 text-center sm:text-right">
-                    <p className="text-sm leading-6">
-                      <span className="text-sub">No. </span>
-                      <span className="font-semibold">{receiptNumber}</span>
-                    </p>
-                    <p className="text-sm leading-6">
-                      <span className="text-sub">Date </span>
-                      <span className="font-semibold">{receiptDate}</span>
-                    </p>
+
+                  <div className="receipt-company-meta">
+                    <div className="receipt-company-name">{business.name}</div>
+                    <div className="receipt-company-contact">{business.phone}</div>
+                    <div className="receipt-company-contact">{business.website.replace(/^https?:\/\//i, "")}</div>
                   </div>
-                  <p className="mt-2 max-w-none text-[11px] text-sub sm:ml-auto sm:max-w-[11rem] sm:text-xs">
-                    {buildReceiptSubtitle()}
-                  </p>
+                </div>
+
+                <div className="receipt-heading-block">
+                  <h1>RECEIPT</h1>
+                  <div className="receipt-meta-row">
+                    <span>No.</span>
+                    <span>{receiptNumber}</span>
+                  </div>
+                  <div className="receipt-meta-row">
+                    <span>Date</span>
+                    <span>{receiptDate}</span>
+                  </div>
                 </div>
               </div>
 
-              {(customerName || customerPhone) && (
-                <div className="py-3 border-b border-border">
-                  <p className="label mb-2">Billed To</p>
-                  <div className="grid gap-1">
-                    {customerName && <p className="font-semibold text-base">{customerName}</p>}
-                    {customerPhone && <p className="text-sub text-sm">{customerPhone}</p>}
-                  </div>
-                </div>
-              )}
+              <p className="receipt-subtitle">{buildReceiptSubtitle()}</p>
+              <div className="receipt-divider" />
 
-              <div className="mt-4 space-y-2 sm:hidden">
-                {lines
-                  .filter((l) => l.description.trim())
-                  .map((l) => {
-                    const amount = (Number(l.qty) || 0) * (Number(l.price) || 0);
-                    return (
-                      <div key={l.id} className="rounded-2xl border border-border bg-slate-50 p-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <p className="text-sm font-medium leading-5 text-ink">{l.description}</p>
-                            <p className="mt-1 text-[11px] text-sub">
-                              Qty {l.qty} • KSh {formatMoney(l.price)} each
-                            </p>
+              <div className="receipt-table-head">
+                <span>Description</span>
+                <span>Qty</span>
+                <span>Price</span>
+                <span>Amount</span>
+              </div>
+
+              <div className="receipt-lines">
+                {lines.filter((l) => l.description.trim()).length ? (
+                  lines
+                    .filter((l) => l.description.trim())
+                    .map((l) => {
+                      const amount = (Number(l.qty) || 0) * (Number(l.price) || 0);
+                      return (
+                        <div key={l.id} className="receipt-row">
+                          <div className="receipt-item-description">
+                            <span>{l.description}</span>
+                            <small>
+                              {Number(l.qty) || 0} x {formatMoney(Number(l.price) || 0)}
+                            </small>
                           </div>
-                          <div className="rounded-full bg-white px-3 py-1 text-sm font-semibold text-brand-700 whitespace-nowrap shadow-sm">
-                            KSh {formatMoney(amount)}
-                          </div>
+                          <div className="receipt-item-qty">{Number(l.qty) || 0}</div>
+                          <div className="receipt-item-price">KSh {formatMoney(Number(l.price) || 0)}</div>
+                          <div className="receipt-item-total">KSh {formatMoney(amount)}</div>
                         </div>
-                      </div>
-                    );
-                  })}
-                {!(lines.filter((l) => l.description.trim()).length) && (
-                  <div className="rounded-2xl border border-dashed border-border bg-white p-3 text-sm text-sub">
-                    No line items added yet.
-                  </div>
+                      );
+                    })
+                ) : (
+                  <div className="receipt-empty-state">No line items added yet.</div>
                 )}
               </div>
 
-              <div className="hidden sm:block">
-              <table className="w-full mt-4 text-xs sm:text-sm receipt-table">
-                <thead>
-                  <tr className="border-b border-border text-left">
-                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider">
-                      Description
-                    </th>
-                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-center w-12 sm:w-16">
-                      Qty
-                    </th>
-                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
-                      Price
-                    </th>
-                    <th className="py-2 font-display font-semibold text-sub uppercase text-[10px] sm:text-xs tracking-wider text-right w-20 sm:w-28">
-                      Amount
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {lines
-                    .filter((l) => l.description.trim())
-                    .map((l) => (
-                      <tr key={l.id} className="border-b border-border/60">
-                        <td className="py-2 pr-1">{l.description}</td>
-                        <td className="py-2 text-center">{l.qty}</td>
-                        <td className="py-2 text-right whitespace-nowrap">{formatMoney(l.price)}</td>
-                        <td className="py-2 text-right font-medium whitespace-nowrap">
-                          {formatMoney((Number(l.qty) || 0) * (Number(l.price) || 0))}
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+              <div className="receipt-total-row">
+                <span>Total</span>
+                <strong>KSh {formatMoney(total)}</strong>
               </div>
 
-              <div className="mt-4 flex justify-end">
-                <div className="w-full space-y-1 sm:w-56">
-                  <div className="flex justify-between text-sm border-t-2 border-ink pt-2 mt-1">
-                    <span className="font-display font-bold">Total</span>
-                    <span className="font-display font-bold">KSh {formatMoney(total)}</span>
-                  </div>
-                </div>
+              <div className="receipt-divider" />
+
+              <div className="receipt-terms-block">
+                <p className="receipt-section-label">TERMS & CONDITIONS</p>
+                <p className="receipt-terms-text">{receiptNotes}</p>
               </div>
 
-              {receiptNotes && (
-                <div className="receipt-notes mt-6 pt-4 border-t border-border print:mt-3 print:pt-3">
-                  <p className="label mb-2">Terms & Conditions</p>
-                  <p className="text-sub text-sm whitespace-pre-line leading-6 print:text-[11px] print:leading-4">
-                    {receiptNotes}
-                  </p>
-                </div>
-              )}
-
-              <div className="receipt-footer mt-6 pt-4 border-t-2 border-ink/10 text-center print:mt-3 print:pt-3">
-                <p className="font-display font-semibold text-sm text-ink print:text-[13px]">
-                  Thank you for shopping with us.
-                </p>
-                <p className="text-faint text-xs mt-1 leading-5 break-words print:text-[11px] print:leading-4">
+              <div className="receipt-footer-box">
+                <p className="receipt-footer-message">Thank you for shopping with us.</p>
+                <p className="receipt-footer-support">
                   Need help with delivery, installation, or after-sales support? Call or WhatsApp us on{" "}
-                  <span className="font-semibold text-ink sm:whitespace-nowrap">{business.phone}</span>.
+                  <span>{business.phone}</span>.
                 </p>
-                <p className="text-faint text-[11px] mt-1 print:text-[10px] print:mt-0.5">
-                  <span className="break-all">{business.website}</span>
-                </p>
+                <p className="receipt-footer-link">{business.website}</p>
               </div>
             </div>
           </div>
@@ -1840,6 +1791,251 @@ export default function ReceiptBuilder() {
       {renderReceiptModal(selectedReceipt)}
 
       <style jsx global>{`
+        .receipt-sheet {
+          color: #0f172a;
+          background: #ffffff;
+          border: 1px solid #e2e8f0;
+          border-radius: 1.25rem;
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+          max-width: 420px;
+          margin: 0 auto;
+          font-family: "Segoe UI", sans-serif;
+        }
+
+        .receipt-header {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 1rem;
+          margin-bottom: 0.5rem;
+        }
+
+        .receipt-brand-block {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          min-width: 0;
+        }
+
+        .receipt-logo-wrap {
+          width: 54px;
+          height: 54px;
+          border-radius: 9999px;
+          background: #dbeef7;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          border: 2px solid rgba(29, 78, 216, 0.12);
+          flex-shrink: 0;
+        }
+
+        .receipt-logo {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        .receipt-company-meta {
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+        }
+
+        .receipt-company-name {
+          font-weight: 800;
+          font-size: 1.15rem;
+          line-height: 1.1;
+        }
+
+        .receipt-company-contact {
+          font-size: 0.62rem;
+          color: #64748b;
+          line-height: 1.4;
+          word-break: break-word;
+        }
+
+        .receipt-heading-block {
+          text-align: right;
+          flex-shrink: 0;
+        }
+
+        .receipt-heading-block h1 {
+          margin: 0;
+          font-size: 2rem;
+          font-weight: 800;
+          letter-spacing: 0.04em;
+          line-height: 1;
+          color: #0f172a;
+        }
+
+        .receipt-meta-row {
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
+          font-size: 0.7rem;
+          color: #334155;
+          margin-top: 0.25rem;
+        }
+
+        .receipt-subtitle {
+          margin: 0.75rem 0 0.5rem;
+          font-size: 0.68rem;
+          color: #475569;
+          text-align: left;
+          line-height: 1.5;
+        }
+
+        .receipt-divider {
+          border-top: 1px dashed rgba(15, 23, 42, 0.35);
+          margin: 0.4rem 0 0.75rem;
+        }
+
+        .receipt-table-head,
+        .receipt-row {
+          display: grid;
+          grid-template-columns: minmax(0, 2fr) 0.5fr 0.7fr 0.8fr;
+          align-items: start;
+          column-gap: 0.5rem;
+        }
+
+        .receipt-table-head {
+          border-bottom: 1px solid rgba(15, 23, 42, 0.18);
+          padding-bottom: 0.38rem;
+          margin-bottom: 0.35rem;
+          font-size: 0.62rem;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: #475569;
+        }
+
+        .receipt-table-head span:nth-child(2),
+        .receipt-table-head span:nth-child(3),
+        .receipt-table-head span:nth-child(4) {
+          text-align: right;
+        }
+
+        .receipt-lines {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .receipt-row {
+          align-items: flex-start;
+          font-size: 0.78rem;
+          color: #0f172a;
+          padding-bottom: 0.2rem;
+        }
+
+        .receipt-item-description {
+          display: flex;
+          flex-direction: column;
+          gap: 0.15rem;
+          min-width: 0;
+        }
+
+        .receipt-item-description span {
+          line-height: 1.35;
+          word-break: break-word;
+        }
+
+        .receipt-item-description small {
+          color: #64748b;
+          font-size: 0.58rem;
+        }
+
+        .receipt-item-qty,
+        .receipt-item-price,
+        .receipt-item-total {
+          text-align: right;
+          white-space: nowrap;
+        }
+
+        .receipt-item-price,
+        .receipt-item-total {
+          font-weight: 600;
+        }
+
+        .receipt-empty-state {
+          border: 1px dashed rgba(15, 23, 42, 0.25);
+          border-radius: 0.75rem;
+          padding: 0.75rem;
+          color: #64748b;
+          font-size: 0.72rem;
+          text-align: center;
+        }
+
+        .receipt-total-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-top: 0.85rem;
+          padding-top: 0.35rem;
+          border-top: 1px solid rgba(15, 23, 42, 0.18);
+          font-size: 0.9rem;
+          font-weight: 700;
+          text-transform: uppercase;
+        }
+
+        .receipt-total-row strong {
+          font-size: 0.95rem;
+        }
+
+        .receipt-terms-block {
+          margin-top: 0.8rem;
+        }
+
+        .receipt-section-label {
+          margin: 0 0 0.35rem;
+          font-size: 0.62rem;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          color: #475569;
+        }
+
+        .receipt-terms-text {
+          margin: 0;
+          font-size: 0.72rem;
+          color: #334155;
+          line-height: 1.5;
+          white-space: pre-line;
+        }
+
+        .receipt-footer-box {
+          margin-top: 0.9rem;
+          padding-top: 0.7rem;
+          border-top: 1px dashed rgba(15, 23, 42, 0.3);
+          text-align: center;
+        }
+
+        .receipt-footer-message {
+          margin: 0;
+          font-size: 0.82rem;
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .receipt-footer-support {
+          margin: 0.5rem 0 0;
+          font-size: 0.64rem;
+          color: #475569;
+          line-height: 1.5;
+        }
+
+        .receipt-footer-support span {
+          font-weight: 700;
+          color: #0f172a;
+        }
+
+        .receipt-footer-link {
+          margin: 0.25rem 0 0;
+          font-size: 0.6rem;
+          color: #64748b;
+          word-break: break-word;
+        }
+
         @media print {
           @page {
             size: 80mm auto;
@@ -1863,28 +2059,35 @@ export default function ReceiptBuilder() {
             overflow: visible;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
+            border: none;
+            box-shadow: none;
           }
 
-          .receipt-sheet .label,
-          .receipt-sheet .text-sub,
-          .receipt-sheet .text-faint {
-            color: #475569 !important;
+          .receipt-company-name {
+            font-size: 0.75rem;
           }
 
-          .receipt-sheet,
-          .receipt-sheet * {
-            break-inside: avoid;
-            page-break-inside: avoid;
+          .receipt-company-contact,
+          .receipt-subtitle,
+          .receipt-table-head,
+          .receipt-item-description small,
+          .receipt-terms-text,
+          .receipt-footer-support,
+          .receipt-footer-link {
+            font-size: 0.5rem !important;
           }
 
-          .receipt-notes,
-          .receipt-footer {
-            margin-top: 0.4rem !important;
-            padding-top: 0.4rem !important;
+          .receipt-heading-block h1 {
+            font-size: 1.2rem;
           }
 
-          .receipt-footer p {
-            line-height: 1.25 !important;
+          .receipt-table-head,
+          .receipt-row,
+          .receipt-total-row,
+          .receipt-footer-box {
+            transform: scale(0.96);
+            transform-origin: top left;
+            width: 100%;
           }
         }
       `}</style>
