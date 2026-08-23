@@ -1846,19 +1846,21 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-heading-title {
-          font-size: 1.6rem;
-          font-weight: 800;
-          letter-spacing: 0.06em;
+          font-size: 1.15rem;
+          font-weight: 700;
+          letter-spacing: 0.03em;
           color: #0f172a;
-          margin-bottom: 0.3rem;
+          margin-bottom: 0.35rem;
         }
 
         .receipt-meta-row {
           display: flex;
           justify-content: center;
-          gap: 0.5rem;
-          font-size: 0.7rem;
+          align-items: center;
+          gap: 0.45rem;
+          font-size: 0.68rem;
           color: #334155;
+          line-height: 1.5;
         }
 
         .receipt-subtitle {
@@ -2061,7 +2063,7 @@ export default function ReceiptBuilder() {
           }
 
           .receipt-heading-title {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
           }
 
           .receipt-table-head,
