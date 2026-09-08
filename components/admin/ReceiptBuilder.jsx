@@ -617,8 +617,8 @@ export default function ReceiptBuilder() {
           ${styles}
           <style>
             html, body {
-              margin: 0 !important;
-              padding: 0 !important;
+              margin: 0;
+              padding: 0;
               width: ${RECEIPT_WIDTH_MM}mm;
               height: ${RECEIPT_HEIGHT_MM}mm;
               min-width: ${RECEIPT_WIDTH_MM}mm;
@@ -629,18 +629,14 @@ export default function ReceiptBuilder() {
             }
             body {
               overflow: hidden;
-              display: block;
             }
             #receipt-print-area {
               width: ${RECEIPT_WIDTH_MM}mm !important;
               height: ${RECEIPT_HEIGHT_MM}mm !important;
-              min-width: ${RECEIPT_WIDTH_MM}mm !important;
               min-height: ${RECEIPT_HEIGHT_MM}mm !important;
-              max-width: ${RECEIPT_WIDTH_MM}mm !important;
-              max-height: ${RECEIPT_HEIGHT_MM}mm !important;
+              max-width: none !important;
               margin: 0 !important;
               box-sizing: border-box !important;
-              display: block !important;
             }
           </style>
         </head>
@@ -1814,10 +1810,8 @@ export default function ReceiptBuilder() {
           box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
           width: ${RECEIPT_WIDTH_MM}mm;
           height: ${RECEIPT_HEIGHT_MM}mm;
-          min-width: ${RECEIPT_WIDTH_MM}mm;
           min-height: ${RECEIPT_HEIGHT_MM}mm;
-          max-width: ${RECEIPT_WIDTH_MM}mm;
-          max-height: ${RECEIPT_HEIGHT_MM}mm;
+          max-width: none;
           padding: 0.75mm;
           overflow: hidden;
           margin: 0 auto;
@@ -2050,15 +2044,6 @@ export default function ReceiptBuilder() {
           @page {
             size: ${RECEIPT_WIDTH_MM}mm ${RECEIPT_HEIGHT_MM}mm;
             margin: 0;
-            marks: none;
-          }
-
-          html, body {
-            width: ${RECEIPT_WIDTH_MM}mm !important;
-            height: ${RECEIPT_HEIGHT_MM}mm !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            background: #ffffff !important;
           }
 
           body * {
