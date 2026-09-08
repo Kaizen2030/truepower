@@ -1741,7 +1741,6 @@ export default function ReceiptBuilder() {
 
               <div className="receipt-table-head">
                 <span>Description</span>
-                <span>Qty</span>
                 <span>Price</span>
                 <span>Amount</span>
               </div>
@@ -1756,11 +1755,7 @@ export default function ReceiptBuilder() {
                         <div key={l.id} className="receipt-row">
                           <div className="receipt-item-description">
                             <span>{l.description}</span>
-                            <small>
-                              {Number(l.qty) || 0} x {formatMoney(Number(l.price) || 0)}
-                            </small>
                           </div>
-                          <div className="receipt-item-qty">{Number(l.qty) || 0}</div>
                           <div className="receipt-item-price">KSh {formatMoney(Number(l.price) || 0)}</div>
                           <div className="receipt-item-total">KSh {formatMoney(amount)}</div>
                         </div>
@@ -1917,9 +1912,9 @@ export default function ReceiptBuilder() {
         .receipt-table-head,
         .receipt-row {
           display: grid;
-          grid-template-columns: minmax(0, 2fr) 0.5fr 0.75fr 0.8fr;
+          grid-template-columns: minmax(0, 2.2fr) 0.9fr 0.9fr;
           align-items: start;
-          column-gap: 0.4rem;
+          column-gap: 0.35rem;
         }
 
         .receipt-table-head {
@@ -1934,8 +1929,7 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-table-head span:nth-child(2),
-        .receipt-table-head span:nth-child(3),
-        .receipt-table-head span:nth-child(4) {
+        .receipt-table-head span:nth-child(3) {
           text-align: right;
         }
 
@@ -1958,30 +1952,19 @@ export default function ReceiptBuilder() {
         .receipt-item-description {
           display: flex;
           flex-direction: column;
-          gap: 0.1rem;
           min-width: 0;
         }
 
         .receipt-item-description span {
           line-height: 1.35;
           word-break: break-word;
+          overflow-wrap: anywhere;
         }
 
-        .receipt-item-description small {
-          color: #000000;
-          font-size: 0.62rem;
-          font-weight: 700;
-        }
-
-        .receipt-item-qty,
         .receipt-item-price,
         .receipt-item-total {
           text-align: right;
           white-space: nowrap;
-        }
-
-        .receipt-item-price,
-        .receipt-item-total {
           font-weight: 600;
         }
 
