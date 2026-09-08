@@ -159,8 +159,6 @@ function isWithinHistoryRange(row, bounds) {
 }
 
 const RECYCLE_BIN_STORAGE_KEY = "truepower.receipt.recycle-bin";
-const RECEIPT_WIDTH_MM = 60;
-const RECEIPT_HEIGHT_MM = 100;
 
 function readDeletedReceiptIds() {
   if (typeof window === "undefined") return [];
@@ -619,24 +617,12 @@ export default function ReceiptBuilder() {
             html, body {
               margin: 0;
               padding: 0;
-              width: ${RECEIPT_WIDTH_MM}mm;
-              height: ${RECEIPT_HEIGHT_MM}mm;
-              min-width: ${RECEIPT_WIDTH_MM}mm;
-              min-height: ${RECEIPT_HEIGHT_MM}mm;
               background: #fff;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
             body {
               overflow: hidden;
-            }
-            #receipt-print-area {
-              width: ${RECEIPT_WIDTH_MM}mm !important;
-              height: ${RECEIPT_HEIGHT_MM}mm !important;
-              min-height: ${RECEIPT_HEIGHT_MM}mm !important;
-              max-width: none !important;
-              margin: 0 !important;
-              box-sizing: border-box !important;
             }
           </style>
         </head>
@@ -1685,7 +1671,7 @@ export default function ReceiptBuilder() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handlePrint} className="btn-primary justify-center">
-                <Printer size={16} /> Print / Save 60x100mm PDF
+                <Printer size={16} /> Print / Save PDF
               </button>
               <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
                 <Share2 size={16} /> Share via WhatsApp
@@ -1700,7 +1686,7 @@ export default function ReceiptBuilder() {
             <div
               ref={printRef}
               id="receipt-print-area"
-              className="receipt-sheet"
+              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-6 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
             >
               <div className="receipt-header">
                 <div className="receipt-logo-wrap">
@@ -1721,6 +1707,7 @@ export default function ReceiptBuilder() {
               <div className="receipt-divider" />
 
               <div className="receipt-meta-block">
+                <div className="receipt-heading-title">RECEIPT</div>
                 <div className="receipt-meta-row">
                   <span>No.</span>
                   <span>{receiptNumber}</span>
@@ -1802,18 +1789,12 @@ export default function ReceiptBuilder() {
 
       <style jsx global>{`
         .receipt-sheet {
-          box-sizing: border-box;
           color: #0f172a;
           background: #ffffff;
           border: 1px solid #e2e8f0;
           border-radius: 1.25rem;
           box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-          width: ${RECEIPT_WIDTH_MM}mm;
-          height: ${RECEIPT_HEIGHT_MM}mm;
-          min-height: ${RECEIPT_HEIGHT_MM}mm;
-          max-width: none;
-          padding: 0.75mm;
-          overflow: hidden;
+          max-width: 420px;
           margin: 0 auto;
           font-family: "Segoe UI", sans-serif;
         }
@@ -1865,21 +1846,19 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-heading-title {
-          font-size: 1.15rem;
-          font-weight: 700;
-          letter-spacing: 0.03em;
+          font-size: 1.6rem;
+          font-weight: 800;
+          letter-spacing: 0.06em;
           color: #0f172a;
-          margin-bottom: 0.35rem;
+          margin-bottom: 0.3rem;
         }
 
         .receipt-meta-row {
           display: flex;
           justify-content: center;
-          align-items: center;
-          gap: 0.45rem;
-          font-size: 0.68rem;
+          gap: 0.5rem;
+          font-size: 0.7rem;
           color: #334155;
-          line-height: 1.5;
         }
 
         .receipt-subtitle {
@@ -2042,7 +2021,7 @@ export default function ReceiptBuilder() {
 
         @media print {
           @page {
-            size: ${RECEIPT_WIDTH_MM}mm ${RECEIPT_HEIGHT_MM}mm;
+            size: 80mm auto;
             margin: 0;
           }
 
@@ -2057,18 +2036,13 @@ export default function ReceiptBuilder() {
             position: absolute;
             top: 0;
             left: 0;
-            width: ${RECEIPT_WIDTH_MM}mm;
-            height: ${RECEIPT_HEIGHT_MM}mm;
-            min-height: ${RECEIPT_HEIGHT_MM}mm;
-            max-width: none;
-            padding: 0.75mm !important;
+            width: 80mm;
+            max-width: 80mm;
+            padding: 3mm !important;
             overflow: visible;
-            box-sizing: border-box;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             border: none;
-            border-right: 1px dotted rgba(100, 116, 139, 0.42);
-            border-bottom: 1px dotted rgba(100, 116, 139, 0.42);
             box-shadow: none;
           }
 
@@ -2079,6 +2053,7 @@ export default function ReceiptBuilder() {
           .receipt-company-contact,
           .receipt-subtitle,
           .receipt-table-head,
+          .receipt-item-description small,
           .receipt-terms-text,
           .receipt-footer-support,
           .receipt-footer-link {
@@ -2086,70 +2061,16 @@ export default function ReceiptBuilder() {
           }
 
           .receipt-heading-title {
-            font-size: 0.9rem;
+            font-size: 1.2rem;
           }
 
           .receipt-table-head,
           .receipt-row,
           .receipt-total-row,
           .receipt-footer-box {
-            transform: none;
-          }
-
-          .receipt-table-head,
-          .receipt-row {
-            grid-template-columns: minmax(0, 1fr) 0.28fr 0.68fr 0.75fr;
-            column-gap: 0.2rem;
-          }
-
-          .receipt-row {
-            font-size: 0.58rem;
-            line-height: 1.15;
-            padding-bottom: 0.08rem;
-          }
-
-          .receipt-item-description {
-            display: block;
-            min-width: 0;
-          }
-
-          .receipt-item-description span {
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-
-          .receipt-item-description small {
-            display: none;
-          }
-
-          .receipt-item-price,
-          .receipt-item-total {
-            font-size: 0.5rem;
-            letter-spacing: -0.01em;
-          }
-
-          .receipt-lines {
-            gap: 0.22rem;
-          }
-
-          .receipt-terms-block {
-            text-align: center;
-          }
-
-          .receipt-divider {
-            margin: 0.28rem 0 0.5rem;
-          }
-
-          .receipt-total-row {
-            margin-top: 0.5rem;
-            padding-top: 0.25rem;
-            font-size: 0.72rem;
-          }
-
-          .receipt-total-row strong {
-            font-size: 0.76rem;
+            transform: scale(0.96);
+            transform-origin: top left;
+            width: 100%;
           }
         }
       `}</style>
