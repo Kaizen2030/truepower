@@ -159,6 +159,8 @@ function isWithinHistoryRange(row, bounds) {
 }
 
 const RECYCLE_BIN_STORAGE_KEY = "truepower.receipt.recycle-bin";
+const RECEIPT_WIDTH_MM = 60;
+const RECEIPT_HEIGHT_MM = 100;
 
 function readDeletedReceiptIds() {
   if (typeof window === "undefined") return [];
@@ -617,12 +619,24 @@ export default function ReceiptBuilder() {
             html, body {
               margin: 0;
               padding: 0;
+              width: ${RECEIPT_WIDTH_MM}mm;
+              height: ${RECEIPT_HEIGHT_MM}mm;
+              min-width: ${RECEIPT_WIDTH_MM}mm;
+              min-height: ${RECEIPT_HEIGHT_MM}mm;
               background: #fff;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
             body {
               overflow: hidden;
+            }
+            #receipt-print-area {
+              width: ${RECEIPT_WIDTH_MM}mm !important;
+              height: ${RECEIPT_HEIGHT_MM}mm !important;
+              min-height: ${RECEIPT_HEIGHT_MM}mm !important;
+              max-width: none !important;
+              margin: 0 !important;
+              box-sizing: border-box !important;
             }
           </style>
         </head>
@@ -1671,7 +1685,7 @@ export default function ReceiptBuilder() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handlePrint} className="btn-primary justify-center">
-                <Printer size={16} /> Print / Save PDF
+                <Printer size={16} /> Print / Save 60x100mm PDF
               </button>
               <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
                 <Share2 size={16} /> Share via WhatsApp
@@ -1686,7 +1700,7 @@ export default function ReceiptBuilder() {
             <div
               ref={printRef}
               id="receipt-print-area"
-              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-6 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
+              className="receipt-sheet"
             >
               <div className="receipt-header">
                 <div className="receipt-logo-wrap">
@@ -1788,12 +1802,18 @@ export default function ReceiptBuilder() {
 
       <style jsx global>{`
         .receipt-sheet {
+          box-sizing: border-box;
           color: #0f172a;
           background: #ffffff;
           border: 1px solid #e2e8f0;
           border-radius: 1.25rem;
           box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-          max-width: 420px;
+          width: ${RECEIPT_WIDTH_MM}mm;
+          height: ${RECEIPT_HEIGHT_MM}mm;
+          min-height: ${RECEIPT_HEIGHT_MM}mm;
+          max-width: none;
+          padding: 0.75mm;
+          overflow: hidden;
           margin: 0 auto;
           font-family: "Segoe UI", sans-serif;
         }
@@ -2022,7 +2042,7 @@ export default function ReceiptBuilder() {
 
         @media print {
           @page {
-            size: 80mm auto;
+            size: ${RECEIPT_WIDTH_MM}mm ${RECEIPT_HEIGHT_MM}mm;
             margin: 0;
           }
 
@@ -2036,11 +2056,14 @@ export default function ReceiptBuilder() {
           .receipt-sheet {
             position: absolute;
             top: 0;
-            left: 4mm;
-            width: 72mm;
-            max-width: 72mm;
-            padding: 3mm 3mm 3mm 4mm !important;
+            left: 0;
+            width: ${RECEIPT_WIDTH_MM}mm;
+            height: ${RECEIPT_HEIGHT_MM}mm;
+            min-height: ${RECEIPT_HEIGHT_MM}mm;
+            max-width: none;
+            padding: 0.75mm !important;
             overflow: visible;
+            box-sizing: border-box;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
             border: none;
