@@ -1966,7 +1966,7 @@ export default function ReceiptBuilder() {
 
         .receipt-meta-block {
           text-align: center;
-          margin: 0.3rem 0;
+          margin: 0.45rem 0;
         }
 
         .receipt-heading-title {
@@ -1987,7 +1987,7 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-subtitle {
-          margin: 0.35rem 0 0.25rem;
+          margin: 0.35rem 0 0.45rem;
           font-size: 0.68rem;
           color: #000000;
           text-align: center;
@@ -1997,7 +1997,7 @@ export default function ReceiptBuilder() {
 
         .receipt-divider {
           border-top: 1px dashed #000000;
-          margin: 0.25rem 0 0.35rem;
+          margin: 0.45rem 0 0.5rem;
         }
 
         .receipt-table-head,
