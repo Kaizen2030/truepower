@@ -512,38 +512,48 @@ export default function ReceiptBuilder() {
   );
   const total = subtotal;
 
-  async function waitForPrintAssets(doc) {
-    const images = Array.from(doc.images || []);
-    const fontPromise =
-      doc.fonts && typeof doc.fonts.ready?.then === "function"
-        ? doc.fonts.ready.catch(() => {})
-        : Promise.resolve();
+  async function createReceiptPdf() {
+    const source = printRef.current;
+    if (!source) return null;
 
-    const imagePromise = new Promise((resolve) => {
-      if (images.length === 0) {
-        resolve();
-        return;
-      }
+    await waitForElementImages(source);
 
-      let remaining = images.length;
-      const settle = () => {
-        remaining -= 1;
-        if (remaining <= 0) resolve();
-      };
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
 
-      images.forEach((img) => {
-        if (img.complete) {
-          settle();
-          return;
-        }
-
-        img.addEventListener("load", settle, { once: true });
-        img.addEventListener("error", settle, { once: true });
-      });
+    const canvas = await html2canvas(source, {
+      backgroundColor: "#ffffff",
+      height: source.scrollHeight,
+      logging: false,
+      scale: 2,
+      useCORS: true,
+      width: source.scrollWidth,
+      windowWidth: source.scrollWidth,
     });
 
-    await Promise.all([fontPromise, imagePromise]);
-    await new Promise((resolve) => window.setTimeout(resolve, 200));
+    const pageWidthMm = 62;
+    const pageHeightMm = Math.max(60, (canvas.height / canvas.width) * pageWidthMm);
+    const pdf = new jsPDF({
+      compress: true,
+      format: [pageWidthMm, pageHeightMm],
+      orientation: "portrait",
+      unit: "mm",
+    });
+
+    pdf.addImage(
+      canvas.toDataURL("image/png"),
+      "PNG",
+      0,
+      0,
+      pageWidthMm,
+      pageHeightMm,
+      undefined,
+      "FAST",
+    );
+
+    return pdf;
   }
 
   async function handleDownloadPdf() {
@@ -553,46 +563,10 @@ export default function ReceiptBuilder() {
         await saveReceipt();
       }
 
-      const source = printRef.current;
-      if (!source) return;
-
-      await waitForElementImages(source);
-
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-        import("html2canvas"),
-        import("jspdf"),
-      ]);
-
-      const canvas = await html2canvas(source, {
-        backgroundColor: "#ffffff",
-        height: source.scrollHeight,
-        logging: false,
-        scale: 2,
-        useCORS: true,
-        width: source.scrollWidth,
-        windowWidth: source.scrollWidth,
-      });
-
-      const pageWidthMm = 62;
-      const pageHeightMm = Math.max(60, (canvas.height / canvas.width) * pageWidthMm);
-      const pdf = new jsPDF({
-        compress: true,
-        format: [pageWidthMm, pageHeightMm],
-        orientation: "portrait",
-        unit: "mm",
-      });
-
-      pdf.addImage(
-        canvas.toDataURL("image/png"),
-        "PNG",
-        0,
-        0,
-        pageWidthMm,
-        pageHeightMm,
-        undefined,
-        "FAST",
-      );
-      pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
+      const pdf = await createReceiptPdf();
+      if (pdf) {
+        pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
+      }
     } catch (error) {
       alert(error.message || "Could not export the 62mm receipt PDF");
     } finally {
@@ -674,141 +648,19 @@ export default function ReceiptBuilder() {
       }
     }
 
-    const source = printRef.current;
-    if (!source) return;
-
-    const originalTitle = document.title;
-    const receiptTitle = `TruePower Kenya Receipt${receiptNumber ? ` #${receiptNumber}` : ""}`;
-    document.title = receiptTitle;
-
-    const frame = document.createElement("iframe");
-    frame.setAttribute("title", receiptTitle);
-    frame.setAttribute("aria-hidden", "true");
-    frame.style.position = "fixed";
-    frame.style.right = "0";
-    frame.style.bottom = "0";
-    frame.style.width = "0";
-    frame.style.height = "0";
-    frame.style.border = "0";
-    frame.style.opacity = "0";
-    frame.style.pointerEvents = "none";
-    frame.style.zIndex = "-1";
-    document.body.appendChild(frame);
-    let cleanedUp = false;
-
-    const styles = Array.from(
-      document.querySelectorAll('link[rel="stylesheet"], style'),
-    )
-      .map((node) => node.outerHTML)
-      .join("\n");
-
-    const cleanup = () => {
-      if (cleanedUp) return;
-      cleanedUp = true;
-      window.removeEventListener("afterprint", cleanup);
-      window.setTimeout(() => frame.remove(), 250);
-    };
-
-    window.addEventListener("afterprint", cleanup, { once: true });
-
-    const doc = frame.contentDocument;
-    if (!doc) {
-      cleanup();
-      window.print();
-      return;
-    }
-
-    doc.open();
-    doc.write(`<!doctype html>
-      <html lang="en">
-        <head>
-          <meta charset="utf-8" />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <title>${receiptTitle}</title>
-          ${styles}
-          <style>
-            html, body {
-              margin: 0;
-              padding: 0;
-              width: 62mm;
-              min-width: 62mm;
-              background: #ffffff;
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-            }
-            body {
-              display: block;
-              width: 62mm;
-              margin: 0;
-              padding: 0;
-              overflow: visible;
-              background: #ffffff;
-            }
-            @page {
-              size: 62mm auto;
-              margin: 0;
-            }
-            #receipt-print-area {
-              width: 62mm !important;
-              max-width: 62mm !important;
-              min-width: 62mm !important;
-              margin: 0 auto !important;
-              box-sizing: border-box !important;
-              overflow: visible !important;
-              page-break-inside: avoid !important;
-              break-inside: avoid !important;
-            }
-          </style>
-        </head>
-        <body>
-          <div id="receipt-print-area" style="width:62mm; min-width:62mm; max-width:62mm; margin:0 auto; box-sizing:border-box;">${source.innerHTML}</div>
-        </body>
-      </html>`);
-    doc.close();
-    doc.title = receiptTitle;
-
     try {
-      await waitForPrintAssets(doc);
-    } catch {
-      // If the receipt assets fail to settle, still try to print the document.
-    }
+      const pdf = await createReceiptPdf();
+      if (!pdf) return;
 
-    const printWindow = frame.contentWindow;
-    if (!printWindow) {
-      cleanup();
-      window.print();
-      return;
-    }
+      const pdfUrl = pdf.output("bloburl");
+      const printWindow = window.open(pdfUrl, "_blank", "noopener,noreferrer");
 
-    printWindow.document.title = receiptTitle;
-    const titleElement = printWindow.document.querySelector("title");
-    if (titleElement) {
-      titleElement.textContent = receiptTitle;
-    }
-
-    if (printWindow.document.body) {
-      printWindow.document.body.style.backgroundColor = "#ffffff";
-    }
-
-    printWindow.focus();
-    setTimeout(() => {
-      try {
-        printWindow.print();
-      } catch (error) {
-        console.error("Print failed, falling back to top-level print:", error);
-        window.print();
+      if (!printWindow) {
+        pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
       }
-    }, 100);
-
-    window.setTimeout(cleanup, 10000);
-
-    const restoreTitle = () => {
-      if (document.title === receiptTitle) {
-        document.title = originalTitle;
-      }
-    };
-
-    window.addEventListener("afterprint", restoreTitle, { once: true });
+    } catch (error) {
+      alert(error.message || "Could not prepare the exact 62mm receipt PDF");
+    }
   }
 
   function startEditingReceipt(receipt) {
@@ -1805,7 +1657,7 @@ export default function ReceiptBuilder() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handlePrint} className="btn-primary justify-center">
-                <Printer size={16} /> Print receipt
+                <Printer size={16} /> Open exact 62mm PDF
               </button>
               <button onClick={handleDownloadPdf} disabled={exporting} className="btn-outline justify-center">
                 <Download size={16} /> {exporting ? "Exporting..." : "Download 62mm PDF"}
