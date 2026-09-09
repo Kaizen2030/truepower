@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import Image from "next/image";
 import { Plus, Trash2, Printer, Share2, Search, X, History, Download } from "lucide-react";
 import { getProducts, supabase } from "@/lib/supabase";
 
@@ -533,7 +532,7 @@ export default function ReceiptBuilder() {
       windowWidth: source.scrollWidth,
     });
 
-    const pageWidthMm = 62;
+    const pageWidthMm = 58;
     const pageHeightMm = Math.max(60, (canvas.height / canvas.width) * pageWidthMm);
     const pdf = new jsPDF({
       compress: true,
@@ -568,7 +567,7 @@ export default function ReceiptBuilder() {
         pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
       }
     } catch (error) {
-      alert(error.message || "Could not export the 62mm receipt PDF");
+      alert(error.message || "Could not export the 58mm receipt PDF");
     } finally {
       setExporting(false);
     }
@@ -659,7 +658,7 @@ export default function ReceiptBuilder() {
         pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
       }
     } catch (error) {
-      alert(error.message || "Could not prepare the exact 62mm receipt PDF");
+      alert(error.message || "Could not prepare the exact 58mm receipt PDF");
     }
   }
 
@@ -1657,10 +1656,10 @@ export default function ReceiptBuilder() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handlePrint} className="btn-primary justify-center">
-                <Printer size={16} /> Open exact 62mm PDF
+                <Printer size={16} /> Open exact 58mm PDF
               </button>
               <button onClick={handleDownloadPdf} disabled={exporting} className="btn-outline justify-center">
-                <Download size={16} /> {exporting ? "Exporting..." : "Download 62mm PDF"}
+                <Download size={16} /> {exporting ? "Exporting..." : "Download 58mm PDF"}
               </button>
               <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
                 <Share2 size={16} /> Share via WhatsApp
@@ -1678,16 +1677,6 @@ export default function ReceiptBuilder() {
               className="receipt-sheet"
             >
               <div className="receipt-header">
-                <div className="receipt-logo-wrap">
-                  <Image
-                    src={business.logo}
-                    alt="TruePower logo"
-                    className="receipt-logo"
-                    width={70}
-                    height={70}
-                    unoptimized
-                  />
-                </div>
                 <div className="receipt-company-name">{business.name}</div>
                 <div className="receipt-company-contact">{business.phone}</div>
                 <div className="receipt-company-contact">{business.website.replace(/^https?:\/\//i, "")}</div>
@@ -1777,9 +1766,9 @@ export default function ReceiptBuilder() {
           border: none;
           border-radius: 0.5rem;
           box-shadow: none;
-          width: 62mm;
-          min-width: 62mm;
-          max-width: 62mm;
+          width: 58mm;
+          min-width: 58mm;
+          max-width: 58mm;
           margin: 0 auto;
           /* Keep the browser/PDF rendering close to the printer's compact sans-serif output. */
           padding: 3mm 5mm;
@@ -1802,25 +1791,6 @@ export default function ReceiptBuilder() {
           text-align: center;
           gap: 0.1rem;
           margin-bottom: 0.15rem;
-        }
-
-        .receipt-logo-wrap {
-          width: 50px;
-          height: 50px;
-          border-radius: 9999px;
-          background: #ffffff;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          border: 1px solid #cbd5e1;
-          margin-bottom: 0.15rem;
-        }
-
-        .receipt-logo {
-          width: 100%;
-          height: 100%;
-          object-fit: contain;
         }
 
         .receipt-company-name {
@@ -2024,13 +1994,13 @@ export default function ReceiptBuilder() {
 
         @media print {
           @page {
-            size: 62mm auto;
+            size: 58mm auto;
             margin: 0;
           }
 
           html, body {
-            width: 62mm !important;
-            max-width: 62mm !important;
+            width: 58mm !important;
+            max-width: 58mm !important;
             overflow: visible !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -2052,9 +2022,9 @@ export default function ReceiptBuilder() {
             position: static;
             top: auto;
             left: auto;
-            width: 62mm !important;
-            max-width: 62mm !important;
-            min-width: 62mm !important;
+            width: 58mm !important;
+            max-width: 58mm !important;
+            min-width: 58mm !important;
             margin: 0 auto !important;
             padding: 3mm 5mm !important;
             overflow: visible;
