@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import { Plus, Trash2, Printer, Share2, Search, X, History } from "lucide-react";
+import { Plus, Trash2, Printer, Share2, Search, X, History, Download } from "lucide-react";
 import { getProducts, supabase } from "@/lib/supabase";
 
 function formatMoney(n) {
@@ -208,6 +208,7 @@ export default function ReceiptBuilder() {
     "Payment after installation\nPochi la Biashara: 0701 039256\n2 years warranty",
   );
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [savedId, setSavedId] = useState(null);
 
   const [history, setHistory] = useState([]);
@@ -494,6 +495,58 @@ export default function ReceiptBuilder() {
 
     await Promise.all([fontPromise, imagePromise]);
     await new Promise((resolve) => window.setTimeout(resolve, 200));
+  }
+
+  async function handleDownloadPdf() {
+    setExporting(true);
+    try {
+      if (!savedId) {
+        await saveReceipt();
+      }
+
+      const source = printRef.current;
+      if (!source) return;
+
+      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+        import("html2canvas"),
+        import("jspdf"),
+      ]);
+
+      const canvas = await html2canvas(source, {
+        backgroundColor: "#ffffff",
+        height: source.scrollHeight,
+        logging: false,
+        scale: 2,
+        useCORS: true,
+        width: source.scrollWidth,
+        windowWidth: source.scrollWidth,
+      });
+
+      const pageWidthMm = 58;
+      const pageHeightMm = Math.max(60, (canvas.height / canvas.width) * pageWidthMm);
+      const pdf = new jsPDF({
+        compress: true,
+        format: [pageWidthMm, pageHeightMm],
+        orientation: "portrait",
+        unit: "mm",
+      });
+
+      pdf.addImage(
+        canvas.toDataURL("image/png"),
+        "PNG",
+        0,
+        0,
+        pageWidthMm,
+        pageHeightMm,
+        undefined,
+        "FAST",
+      );
+      pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
+    } catch (error) {
+      alert(error.message || "Could not export the 58mm receipt PDF");
+    } finally {
+      setExporting(false);
+    }
   }
 
   async function saveReceipt({ openHistory = false, openModal = false } = {}) {
@@ -1701,7 +1754,10 @@ export default function ReceiptBuilder() {
 
             <div className="flex flex-col sm:flex-row gap-3">
               <button onClick={handlePrint} className="btn-primary justify-center">
-                <Printer size={16} /> Print / Save PDF
+                <Printer size={16} /> Print receipt
+              </button>
+              <button onClick={handleDownloadPdf} disabled={exporting} className="btn-outline justify-center">
+                <Download size={16} /> {exporting ? "Exporting..." : "Download 58mm PDF"}
               </button>
               <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
                 <Share2 size={16} /> Share via WhatsApp
