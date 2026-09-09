@@ -211,6 +211,25 @@ async function fetchReceiptHistory() {
   }
 }
 
+async function waitForElementImages(element) {
+  const images = Array.from(element?.querySelectorAll("img") || []);
+
+  await Promise.all(
+    images.map(
+      (image) =>
+        new Promise((resolve) => {
+          if (image.complete) {
+            resolve();
+            return;
+          }
+
+          image.addEventListener("load", resolve, { once: true });
+          image.addEventListener("error", resolve, { once: true });
+        }),
+    ),
+  );
+}
+
 export default function ReceiptBuilder() {
   const [products, setProducts] = useState([]);
   const [productQuery, setProductQuery] = useState("");
@@ -537,6 +556,8 @@ export default function ReceiptBuilder() {
       const source = printRef.current;
       if (!source) return;
 
+      await waitForElementImages(source);
+
       const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
         import("html2canvas"),
         import("jspdf"),
@@ -552,7 +573,7 @@ export default function ReceiptBuilder() {
         windowWidth: source.scrollWidth,
       });
 
-      const pageWidthMm = 58;
+      const pageWidthMm = 62;
       const pageHeightMm = Math.max(60, (canvas.height / canvas.width) * pageWidthMm);
       const pdf = new jsPDF({
         compress: true,
@@ -573,7 +594,7 @@ export default function ReceiptBuilder() {
       );
       pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
     } catch (error) {
-      alert(error.message || "Could not export the 58mm receipt PDF");
+      alert(error.message || "Could not export the 62mm receipt PDF");
     } finally {
       setExporting(false);
     }
@@ -709,28 +730,28 @@ export default function ReceiptBuilder() {
             html, body {
               margin: 0;
               padding: 0;
-              width: 58mm;
-              min-width: 58mm;
+              width: 62mm;
+              min-width: 62mm;
               background: #ffffff;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
             body {
               display: block;
-              width: 58mm;
+              width: 62mm;
               margin: 0;
               padding: 0;
               overflow: visible;
               background: #ffffff;
             }
             @page {
-              size: 58mm auto;
+              size: 62mm auto;
               margin: 0;
             }
             #receipt-print-area {
-              width: 58mm !important;
-              max-width: 58mm !important;
-              min-width: 58mm !important;
+              width: 62mm !important;
+              max-width: 62mm !important;
+              min-width: 62mm !important;
               margin: 0 auto !important;
               box-sizing: border-box !important;
               overflow: visible !important;
@@ -740,7 +761,7 @@ export default function ReceiptBuilder() {
           </style>
         </head>
         <body>
-          <div id="receipt-print-area" style="width:58mm; min-width:58mm; max-width:58mm; margin:0 auto; box-sizing:border-box;">${source.innerHTML}</div>
+          <div id="receipt-print-area" style="width:62mm; min-width:62mm; max-width:62mm; margin:0 auto; box-sizing:border-box;">${source.innerHTML}</div>
         </body>
       </html>`);
     doc.close();
@@ -1787,7 +1808,7 @@ export default function ReceiptBuilder() {
                 <Printer size={16} /> Print receipt
               </button>
               <button onClick={handleDownloadPdf} disabled={exporting} className="btn-outline justify-center">
-                <Download size={16} /> {exporting ? "Exporting..." : "Download 58mm PDF"}
+                <Download size={16} /> {exporting ? "Exporting..." : "Download 62mm PDF"}
               </button>
               <button onClick={handleShareWhatsApp} className="btn-outline justify-center">
                 <Share2 size={16} /> Share via WhatsApp
@@ -1812,6 +1833,7 @@ export default function ReceiptBuilder() {
                     className="receipt-logo"
                     width={70}
                     height={70}
+                    unoptimized
                   />
                 </div>
                 <div className="receipt-company-name">{business.name}</div>
@@ -1900,16 +1922,16 @@ export default function ReceiptBuilder() {
         .receipt-sheet {
           color: #000000;
           background: #ffffff;
-          border: 1px solid #cbd5e1;
+          border: none;
           border-radius: 0.5rem;
-          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
-          width: 58mm;
-          min-width: 58mm;
-          max-width: 58mm;
+          box-shadow: none;
+          width: 62mm;
+          min-width: 62mm;
+          max-width: 62mm;
           margin: 0 auto;
-          /* Xprinter 58 models usually expose about 48mm of printable width. */
+          /* Keep the browser/PDF rendering close to the printer's compact sans-serif output. */
           padding: 3mm 5mm;
-          font-family: Arial, "Segoe UI", sans-serif;
+          font-family: Arial, Helvetica, sans-serif;
           font-size: 8.5px;
           line-height: 1.35;
           letter-spacing: 0;
@@ -1950,7 +1972,7 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-company-name {
-          font-weight: 900;
+          font-weight: 800;
           font-size: 1.05rem;
           line-height: 1.2;
           color: #0f172a;
@@ -1961,7 +1983,7 @@ export default function ReceiptBuilder() {
           color: #000000;
           line-height: 1.4;
           word-break: break-word;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .receipt-meta-block {
@@ -1971,7 +1993,7 @@ export default function ReceiptBuilder() {
 
         .receipt-heading-title {
           font-size: 1.1rem;
-          font-weight: 900;
+          font-weight: 800;
           letter-spacing: 0.04em;
           color: #0f172a;
           margin-bottom: 0.2rem;
@@ -1983,7 +2005,7 @@ export default function ReceiptBuilder() {
           gap: 0.5rem;
           font-size: 0.7rem;
           color: #000000;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .receipt-subtitle {
@@ -1992,7 +2014,7 @@ export default function ReceiptBuilder() {
           color: #000000;
           text-align: center;
           line-height: 1.35;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .receipt-divider {
@@ -2013,7 +2035,7 @@ export default function ReceiptBuilder() {
           padding-bottom: 0.25rem;
           margin-bottom: 0.2rem;
           font-size: 0.64rem;
-          font-weight: 900;
+          font-weight: 700;
           letter-spacing: 0.04em;
           text-transform: uppercase;
           color: #0f172a;
@@ -2036,7 +2058,7 @@ export default function ReceiptBuilder() {
           padding-bottom: 0.1rem;
           page-break-inside: avoid;
           break-inside: avoid;
-          font-weight: 600;
+          font-weight: 500;
         }
 
         .receipt-item-description {
@@ -2055,7 +2077,7 @@ export default function ReceiptBuilder() {
         .receipt-item-total {
           text-align: right;
           white-space: nowrap;
-          font-weight: 600;
+          font-weight: 500;
         }
 
         .receipt-empty-state {
@@ -2075,7 +2097,7 @@ export default function ReceiptBuilder() {
           padding-top: 0.25rem;
           border-top: 1px solid #334155;
           font-size: 0.75rem;
-          font-weight: 900;
+          font-weight: 800;
           text-transform: uppercase;
           color: #0f172a;
         }
@@ -2093,7 +2115,7 @@ export default function ReceiptBuilder() {
         .receipt-section-label {
           margin: 0 0 0.3rem;
           font-size: 0.7rem;
-          font-weight: 900;
+          font-weight: 800;
           letter-spacing: 0.04em;
           color: #0f172a;
           text-align: center;
@@ -2106,7 +2128,7 @@ export default function ReceiptBuilder() {
           line-height: 1.45;
           white-space: pre-line;
           text-align: center;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .receipt-footer-box {
@@ -2121,7 +2143,7 @@ export default function ReceiptBuilder() {
         .receipt-footer-message {
           margin: 0;
           font-size: 0.78rem;
-          font-weight: 900;
+          font-weight: 800;
           color: #0f172a;
         }
 
@@ -2131,11 +2153,11 @@ export default function ReceiptBuilder() {
           color: #000000;
           line-height: 1.45;
           text-align: center;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .receipt-footer-support span {
-          font-weight: 900;
+          font-weight: 800;
           color: #0f172a;
         }
 
@@ -2145,18 +2167,18 @@ export default function ReceiptBuilder() {
           color: #000000;
           word-break: break-word;
           text-align: center;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         @media print {
           @page {
-            size: 58mm auto;
+            size: 62mm auto;
             margin: 0;
           }
 
           html, body {
-            width: 58mm !important;
-            max-width: 58mm !important;
+            width: 62mm !important;
+            max-width: 62mm !important;
             overflow: visible !important;
             margin: 0 !important;
             padding: 0 !important;
@@ -2178,9 +2200,9 @@ export default function ReceiptBuilder() {
             position: static;
             top: auto;
             left: auto;
-            width: 58mm !important;
-            max-width: 58mm !important;
-            min-width: 58mm !important;
+            width: 62mm !important;
+            max-width: 62mm !important;
+            min-width: 62mm !important;
             margin: 0 auto !important;
             padding: 3mm 5mm !important;
             overflow: visible;
