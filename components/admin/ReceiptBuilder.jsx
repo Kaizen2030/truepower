@@ -211,7 +211,7 @@ export default function ReceiptBuilder() {
   const [savedId, setSavedId] = useState(null);
 
   const [history, setHistory] = useState([]);
-  const [deletedReceiptIds, setDeletedReceiptIds] = useState([]);
+  const [deletedReceiptIds, setDeletedReceiptIds] = useState(() => readDeletedReceiptIds());
   const [recycleBinNotice, setRecycleBinNotice] = useState(null);
   const [activePanel, setActivePanel] = useState("builder");
   const [historyQuery, setHistoryQuery] = useState("");
@@ -227,62 +227,70 @@ export default function ReceiptBuilder() {
   const printRef = useRef();
 
   useEffect(() => {
-    setDeletedReceiptIds(readDeletedReceiptIds());
-    getProducts()
-      .then(setProducts)
-      .catch(() => setProducts([]));
-    loadSettings();
-    loadHistory();
+    let isMounted = true;
+
+    const loadInitialData = async () => {
+      try {
+        const items = await getProducts();
+        if (isMounted) setProducts(items);
+      } catch {
+        if (isMounted) setProducts([]);
+      }
+
+      try {
+        const { data } = await supabase.from("settings").select("key, value");
+        if (!isMounted || !data) return;
+        const map = {};
+        data.forEach((row) => (map[row.key] = row.value));
+        setBusiness((current) => ({
+          ...current,
+          name: map.business_name || current.name,
+          address: map.business_address || current.address,
+          phone: map.whatsapp_number
+            ? `+${String(map.whatsapp_number).replace(/^\+/, "")}`
+            : map.wa_number
+              ? `+${String(map.wa_number).replace(/^\+/, "")}`
+              : current.phone,
+          website: map.business_website || current.website,
+        }));
+      } catch (err) {
+        if (isMounted) setLoadError(describeRlsError(err));
+      }
+
+      try {
+        const { data, error } = await supabase
+          .from("receipts")
+          .select("id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes")
+          .order("created_at", { ascending: false })
+          .limit(5000);
+        if (!isMounted) return;
+        if (error) throw error;
+        const rows = data || [];
+        setHistory(rows);
+        setReceiptNumber(getNextReceiptNumber(rows));
+        const latestDate = new Date(rows[0]?.created_at);
+        if (!Number.isNaN(latestDate.getTime())) {
+          setHistoryMonth(latestDate.getMonth());
+          setHistoryYear(latestDate.getFullYear());
+        }
+      } catch (error) {
+        if (!isMounted) return;
+        setHistory([]);
+        setLoadError(describeRlsError(error));
+        setReceiptNumber("1007");
+      }
+    };
+
+    loadInitialData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
     writeDeletedReceiptIds(deletedReceiptIds);
   }, [deletedReceiptIds]);
-
-  async function loadSettings() {
-    try {
-      const { data } = await supabase.from("settings").select("key, value");
-      if (!data) return;
-      const map = {};
-      data.forEach((r) => (map[r.key] = r.value));
-      setBusiness((b) => ({
-        ...b,
-        name: map.business_name || b.name,
-        address: map.business_address || b.address,
-        phone: map.whatsapp_number
-          ? `+${String(map.whatsapp_number).replace(/^\+/, "")}`
-          : map.wa_number
-            ? `+${String(map.wa_number).replace(/^\+/, "")}`
-            : b.phone,
-        website: map.business_website || b.website,
-      }));
-    } catch (err) {
-      setLoadError(describeRlsError(err));
-    }
-  }
-
-  async function loadHistory() {
-    try {
-      const { data, error } = await supabase
-        .from("receipts")
-        .select("id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes")
-        .order("created_at", { ascending: false })
-        .limit(5000);
-      if (error) throw error;
-      const rows = data || [];
-      setHistory(rows);
-      setReceiptNumber(getNextReceiptNumber(rows));
-      const latestDate = new Date(rows[0]?.created_at);
-      if (!Number.isNaN(latestDate.getTime())) {
-        setHistoryMonth(latestDate.getMonth());
-        setHistoryYear(latestDate.getFullYear());
-      }
-    } catch (e) {
-      setHistory([]);
-      setLoadError(describeRlsError(e));
-      setReceiptNumber("1007");
-    }
-  }
 
   const filteredProducts = useMemo(() => {
     if (!productQuery.trim()) return products.slice(0, 30);
@@ -396,20 +404,6 @@ export default function ReceiptBuilder() {
 
   const binPageCount = Math.max(1, Math.ceil(filteredBinHistory.length / historyPageSize));
   const visibleBinHistory = filteredBinHistory.slice(binPage * historyPageSize, (binPage + 1) * historyPageSize);
-
-  useEffect(() => {
-    setHistoryPage(0);
-    setSelectedReceipt((current) => {
-      if (!current) return current;
-      return filteredHistory.some((row) => String(row.id) === String(current.id))
-        ? current
-        : filteredHistory[0] || null;
-    });
-  }, [historyQuery, historyRange, historyMonth, historyYear, filteredHistory]);
-
-  useEffect(() => {
-    setBinPage(0);
-  }, [binQuery, recycleBinHistory]);
 
   function shiftHistoryMonth(step) {
     const nextDate = new Date(historyYear, historyMonth + step, 1);
@@ -624,19 +618,21 @@ export default function ReceiptBuilder() {
               print-color-adjust: exact;
             }
             body {
-              display: flex;
-              align-items: flex-start;
-              justify-content: center;
+              display: block;
+              width: 58mm;
+              margin: 0;
+              padding: 0;
               overflow: visible;
+              background: #ffffff;
             }
             @page {
-              size: 80mm auto;
+              size: 58mm auto;
               margin: 0;
             }
             #receipt-print-area {
-              width: 80mm !important;
-              max-width: 80mm !important;
-              min-width: 80mm !important;
+              width: 58mm !important;
+              max-width: 58mm !important;
+              min-width: 58mm !important;
               margin: 0 auto !important;
               box-sizing: border-box !important;
               overflow: visible !important;
@@ -646,7 +642,7 @@ export default function ReceiptBuilder() {
           </style>
         </head>
         <body>
-          <div id="receipt-print-area" style="width:80mm; max-width:80mm; margin:0 auto; box-sizing:border-box;">${source.innerHTML}</div>
+          <div id="receipt-print-area" style="width:58mm; max-width:58mm; margin:0 auto; box-sizing:border-box;">${source.innerHTML}</div>
         </body>
       </html>`);
     doc.close();
@@ -1808,8 +1804,8 @@ export default function ReceiptBuilder() {
           border: 1px solid #000000;
           border-radius: 1.25rem;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-          width: min(100%, 80mm);
-          max-width: 80mm;
+          width: min(100%, 58mm);
+          max-width: 58mm;
           margin: 0 auto;
           font-family: "Segoe UI", sans-serif;
           font-size: 10px;
@@ -1825,7 +1821,7 @@ export default function ReceiptBuilder() {
         @media (max-width: 640px) {
           .receipt-sheet {
             width: 100%;
-            max-width: 80mm;
+            max-width: 58mm;
             margin: 0 auto;
           }
         }
@@ -1840,8 +1836,8 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-logo-wrap {
-          width: 52px;
-          height: 52px;
+          width: 64px;
+          height: 64px;
           border-radius: 9999px;
           background: #ffffff;
           display: flex;
@@ -2060,15 +2056,21 @@ export default function ReceiptBuilder() {
 
         @media print {
           @page {
-            size: 80mm 1000mm;
+            size: 58mm auto;
             margin: 0;
           }
 
           html, body {
-            width: 80mm !important;
+            width: 58mm !important;
+            max-width: 58mm !important;
             overflow: visible !important;
             margin: 0 !important;
             padding: 0 !important;
+            background: #ffffff !important;
+          }
+
+          body {
+            display: block !important;
           }
 
           body * {
@@ -2082,9 +2084,9 @@ export default function ReceiptBuilder() {
             position: static;
             top: auto;
             left: auto;
-            width: 80mm !important;
-            max-width: 80mm !important;
-            min-width: 80mm !important;
+            width: 58mm !important;
+            max-width: 58mm !important;
+            min-width: 58mm !important;
             margin: 0 auto !important;
             padding: 3mm !important;
             overflow: visible;
@@ -2097,7 +2099,7 @@ export default function ReceiptBuilder() {
           }
 
           .receipt-company-name {
-            font-size: 1.9rem;
+            font-size: 1rem !important;
           }
 
           .receipt-company-contact,
@@ -2107,21 +2109,21 @@ export default function ReceiptBuilder() {
           .receipt-terms-text,
           .receipt-footer-support,
           .receipt-footer-link {
-            font-size: 1.08rem !important;
+            font-size: 0.68rem !important;
           }
 
           .receipt-heading-title {
-            font-size: 1.9rem;
+            font-size: 1.1rem !important;
           }
 
           .receipt-section-label,
           .receipt-footer-message {
-            font-size: 1.2rem !important;
+            font-size: 0.8rem !important;
           }
 
-          .receipt-table-head,
           .receipt-row,
           .receipt-total-row,
+          .receipt-table-head,
           .receipt-footer-box {
             page-break-inside: avoid !important;
             break-inside: avoid !important;
