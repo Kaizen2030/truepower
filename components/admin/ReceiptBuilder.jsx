@@ -2109,6 +2109,18 @@ export default function ReceiptBuilder() {
             break-inside: avoid;
           }
 
+          .receipt-sheet,
+          .receipt-sheet * {
+            color: #000000 !important;
+          }
+
+          .receipt-divider,
+          .receipt-table-head,
+          .receipt-total-row,
+          .receipt-footer-box {
+            border-color: #000000 !important;
+          }
+
           .receipt-row,
           .receipt-total-row,
           .receipt-table-head,
