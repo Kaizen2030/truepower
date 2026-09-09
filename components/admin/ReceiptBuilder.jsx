@@ -442,6 +442,20 @@ export default function ReceiptBuilder() {
     setProductQuery("");
   }
 
+  async function loadHistory() {
+    const { data, error } = await supabase
+      .from("receipts")
+      .select("id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes")
+      .order("created_at", { ascending: false })
+      .limit(5000);
+
+    if (error) throw error;
+
+    const rows = data || [];
+    setHistory(rows);
+    return rows;
+  }
+
   const subtotal = useMemo(
     () => lines.reduce((sum, l) => sum + (Number(l.qty) || 0) * (Number(l.price) || 0), 0),
     [lines],
@@ -612,7 +626,8 @@ export default function ReceiptBuilder() {
             html, body {
               margin: 0;
               padding: 0;
-              width: 100%;
+              width: 58mm;
+              min-width: 58mm;
               background: #ffffff;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
@@ -642,7 +657,7 @@ export default function ReceiptBuilder() {
           </style>
         </head>
         <body>
-          <div id="receipt-print-area" style="width:58mm; max-width:58mm; margin:0 auto; box-sizing:border-box;">${source.innerHTML}</div>
+          <div id="receipt-print-area" style="width:58mm; min-width:58mm; max-width:58mm; margin:0 auto; box-sizing:border-box;">${source.innerHTML}</div>
         </body>
       </html>`);
     doc.close();
@@ -1701,7 +1716,7 @@ export default function ReceiptBuilder() {
             <div
               ref={printRef}
               id="receipt-print-area"
-              className="receipt-sheet bg-white border border-border rounded-2xl shadow-card p-4 sm:p-6 print:border-0 print:shadow-none print:rounded-none print:p-0 max-w-full overflow-hidden min-w-0"
+              className="receipt-sheet"
             >
               <div className="receipt-header">
                 <div className="receipt-logo-wrap">
@@ -1799,18 +1814,22 @@ export default function ReceiptBuilder() {
 
       <style jsx global>{`
         .receipt-sheet {
-          color: #000000;
+          color: #111827;
           background: #ffffff;
-          border: 1px solid #000000;
-          border-radius: 1.25rem;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-          width: min(100%, 58mm);
+          border: 1px solid #cbd5e1;
+          border-radius: 0.5rem;
+          box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+          width: 58mm;
+          min-width: 58mm;
           max-width: 58mm;
           margin: 0 auto;
-          font-family: "Segoe UI", sans-serif;
-          font-size: 10px;
-          line-height: 1.45;
+          /* Xprinter 58 models usually expose about 48mm of printable width. */
+          padding: 3mm 5mm;
+          font-family: Arial, "Segoe UI", sans-serif;
+          font-size: 8.5px;
+          line-height: 1.35;
           letter-spacing: 0;
+          font-variant-numeric: tabular-nums;
           text-rendering: optimizeLegibility;
           -webkit-font-smoothing: antialiased;
           page-break-inside: avoid;
@@ -1818,34 +1837,26 @@ export default function ReceiptBuilder() {
           box-sizing: border-box;
         }
 
-        @media (max-width: 640px) {
-          .receipt-sheet {
-            width: 100%;
-            max-width: 58mm;
-            margin: 0 auto;
-          }
-        }
-
         .receipt-header {
           display: flex;
           flex-direction: column;
           align-items: center;
           text-align: center;
-          gap: 0.15rem;
-          margin-bottom: 0.2rem;
+          gap: 0.1rem;
+          margin-bottom: 0.15rem;
         }
 
         .receipt-logo-wrap {
-          width: 64px;
-          height: 64px;
+          width: 50px;
+          height: 50px;
           border-radius: 9999px;
           background: #ffffff;
           display: flex;
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          border: 2px solid rgba(0, 0, 0, 0.2);
-          margin-bottom: 0.25rem;
+          border: 1px solid #cbd5e1;
+          margin-bottom: 0.15rem;
         }
 
         .receipt-logo {
@@ -1856,14 +1867,14 @@ export default function ReceiptBuilder() {
 
         .receipt-company-name {
           font-weight: 900;
-          font-size: 1.1rem;
+          font-size: 1.05rem;
           line-height: 1.2;
-          color: #000000;
+          color: #0f172a;
         }
 
         .receipt-company-contact {
-          font-size: 0.7rem;
-          color: #000000;
+          font-size: 0.66rem;
+          color: #334155;
           line-height: 1.4;
           word-break: break-word;
           font-weight: 700;
@@ -1871,14 +1882,14 @@ export default function ReceiptBuilder() {
 
         .receipt-meta-block {
           text-align: center;
-          margin: 0.35rem 0;
+          margin: 0.3rem 0;
         }
 
         .receipt-heading-title {
-          font-size: 1.2rem;
+          font-size: 1.1rem;
           font-weight: 900;
           letter-spacing: 0.04em;
-          color: #000000;
+          color: #0f172a;
           margin-bottom: 0.2rem;
         }
 
@@ -1886,42 +1897,42 @@ export default function ReceiptBuilder() {
           display: flex;
           justify-content: center;
           gap: 0.5rem;
-          font-size: 0.72rem;
-          color: #000000;
+          font-size: 0.68rem;
+          color: #334155;
           font-weight: 700;
         }
 
         .receipt-subtitle {
-          margin: 0.5rem 0 0.35rem;
-          font-size: 0.7rem;
-          color: #000000;
+          margin: 0.35rem 0 0.25rem;
+          font-size: 0.64rem;
+          color: #475569;
           text-align: center;
-          line-height: 1.5;
+          line-height: 1.35;
           font-weight: 700;
         }
 
         .receipt-divider {
-          border-top: 1px dashed rgba(0, 0, 0, 0.9);
-          margin: 0.25rem 0 0.45rem;
+          border-top: 1px dashed #64748b;
+          margin: 0.25rem 0 0.35rem;
         }
 
         .receipt-table-head,
         .receipt-row {
           display: grid;
-          grid-template-columns: minmax(0, 2.2fr) 0.9fr 0.9fr;
+          grid-template-columns: minmax(0, 1fr) auto auto;
           align-items: start;
-          column-gap: 0.35rem;
+          column-gap: 0.25rem;
         }
 
         .receipt-table-head {
-          border-bottom: 1px solid rgba(0, 0, 0, 0.9);
+          border-bottom: 1px solid #475569;
           padding-bottom: 0.25rem;
           margin-bottom: 0.2rem;
-          font-size: 0.7rem;
+          font-size: 0.64rem;
           font-weight: 900;
           letter-spacing: 0.04em;
           text-transform: uppercase;
-          color: #000000;
+          color: #0f172a;
         }
 
         .receipt-table-head span:nth-child(2),
@@ -1932,17 +1943,17 @@ export default function ReceiptBuilder() {
         .receipt-lines {
           display: flex;
           flex-direction: column;
-          gap: 0.35rem;
+          gap: 0.25rem;
         }
 
         .receipt-row {
           align-items: flex-start;
-          font-size: 0.72rem;
-          color: #000000;
-          padding-bottom: 0.15rem;
+          font-size: 0.68rem;
+          color: #1e293b;
+          padding-bottom: 0.1rem;
           page-break-inside: avoid;
           break-inside: avoid;
-          font-weight: 700;
+          font-weight: 600;
         }
 
         .receipt-item-description {
@@ -1952,7 +1963,7 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-item-description span {
-          line-height: 1.35;
+          line-height: 1.25;
           word-break: break-word;
           overflow-wrap: anywhere;
         }
@@ -1967,9 +1978,9 @@ export default function ReceiptBuilder() {
         .receipt-empty-state {
           border: 1px dashed rgba(15, 23, 42, 0.25);
           border-radius: 0.75rem;
-          padding: 0.75rem;
+          padding: 0.55rem;
           color: #64748b;
-          font-size: 0.72rem;
+          font-size: 0.68rem;
           text-align: center;
         }
 
@@ -1977,39 +1988,39 @@ export default function ReceiptBuilder() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-top: 0.6rem;
-          padding-top: 0.3rem;
-          border-top: 1px solid rgba(0, 0, 0, 0.9);
-          font-size: 0.78rem;
+          margin-top: 0.45rem;
+          padding-top: 0.25rem;
+          border-top: 1px solid #334155;
+          font-size: 0.75rem;
           font-weight: 900;
           text-transform: uppercase;
-          color: #000000;
+          color: #0f172a;
         }
 
         .receipt-total-row strong {
-          font-size: 0.9rem;
-          color: #000000;
+          font-size: 0.88rem;
+          color: #0f172a;
         }
 
         .receipt-terms-block {
-          margin-top: 0.6rem;
+          margin-top: 0.45rem;
           text-align: center;
         }
 
         .receipt-section-label {
           margin: 0 0 0.3rem;
-          font-size: 0.75rem;
+          font-size: 0.7rem;
           font-weight: 900;
           letter-spacing: 0.04em;
-          color: #000000;
+          color: #0f172a;
           text-align: center;
         }
 
         .receipt-terms-text {
           margin: 0;
-          font-size: 0.72rem;
-          color: #000000;
-          line-height: 1.6;
+          font-size: 0.66rem;
+          color: #334155;
+          line-height: 1.45;
           white-space: pre-line;
           text-align: center;
           font-weight: 700;
@@ -2026,29 +2037,29 @@ export default function ReceiptBuilder() {
 
         .receipt-footer-message {
           margin: 0;
-          font-size: 0.84rem;
+          font-size: 0.78rem;
           font-weight: 900;
-          color: #000000;
+          color: #0f172a;
         }
 
         .receipt-footer-support {
-          margin: 0.35rem 0 0;
-          font-size: 0.7rem;
-          color: #000000;
-          line-height: 1.7;
+          margin: 0.3rem 0 0;
+          font-size: 0.64rem;
+          color: #475569;
+          line-height: 1.45;
           text-align: center;
           font-weight: 700;
         }
 
         .receipt-footer-support span {
           font-weight: 900;
-          color: #000000;
+          color: #0f172a;
         }
 
         .receipt-footer-link {
           margin: 0.2rem 0 0;
-          font-size: 0.65rem;
-          color: #000000;
+          font-size: 0.6rem;
+          color: #64748b;
           word-break: break-word;
           text-align: center;
           font-weight: 700;
@@ -2088,7 +2099,7 @@ export default function ReceiptBuilder() {
             max-width: 58mm !important;
             min-width: 58mm !important;
             margin: 0 auto !important;
-            padding: 3mm !important;
+            padding: 3mm 5mm !important;
             overflow: visible;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
@@ -2096,29 +2107,6 @@ export default function ReceiptBuilder() {
             box-shadow: none;
             page-break-inside: avoid;
             break-inside: avoid;
-          }
-
-          .receipt-company-name {
-            font-size: 1rem !important;
-          }
-
-          .receipt-company-contact,
-          .receipt-subtitle,
-          .receipt-table-head,
-          .receipt-item-description small,
-          .receipt-terms-text,
-          .receipt-footer-support,
-          .receipt-footer-link {
-            font-size: 0.68rem !important;
-          }
-
-          .receipt-heading-title {
-            font-size: 1.1rem !important;
-          }
-
-          .receipt-section-label,
-          .receipt-footer-message {
-            font-size: 0.8rem !important;
           }
 
           .receipt-row,
