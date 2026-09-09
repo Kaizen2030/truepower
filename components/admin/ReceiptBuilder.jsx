@@ -183,6 +183,34 @@ function writeDeletedReceiptIds(ids) {
   }
 }
 
+const RECEIPT_HISTORY_PAGE_SIZE = 1000;
+const RECEIPT_HISTORY_SELECT =
+  "id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes";
+
+async function fetchReceiptHistory() {
+  const rows = [];
+  let pageStart = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from("receipts")
+      .select(RECEIPT_HISTORY_SELECT)
+      .order("created_at", { ascending: false })
+      .range(pageStart, pageStart + RECEIPT_HISTORY_PAGE_SIZE - 1);
+
+    if (error) throw error;
+
+    const page = data || [];
+    rows.push(...page);
+
+    if (page.length < RECEIPT_HISTORY_PAGE_SIZE) {
+      return rows;
+    }
+
+    pageStart += RECEIPT_HISTORY_PAGE_SIZE;
+  }
+}
+
 export default function ReceiptBuilder() {
   const [products, setProducts] = useState([]);
   const [productQuery, setProductQuery] = useState("");
@@ -259,14 +287,8 @@ export default function ReceiptBuilder() {
       }
 
       try {
-        const { data, error } = await supabase
-          .from("receipts")
-          .select("id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes")
-          .order("created_at", { ascending: false })
-          .limit(5000);
+        const rows = await fetchReceiptHistory();
         if (!isMounted) return;
-        if (error) throw error;
-        const rows = data || [];
         setHistory(rows);
         setReceiptNumber(getNextReceiptNumber(rows));
         const latestDate = new Date(rows[0]?.created_at);
@@ -428,11 +450,27 @@ export default function ReceiptBuilder() {
   function addProductLine(product) {
     setLines((ls) => {
       const last = ls[ls.length - 1];
+      const productName = String(product.name || "").trim();
+      const productPrice = Number(product.price) || 0;
+      const matchingLine = ls.find(
+        (line) =>
+          line.description.trim().toLowerCase() === productName.toLowerCase() &&
+          (Number(line.price) || 0) === productPrice,
+      );
+
+      if (matchingLine) {
+        return ls.map((line) =>
+          line.id === matchingLine.id
+            ? { ...line, qty: (Number(line.qty) || 0) + 1 }
+            : line,
+        );
+      }
+
       const newLine = {
         id: crypto.randomUUID(),
-        description: product.name,
+        description: productName,
         qty: 1,
-        price: Number(product.price) || 0,
+        price: productPrice,
       };
       if (!last.description.trim() && ls.length === 1) {
         return [newLine];
@@ -444,15 +482,7 @@ export default function ReceiptBuilder() {
   }
 
   async function loadHistory() {
-    const { data, error } = await supabase
-      .from("receipts")
-      .select("id, receipt_number, customer_name, customer_phone, subtotal, total, created_at, items, notes")
-      .order("created_at", { ascending: false })
-      .limit(5000);
-
-    if (error) throw error;
-
-    const rows = data || [];
+    const rows = await fetchReceiptHistory();
     setHistory(rows);
     return rows;
   }
