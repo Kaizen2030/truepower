@@ -1807,8 +1807,7 @@ export default function ReceiptBuilder() {
               <div className="receipt-divider" />
 
               <div className="receipt-table-head">
-                <span>Description</span>
-                <span>Price</span>
+                <span>Item</span>
                 <span>Amount</span>
               </div>
 
@@ -1823,7 +1822,6 @@ export default function ReceiptBuilder() {
                           <div className="receipt-item-description">
                             <span>{l.description}</span>
                           </div>
-                          <div className="receipt-item-price">KSh {formatMoney(Number(l.price) || 0)}</div>
                           <div className="receipt-item-total">KSh {formatMoney(amount)}</div>
                         </div>
                       );
@@ -1975,7 +1973,7 @@ export default function ReceiptBuilder() {
         .receipt-table-head,
         .receipt-row {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) auto auto;
+          grid-template-columns: minmax(0, 1fr) 20mm;
           align-items: start;
           column-gap: 0.25rem;
         }
@@ -1991,8 +1989,7 @@ export default function ReceiptBuilder() {
           color: #0f172a;
         }
 
-        .receipt-table-head span:nth-child(2),
-        .receipt-table-head span:nth-child(3) {
+        .receipt-table-head span:last-child {
           text-align: right;
         }
 
@@ -2020,8 +2017,8 @@ export default function ReceiptBuilder() {
 
         .receipt-item-description span {
           line-height: 1.25;
-          word-break: break-word;
-          overflow-wrap: anywhere;
+          word-break: normal;
+          overflow-wrap: break-word;
         }
 
         .receipt-item-price,
