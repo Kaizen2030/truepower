@@ -1898,7 +1898,7 @@ export default function ReceiptBuilder() {
 
       <style jsx global>{`
         .receipt-sheet {
-          color: #111827;
+          color: #000000;
           background: #ffffff;
           border: 1px solid #cbd5e1;
           border-radius: 0.5rem;
@@ -1957,8 +1957,8 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-company-contact {
-          font-size: 0.66rem;
-          color: #334155;
+          font-size: 0.7rem;
+          color: #000000;
           line-height: 1.4;
           word-break: break-word;
           font-weight: 700;
@@ -1981,22 +1981,22 @@ export default function ReceiptBuilder() {
           display: flex;
           justify-content: center;
           gap: 0.5rem;
-          font-size: 0.68rem;
-          color: #334155;
+          font-size: 0.7rem;
+          color: #000000;
           font-weight: 700;
         }
 
         .receipt-subtitle {
           margin: 0.35rem 0 0.25rem;
-          font-size: 0.64rem;
-          color: #475569;
+          font-size: 0.68rem;
+          color: #000000;
           text-align: center;
           line-height: 1.35;
           font-weight: 700;
         }
 
         .receipt-divider {
-          border-top: 1px dashed #64748b;
+          border-top: 1px dashed #000000;
           margin: 0.25rem 0 0.35rem;
         }
 
@@ -2032,7 +2032,7 @@ export default function ReceiptBuilder() {
         .receipt-row {
           align-items: flex-start;
           font-size: 0.68rem;
-          color: #1e293b;
+          color: #000000;
           padding-bottom: 0.1rem;
           page-break-inside: avoid;
           break-inside: avoid;
@@ -2101,8 +2101,8 @@ export default function ReceiptBuilder() {
 
         .receipt-terms-text {
           margin: 0;
-          font-size: 0.66rem;
-          color: #334155;
+          font-size: 0.7rem;
+          color: #000000;
           line-height: 1.45;
           white-space: pre-line;
           text-align: center;
@@ -2127,8 +2127,8 @@ export default function ReceiptBuilder() {
 
         .receipt-footer-support {
           margin: 0.3rem 0 0;
-          font-size: 0.64rem;
-          color: #475569;
+          font-size: 0.68rem;
+          color: #000000;
           line-height: 1.45;
           text-align: center;
           font-weight: 700;
@@ -2141,8 +2141,8 @@ export default function ReceiptBuilder() {
 
         .receipt-footer-link {
           margin: 0.2rem 0 0;
-          font-size: 0.6rem;
-          color: #64748b;
+          font-size: 0.64rem;
+          color: #000000;
           word-break: break-word;
           text-align: center;
           font-weight: 700;
