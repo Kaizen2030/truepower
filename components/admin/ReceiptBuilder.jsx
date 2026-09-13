@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Plus, Trash2, Printer, Share2, Search, X, History, Download } from "lucide-react";
+import { Bluetooth, Plus, Trash2, Printer, Share2, Search, X, History, Download } from "lucide-react";
 import { getProducts, supabase } from "@/lib/supabase";
 
 function formatMoney(n) {
@@ -255,6 +255,7 @@ export default function ReceiptBuilder() {
   );
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [thermalPrinting, setThermalPrinting] = useState(false);
   const [savedId, setSavedId] = useState(null);
 
   const [history, setHistory] = useState([]);
@@ -659,6 +660,53 @@ export default function ReceiptBuilder() {
       }
     } catch (error) {
       alert(error.message || "Could not prepare the exact 58mm receipt PDF");
+    }
+  }
+
+  async function handleThermalPrint() {
+    setThermalPrinting(true);
+    try {
+      if (!savedId) {
+        await saveReceipt();
+      }
+
+      const bridgeUrl =
+        process.env.NEXT_PUBLIC_THERMAL_BRIDGE_URL || "http://127.0.0.1:18181";
+      const response = await fetch(`${bridgeUrl}/print`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          business: {
+            name: business.name,
+            phone: business.phone,
+            website: business.website,
+          },
+          receipt: {
+            receiptNumber,
+            receiptDate,
+            customerName,
+            items: lines.map((line) => ({
+              description: line.description,
+              qty: Number(line.qty) || 0,
+              price: Number(line.price) || 0,
+            })),
+            notes,
+            total,
+          },
+        }),
+      });
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result.error || "The thermal printer bridge rejected the receipt.");
+      }
+    } catch (error) {
+      alert(
+        error.message ||
+          "Could not reach the Bluetooth printer. Start the TruePower thermal bridge first.",
+      );
+    } finally {
+      setThermalPrinting(false);
     }
   }
 
@@ -1655,6 +1703,14 @@ export default function ReceiptBuilder() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={handleThermalPrint}
+                disabled={thermalPrinting || saving}
+                className="btn-primary justify-center disabled:opacity-60"
+                title="Print directly to the paired Xprinter through the local thermal bridge"
+              >
+                <Bluetooth size={16} /> {thermalPrinting ? "Printing..." : "Print Bluetooth"}
+              </button>
               <button onClick={handlePrint} className="btn-primary justify-center">
                 <Printer size={16} /> Open exact 58mm PDF
               </button>
