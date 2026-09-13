@@ -1,6 +1,22 @@
 # Bluetooth Thermal Printing
 
-The XP-P203A uses a Bluetooth printer connection, not a browser Web Bluetooth connection. The web app therefore sends receipt data to a small bridge running on the same computer as the browser. The bridge writes ESC/POS bytes to the printer's paired Bluetooth serial port.
+There are now two supported modes:
+
+- **Android companion:** install `android-thermal` on any Android phone or
+  tablet, pair that device with the Xprinter, and print directly. No computer
+  or Node.js process is required on that phone.
+- **Desktop bridge:** use the Node.js bridge below when printing from Windows
+  or another desktop browser.
+
+The receipt builder automatically uses the Android companion when it detects
+the native `AndroidThermalPrinter` interface. Otherwise it falls back to the
+desktop bridge.
+
+The XP-P203A uses a Bluetooth printer connection rather than a dependable
+browser Web Bluetooth connection. The Android companion writes ESC/POS bytes
+directly to the paired printer. On desktop, the web app sends the same receipt
+data to a small bridge running on the computer that owns the paired Bluetooth
+serial port.
 
 ## One-time setup on Windows
 

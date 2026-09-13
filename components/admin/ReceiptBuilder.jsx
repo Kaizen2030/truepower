@@ -3,6 +3,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Bluetooth, Plus, Trash2, Printer, Share2, Search, X, History, Download } from "lucide-react";
 import { getProducts, supabase } from "@/lib/supabase";
+import { buildThermalReceipt } from "@/lib/thermalReceipt";
+
+function toBase64(bytes) {
+  let binary = "";
+  const chunkSize = 0x8000;
+
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+
+  return btoa(binary);
+}
 
 function formatMoney(n) {
   const num = Number(n) || 0;
@@ -670,30 +682,40 @@ export default function ReceiptBuilder() {
         await saveReceipt();
       }
 
+      const nativePrinter =
+        typeof window !== "undefined" ? window.AndroidThermalPrinter : null;
+      const printPayload = {
+        business: {
+          name: business.name,
+          phone: business.phone,
+          website: business.website,
+        },
+        receipt: {
+          receiptNumber,
+          receiptDate,
+          customerName,
+          items: lines.map((line) => ({
+            description: line.description,
+            qty: Number(line.qty) || 0,
+            price: Number(line.price) || 0,
+          })),
+          notes,
+          total,
+        },
+      };
+
+      if (nativePrinter?.printReceipt) {
+        const bytes = buildThermalReceipt(printPayload);
+        nativePrinter.printReceipt(toBase64(bytes));
+        return;
+      }
+
       const bridgeUrl =
         process.env.NEXT_PUBLIC_THERMAL_BRIDGE_URL || "http://127.0.0.1:18181";
       const response = await fetch(`${bridgeUrl}/print`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          business: {
-            name: business.name,
-            phone: business.phone,
-            website: business.website,
-          },
-          receipt: {
-            receiptNumber,
-            receiptDate,
-            customerName,
-            items: lines.map((line) => ({
-              description: line.description,
-              qty: Number(line.qty) || 0,
-              price: Number(line.price) || 0,
-            })),
-            notes,
-            total,
-          },
-        }),
+        body: JSON.stringify(printPayload),
       });
       const result = await response.json().catch(() => ({}));
 
