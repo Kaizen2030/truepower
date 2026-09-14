@@ -19,7 +19,17 @@ function categoryName(product) {
 }
 
 export default function LivelyProductRail({ products = [], title = "Featured TruePower solutions", subtitle = "Popular products for homes, rentals, and projects." }) {
-  const visible = products.filter((product) => productImage(product)).slice(0, 10);
+  const visible = products
+    .filter((product) => productImage(product))
+    .sort((a, b) => {
+      const score = (product) => {
+        const text = `${product.name || ""} ${product.cat || ""} ${product.category || ""}`.toLowerCase();
+        return (/(shower|heater|anlabeier|instant)/.test(text) ? 30 : 0) +
+          (/(pump|solar|bulb|lighting|electrical|plug)/.test(text) ? 15 : 0);
+      };
+      return score(b) - score(a);
+    })
+    .slice(0, 10);
   const railRef = useRef(null);
   if (!visible.length) return null;
 

@@ -52,7 +52,7 @@ export default async function ServicesPage() {
     }
     services = data || [];
   }
-  const productData = await getProducts({ pageSize: 12, limit: 12, sort: "newest" });
+  const productData = await getProducts({ pageSize: 30, limit: 30, sort: "newest" });
   const stats = [
     { value: "500+", label: "Projects Completed", icon: Award },
     { value: "98%", label: "Customer Satisfaction", icon: Star },

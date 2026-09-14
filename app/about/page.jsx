@@ -165,7 +165,7 @@ export default async function AboutPage() {
     getTestimonials(),
     getGalleryImages(),
     getPublishedBlogs({ pageSize: 3 }),
-    getProducts({ pageSize: 4, limit: 4, sort: "newest" }),
+    getProducts({ pageSize: 20, limit: 20, sort: "newest" }),
   ]);
 
   const pageData = content?.main ?? content ?? {};

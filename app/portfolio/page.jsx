@@ -72,7 +72,7 @@ export default async function PortfolioPage() {
     getGalleryImages(),
     getTestimonials(),
     getPageContent("portfolio"),
-    getProducts({ pageSize: 12, limit: 12, sort: "newest" }),
+    getProducts({ pageSize: 30, limit: 30, sort: "newest" }),
   ]);
 
   const pageData = content?.main ?? content ?? {};
