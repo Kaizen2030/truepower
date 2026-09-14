@@ -1625,7 +1625,7 @@ export default function ReceiptBuilder() {
               </div>
             )}
 
-            <div className="card border-slate-200 p-4 shadow-sm sm:p-5">
+            <div className="card hover:translate-y-0 border-slate-200 p-4 shadow-sm sm:p-5">
               <div className="mb-4 flex items-center gap-3">
                 <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-50 text-sm font-bold text-blue-700">01</div>
                 <div><h3 className="text-sm font-bold text-slate-900">Receipt details</h3><p className="text-xs text-sub">Identify this transaction and the customer.</p></div>
@@ -1669,7 +1669,7 @@ export default function ReceiptBuilder() {
               </div>
             </div>
 
-            <div className="card overflow-hidden border-slate-200 p-4 shadow-sm sm:p-5">
+            <div className="card hover:translate-y-0 overflow-hidden border-slate-200 p-4 shadow-sm sm:p-5">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div>
                   <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-50 text-sm font-bold text-emerald-700">02</div><label className="label mb-0">Items</label></div>
@@ -1679,6 +1679,7 @@ export default function ReceiptBuilder() {
                 </div>
                 <div className="relative w-full sm:w-auto min-w-0">
                   <button
+                    type="button"
                     onClick={() => setShowProductPicker((s) => !s)}
                     className="btn-outline text-sm py-2 px-4 inline-flex items-center justify-center gap-2 w-full sm:w-auto"
                   >
@@ -1686,11 +1687,11 @@ export default function ReceiptBuilder() {
                   </button>
                   {showProductPicker && (
                     <div
-                      className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/40 p-4 sm:p-6"
+                      className="fixed inset-0 z-50 overscroll-contain overflow-y-auto bg-slate-950/40 p-4 touch-pan-y sm:p-6"
                       onClick={() => setShowProductPicker(false)}
                     >
                       <div
-                        className="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-white shadow-pop"
+                        className="mx-auto w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-white shadow-pop [transform:translateZ(0)]"
                         onClick={(e) => e.stopPropagation()}
                       >
                         <div className="flex flex-col gap-2 border-b border-border p-4 sm:flex-row sm:items-center">
@@ -1713,7 +1714,8 @@ export default function ReceiptBuilder() {
                             <button
                               key={p.id}
                               onClick={() => addProductLine(p)}
-                              className="flex w-full items-start justify-between gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-muted"
+                            type="button"
+                            className="flex w-full items-start justify-between gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-muted active:bg-blue-50"
                             >
                               <span className="min-w-0 flex-1 whitespace-normal break-words text-sm leading-snug">
                                 {p.name}
@@ -1761,7 +1763,7 @@ export default function ReceiptBuilder() {
               </button>
             </div>
 
-            <div className="card border-slate-200 p-4 shadow-sm sm:p-5">
+            <div className="card hover:translate-y-0 border-slate-200 p-4 shadow-sm sm:p-5">
               <div className="mb-3 flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-50 text-sm font-bold text-amber-700">03</div><div><label className="label mb-0">Terms & Notes</label><p className="text-xs text-sub">These words appear below the total.</p></div></div>
               <textarea
                 className="input h-24 resize-none py-2.5 sm:py-3"
