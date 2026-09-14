@@ -17,10 +17,10 @@ export default function ProjectGallery({
       : galleryImages.filter((img) => img.category === activeCategory);
 
   return (
-    <section className="py-16 lg:py-20 bg-white">
+    <section className="bg-[#f5f8ff] py-16 lg:py-20">
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
         {/* HEADER */}
-        <div className="text-center mb-10">
+        <div className="mb-10 text-center">
           <div className="badge mb-4">{gallerySection.title}</div>
           <h2 className="font-display font-extrabold text-3xl lg:text-4xl text-ink mb-4">
             {gallerySection.title}
@@ -62,22 +62,22 @@ export default function ProjectGallery({
             {filteredImages.map((img) => (
               <div
                 key={img.id}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-white shadow-sm cursor-pointer"
+                className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_14px_35px_rgba(7,27,82,0.08)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(7,27,82,0.14)]"
                 onClick={() => setSelectedImage(img)}
               >
                 <img
                   src={img.image_url}
                   alt={img.title || "Installation"}
-                  className="h-auto w-full bg-slate-50 object-contain p-2 transition-transform duration-500 group-hover:scale-[1.02] sm:aspect-[4/5] sm:h-full sm:p-3"
+                  className="h-full w-full bg-slate-50 object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                 />
 
-                {/* HOVER OVERLAY */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100">
-                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                    <p className="font-display font-semibold leading-tight">
+                {/* PROJECT INFO */}
+                <div className="absolute inset-x-0 bottom-0 bg-[#292566]/95 px-4 py-3 text-white">
+                  <div>
+                    <p className="line-clamp-2 font-display font-bold leading-tight">
                       {img.title || "Installation"}
                     </p>
-                    <p className="text-sm text-white/70 line-clamp-2">
+                    <p className="mt-1 line-clamp-2 text-xs text-white/75">
                       {img.description}
                     </p>
                   </div>

@@ -164,27 +164,27 @@ export default async function PortfolioPage() {
     <main className="min-h-screen bg-white overflow-x-hidden">
 
       {/* ── HERO ── */}
-      <section className="border-b border-border bg-white">
+      <section className="border-b border-[#102d73] bg-[#071b52] text-white">
         <div className="mx-auto grid w-full gap-10 px-4 py-16 sm:px-6 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:py-20 xl:px-12">
 
           {/* Left */}
           <div>
             {/* Eyebrow */}
             <div className="flex items-center gap-3 mb-6">
-              <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
-              <div className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-4 py-1.5 text-sm font-semibold text-ink shadow-sm">
-                <Camera size={14} className="text-brand-500" />
+              <span className="inline-block h-2 w-2 rounded-full bg-[#ffd92f]" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm font-semibold text-white shadow-sm backdrop-blur">
+                <Camera size={14} className="text-[#ffd92f]" />
                 {hero.badge || "Portfolio"}
               </div>
             </div>
 
             {/* Headline — two-tone */}
-            <h1 className="mt-2 max-w-2xl font-display text-4xl font-extrabold leading-tight text-ink sm:text-5xl lg:text-6xl">
+            <h1 className="mt-2 max-w-2xl font-display text-4xl font-extrabold leading-tight text-white sm:text-5xl lg:text-6xl">
               {hero.title || "Hot water that works —"}
-              <span className="text-brand-500"> {hero.titleAccent || "proof included."}</span>
+              <span className="text-[#ffd92f]"> {hero.titleAccent || "proof included."}</span>
             </h1>
 
-            <p className="mt-5 max-w-xl text-base leading-8 text-sub sm:text-lg">
+            <p className="mt-5 max-w-xl text-base leading-8 text-white/75 sm:text-lg">
               {hero.subtitle ||
                 "Real installs, real reviews, and products tested against Kenyan water pressure. Browse the work, then let us help you choose."}
             </p>
@@ -194,14 +194,14 @@ export default async function PortfolioPage() {
                 href={cta.button_link || "https://wa.me/254701039256"}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-brand-500 px-6 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02] shadow-sm"
+                className="inline-flex items-center gap-2 rounded-full bg-[#ffd92f] px-6 py-3 font-display font-bold text-[#071b52] transition-transform hover:scale-[1.02] shadow-sm"
               >
                 <MessageCircle size={18} />
                 WhatsApp Us
               </a>
               <Link
                 href="/shop"
-                className="inline-flex items-center gap-2 rounded-full border border-border bg-white px-6 py-3 font-display font-bold text-ink transition-transform hover:scale-[1.02] shadow-sm"
+                className="inline-flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-6 py-3 font-display font-bold text-white transition-transform hover:scale-[1.02] shadow-sm backdrop-blur"
               >
                 Browse Products
                 <ArrowRight size={16} />
@@ -212,7 +212,7 @@ export default async function PortfolioPage() {
               {["Instant showers", "Solar", "Pumps", "Showroom · Nyamakima"].map((pill) => (
                 <span
                   key={pill}
-                  className="rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-sub shadow-sm"
+                  className="rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-xs font-medium text-white/80 shadow-sm backdrop-blur"
                 >
                   {pill}
                 </span>
