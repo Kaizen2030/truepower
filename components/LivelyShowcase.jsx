@@ -4,6 +4,36 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, MessageCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 
+const broadCategoryLabels = [
+  "Instant Showers",
+  "Water Heaters",
+  "Solar & Backup Power",
+  "Lighting & Bulbs",
+  "Sockets & Plugs",
+  "CCTV & Security",
+];
+
+function getSmartCategoryLabel(category, index) {
+  const text = `${category.label || ""} ${category.title || ""} ${category.category || ""}`.toLowerCase();
+  const matches = [
+    ["solar", "Solar & Backup Power"],
+    ["bulb", "Lighting & Bulbs"],
+    ["light", "Lighting & Bulbs"],
+    ["socket", "Sockets & Plugs"],
+    ["plug", "Sockets & Plugs"],
+    ["cctv", "CCTV & Security"],
+    ["camera", "CCTV & Security"],
+    ["fence", "Electric Fence"],
+    ["pump", "Water Pumps"],
+    ["heater", "Water Heaters"],
+    ["shower", "Instant Showers"],
+    ["repair", "Repairs & Maintenance"],
+  ];
+  const match = matches.find(([keyword]) => text.includes(keyword));
+  const isGeneric = !text || /^(product|products|showroom|showroom products|truepower project|installation service|shower & water systems)$/i.test(category.label || "");
+  return match?.[1] || (isGeneric ? broadCategoryLabels[index % broadCategoryLabels.length] : category.label);
+}
+
 export default function LivelyShowcase({ slides = [], categories = [] }) {
   const [active, setActive] = useState(0);
 
@@ -43,7 +73,7 @@ export default function LivelyShowcase({ slides = [], categories = [] }) {
           <div className="flex items-center gap-1.5">{slides.map((slide, index) => <button key={slide.image || index} type="button" aria-label={`Show slide ${index + 1}`} onClick={() => setActive(index)} className={`h-1.5 rounded-full transition-all ${index === active ? "w-7 bg-[#292566]" : "w-1.5 bg-slate-300"}`} />)}</div>
           <button type="button" onClick={() => setActive((active + 1) % slides.length)} className="rounded-full bg-white p-2 text-[#292566] shadow-sm transition hover:scale-110"><ArrowRight size={15} /></button>
         </div>
-        {categories.length > 0 && <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">{categories.map((category, index) => <Link key={category.label} href={category.href || "/shop"} className="group rounded-2xl bg-white p-3 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"><div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-[#fff6bf]">{category.image ? <img src={category.image} alt="" className="h-full w-full object-contain transition duration-500 group-hover:scale-110" /> : <MessageCircle className="text-[#292566]" />}</div><p className="mt-2 text-xs font-bold text-slate-700">{category.label}</p></Link>)}</div>}
+        {categories.length > 0 && <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-6">{categories.map((category, index) => <Link key={`${category.label || "category"}-${index}`} href={category.href || "/shop"} className="group rounded-2xl bg-white p-3 text-center shadow-sm transition hover:-translate-y-1 hover:shadow-lg"><div className="mx-auto flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-[#fff6bf]">{category.image ? <img src={category.image} alt={getSmartCategoryLabel(category, index)} className="h-full w-full object-contain transition duration-500 group-hover:scale-110" /> : <MessageCircle className="text-[#292566]" />}</div><p className="mt-2 text-xs font-bold text-slate-700">{getSmartCategoryLabel(category, index)}</p></Link>)}</div>}
       </div>
     </section>
   );

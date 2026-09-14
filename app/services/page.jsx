@@ -60,6 +60,7 @@ export default async function ServicesPage() {
     { value: "2hr", label: "Response Time", icon: Clock },
   ];
   const serviceSlides = services.flatMap((service) => (service.images?.length ? service.images.slice(0, 1).map((image) => ({ image: image.url || image, kicker: service.category || "TruePower service", title: service.title, description: service.description || "Professional support from quote to completion.", href: "#services", action: "Explore service" })) : service.image_url ? [{ image: service.image_url, kicker: service.category || "TruePower service", title: service.title, description: service.description || "Professional support from quote to completion.", href: "#services", action: "Explore service" }] : []));
+  const serviceVisuals = serviceSlides.filter((slide) => slide.image).slice(0, 3);
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
       <LivelyShowcase slides={serviceSlides} categories={services.slice(0, 6).map((service) => ({ image: service.images?.[0]?.url || service.image_url, label: service.title || "Installation service", href: "#services" })).filter((item) => item.image)} />
@@ -71,7 +72,7 @@ export default async function ServicesPage() {
           <div className="absolute -right-20 bottom-20 h-96 w-96 animate-float rounded-full bg-[#ff8a65]/15 blur-3xl" />
         </div>
 
-        <div className="relative w-full mx-auto px-4 py-16 sm:px-6 sm:py-20 lg:px-10 xl:px-12">
+        <div className="relative mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 xl:px-12">
           <div className="max-w-3xl">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/80 px-4 py-1.5 shadow-sm backdrop-blur">
               <Sparkles size={16} className="text-brand-500" />
@@ -104,6 +105,37 @@ export default async function ServicesPage() {
                 View Portfolio <ArrowRight size={16} />
               </Link>
             </div>
+          </div>
+
+          <div className="relative w-full max-w-2xl justify-self-end">
+            {serviceVisuals.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                <div className="group relative col-span-2 aspect-[16/9] overflow-hidden rounded-[1.75rem] border border-white/80 bg-slate-100 shadow-[0_24px_60px_rgba(15,23,42,0.18)] animate-fade-up" style={{ animation: "fadeUp 0.7s ease-out 180ms forwards" }}>
+                  <img src={serviceVisuals[0].image} alt={serviceVisuals[0].title || "TruePower installation service"} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#061b45]/85 via-[#061b45]/10 to-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 sm:bottom-5 sm:left-5 sm:right-5">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#ffd92f]">Featured service</p>
+                    <p className="mt-1 font-display text-lg font-extrabold text-white sm:text-2xl">{serviceVisuals[0].title || "Professional installation"}</p>
+                  </div>
+                  <div className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-[#12336b] shadow-sm">TruePower team</div>
+                </div>
+                {serviceVisuals.slice(1, 3).map((visual, index) => (
+                  <div key={`${visual.image}-${index}`} className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/80 bg-slate-100 shadow-lg animate-fade-up" style={{ animation: `fadeUp 0.7s ease-out ${320 + index * 120}ms forwards` }}>
+                    <img src={visual.image} alt={visual.title || "TruePower service"} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#061b45]/80 via-transparent to-transparent" />
+                    <p className="absolute bottom-3 left-3 right-3 text-sm font-bold text-white sm:text-base">{visual.title || "Installation & repair"}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex aspect-[16/10] items-center justify-center rounded-[1.75rem] bg-[#09295f] p-8 text-center text-white shadow-[0_24px_60px_rgba(15,23,42,0.18)]">
+                <div>
+                  <Wrench className="mx-auto mb-4 text-[#ffd92f]" size={48} />
+                  <p className="font-display text-2xl font-extrabold">Installation. Repair. Support.</p>
+                  <p className="mt-2 text-sm text-blue-100">Reliable TruePower service from quote to completion.</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
