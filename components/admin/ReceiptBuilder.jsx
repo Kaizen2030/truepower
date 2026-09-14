@@ -509,6 +509,7 @@ export default function ReceiptBuilder() {
         qty: 1,
         price: productPrice,
         image: Array.isArray(product.images) ? product.images[0] : product.image_url || "",
+        availableQuantity: product.stock ?? product.quantity ?? product.available_quantity ?? null,
       };
       if (!last.description.trim() && ls.length === 1) {
         return [newLine];
@@ -1729,7 +1730,7 @@ export default function ReceiptBuilder() {
                               })()}
                               <span className="min-w-0 flex-1">
                                 <span className="block truncate text-sm font-bold leading-snug text-slate-900">{p.name}</span>
-                                <span className="mt-1 block text-xs text-sub">Tap to add · Qty 1</span>
+                                <span className="mt-1 block text-xs text-sub">Tap to add · Qty 1{(() => { const available = p.stock ?? p.quantity ?? p.available_quantity; return available != null ? ` · Available: ${available}` : ""; })()}</span>
                               </span>
                               <span className="flex shrink-0 flex-col items-end gap-1">
                                 <span className="whitespace-nowrap text-sm font-bold text-brand-600">KSh {formatMoney(p.price)}</span>
@@ -1754,10 +1755,10 @@ export default function ReceiptBuilder() {
                     className="rounded-2xl border border-slate-200 bg-slate-50/60 p-3 shadow-sm transition hover:border-blue-200 hover:bg-white sm:grid sm:grid-cols-[minmax(0,1fr)_76px_120px_36px] sm:items-end sm:gap-2"
                   >
                     <div className="flex min-w-0 items-end gap-2">
-                      {l.image ? <img src={l.image} alt="" className="h-11 w-11 shrink-0 rounded-xl border border-slate-200 bg-white object-cover" /> : <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600"><Package size={18} /></span>}
+                      {l.image ? <img src={l.image} alt="" className="h-16 w-16 shrink-0 rounded-2xl border border-slate-200 bg-white object-cover shadow-sm" /> : <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-blue-600 shadow-sm"><Package size={24} /></span>}
                       <label className="block min-w-0 flex-1"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Product / service</span><input className="input py-2.5 sm:py-3" placeholder="e.g. Black Anlabeier" value={l.description} onChange={(e) => updateLine(l.id, { description: e.target.value })} /></label>
                     </div>
-                    <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Qty</span><input type="number" min="0" className="input py-2.5 text-center sm:py-3" placeholder="1" value={l.qty} onChange={(e) => updateLine(l.id, { qty: e.target.value })} /></label>
+                    <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Quantity</span><input type="number" min="0" className="input py-2.5 text-center sm:py-3" placeholder="1" value={l.qty} onChange={(e) => updateLine(l.id, { qty: e.target.value })} />{l.availableQuantity != null && <span className="mt-1 block text-[10px] font-semibold text-emerald-700">Available: {l.availableQuantity}</span>}</label>
                     <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Unit price</span><input type="number" min="0" className="input py-2.5 text-right sm:py-3" placeholder="0" value={l.price} onChange={(e) => updateLine(l.id, { price: e.target.value })} /></label>
                     <div className="flex items-center justify-between gap-2 sm:block">
                       <span className="text-xs font-bold text-slate-700 sm:hidden">Line total: KSh {formatMoney((Number(l.qty) || 0) * (Number(l.price) || 0))}</span>
