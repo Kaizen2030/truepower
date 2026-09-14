@@ -34,6 +34,7 @@ import { getProducts } from "@/lib/products";
 import LivelyTrustStrip from "@/components/LivelyTrustStrip";
 import LivelyCategoryRail from "@/components/LivelyCategoryRail";
 import LivelyShowcase from "@/components/LivelyShowcase";
+import LivelyProductRail from "@/components/LivelyProductRail";
 
 export const metadata = createSeo({
   title: "About TruePower Kenya",
@@ -220,6 +221,7 @@ export default async function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
       <LivelyShowcase slides={showcaseSlides} categories={showcaseCategories} />
+      <LivelyProductRail products={productData?.data || []} title="Bestselling water & power solutions" subtitle="Instant showers, water heaters, pumps, solar and electrical products." />
       {/* HERO SECTION */}
       <section className="relative overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)]">
         <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 animate-drift rounded-full bg-[#ffd92f]/25 blur-3xl" />

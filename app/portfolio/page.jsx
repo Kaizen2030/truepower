@@ -25,6 +25,8 @@ import ProjectGallery from "@/components/ProjectGallery";
 import LivelyTrustStrip from "@/components/LivelyTrustStrip";
 import LivelyCategoryRail from "@/components/LivelyCategoryRail";
 import LivelyShowcase from "@/components/LivelyShowcase";
+import LivelyProductRail from "@/components/LivelyProductRail";
+import { getProducts } from "@/lib/products";
 
 export const metadata = createSeo({
   title: "Portfolio & Installations",
@@ -66,10 +68,11 @@ function DynamicPortfolioIcon({ name, size = 24, className = "" }) {
 }
 
 export default async function PortfolioPage() {
-  const [galleryImages, testimonials, content] = await Promise.all([
+  const [galleryImages, testimonials, content, productData] = await Promise.all([
     getGalleryImages(),
     getTestimonials(),
     getPageContent("portfolio"),
+    getProducts({ pageSize: 12, limit: 12, sort: "newest" }),
   ]);
 
   const pageData = content?.main ?? content ?? {};
@@ -176,6 +179,7 @@ export default async function PortfolioPage() {
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
       <LivelyShowcase slides={showcaseSlides} categories={(galleryImages || []).slice(0, 6).map((image) => ({ image: image.image_url, label: image.title || portfolioCategoryLabel(image.category), href: "#projects" }))} />
+      <LivelyProductRail products={productData?.data || []} title="Products behind the projects" subtitle="Explore the instant showers, water heaters, pumps and electrical products we install." />
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)] text-slate-950">

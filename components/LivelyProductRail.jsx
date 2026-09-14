@@ -1,0 +1,28 @@
+import Link from "next/link";
+import { ArrowRight, Heart, Sparkles } from "lucide-react";
+
+function productImage(product) {
+  return Array.isArray(product.images) ? product.images[0] : product.image_url || product.images;
+}
+
+export default function LivelyProductRail({ products = [], title = "Featured TruePower solutions", subtitle = "Popular products for homes, rentals, and projects." }) {
+  const visible = products.filter((product) => productImage(product)).slice(0, 10);
+  if (!visible.length) return null;
+
+  return (
+    <section className="bg-white px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-5 flex items-end justify-between gap-4"><div><p className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-500">TruePower catalogue</p><h2 className="mt-1 font-display text-2xl font-extrabold text-slate-950 sm:text-3xl">{title}</h2><p className="mt-1 text-sm text-slate-500">{subtitle}</p></div><Link href="/shop" className="hidden items-center gap-1 text-sm font-bold text-[#292566] sm:inline-flex">View all <ArrowRight size={15} /></Link></div>
+        <div className="flex snap-x gap-4 overflow-x-auto pb-3 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {visible.map((product, index) => {
+            const image = productImage(product);
+            return <Link href={`/product/${product.id}`} key={product.id || index} className="group w-[210px] shrink-0 snap-start overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:w-[230px]">
+              <div className="relative h-48 overflow-hidden bg-[#f5f8ff]"><img src={image} alt={product.name || "TruePower product"} className="h-full w-full object-contain p-3 transition duration-700 group-hover:scale-110" /><span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#292566] shadow-sm"><Sparkles size={11} className="mr-1 inline text-[#f2bd00]" /> {index < 3 ? "Bestseller" : "Popular"}</span><span className="absolute right-3 top-3 rounded-full bg-white/90 p-1.5 text-slate-400 shadow-sm"><Heart size={14} /></span></div>
+              <div className="p-4"><p className="line-clamp-2 min-h-[2.75rem] text-sm font-bold leading-snug text-slate-900">{product.name || "TruePower solution"}</p><p className="mt-2 text-xs text-slate-500">{product.catLabel || product.category || product.cat || "Electrical & water solutions"}</p><p className="mt-2 text-base font-extrabold text-[#292566]">KSh {Number(product.price || 0).toLocaleString()}</p></div>
+            </Link>;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}

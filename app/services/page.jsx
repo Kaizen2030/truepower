@@ -7,6 +7,8 @@ import ProjectGallery from "@/components/ProjectGallery";
 import LivelyTrustStrip from "@/components/LivelyTrustStrip";
 import LivelyCategoryRail from "@/components/LivelyCategoryRail";
 import LivelyShowcase from "@/components/LivelyShowcase";
+import LivelyProductRail from "@/components/LivelyProductRail";
+import { getProducts } from "@/lib/products";
 import {
   ArrowRight,
   Check,
@@ -50,6 +52,7 @@ export default async function ServicesPage() {
     }
     services = data || [];
   }
+  const productData = await getProducts({ pageSize: 12, limit: 12, sort: "newest" });
   const stats = [
     { value: "500+", label: "Projects Completed", icon: Award },
     { value: "98%", label: "Customer Satisfaction", icon: Star },
@@ -60,6 +63,7 @@ export default async function ServicesPage() {
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
       <LivelyShowcase slides={serviceSlides} categories={services.slice(0, 6).map((service) => ({ image: service.images?.[0]?.url || service.image_url, label: service.title || "Installation service", href: "#services" })).filter((item) => item.image)} />
+      <LivelyProductRail products={productData?.data || []} title="Products we install and support" subtitle="Choose the right shower, heater, pump, solar or electrical solution." />
       <section className="relative flex min-h-[60vh] items-center overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)]">
         <div className="absolute inset-0">
           <div className="absolute -left-20 top-20 h-96 w-96 animate-drift rounded-full bg-[#ffd92f]/25 blur-3xl" />
