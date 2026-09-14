@@ -1253,7 +1253,7 @@ export default function AdminPage() {
                     e.preventDefault();
                     handleProductDrop(p.id);
                   }}
-                  className={`card relative cursor-move overflow-hidden p-0 transition-all ${draggedProductId === p.id ? "opacity-60 ring-2 ring-brand-200" : ""} ${dragOverProductId === p.id ? "ring-2 ring-brand-400 shadow-product-hover" : ""}`}
+                  className={`card relative min-w-0 cursor-move overflow-hidden p-0 transition-all ${draggedProductId === p.id ? "opacity-60 ring-2 ring-brand-200" : ""} ${dragOverProductId === p.id ? "ring-2 ring-brand-400 shadow-product-hover" : ""}`}
                 >
                   <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-3">
                     <button type="button" draggable onDragStart={() => setDraggedProductId(p.id)} className="rounded-xl border border-border bg-muted p-2 text-sub hover:text-brand-500" title="Drag to reorder"><GripVertical size={16} /></button>
@@ -1273,8 +1273,8 @@ export default function AdminPage() {
                       <Package size={42} className="text-slate-300" />
                     )}
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 bg-[#292566] px-4 py-3 text-white shadow-[0_-8px_20px_rgba(41,37,102,0.16)]">
-                    <p className="line-clamp-2 min-h-[2.5rem] text-center text-sm font-bold leading-snug">
+                  <div className="absolute inset-x-0 bottom-0 min-w-0 overflow-hidden bg-[#292566] px-4 py-3 text-white shadow-[0_-8px_20px_rgba(41,37,102,0.16)]">
+                    <p className="line-clamp-2 min-w-0 max-w-full whitespace-normal break-words text-center text-sm font-bold leading-snug [overflow-wrap:anywhere]">
                       {p.name}
                     </p>
                     <p className="mt-1 text-center text-xs capitalize text-white/80">
