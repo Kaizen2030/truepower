@@ -8,6 +8,7 @@ import {
   Save,
   X,
   Upload,
+  Download,
   LogOut,
   Settings,
   Package,
@@ -909,6 +910,14 @@ export default function AdminPage() {
             <p className="text-sub text-sm">{user?.email}</p>
           </div>
           <div className="flex flex-wrap gap-2 items-center">
+            <a
+              href="/downloads/TruePower-Receipt-Builder.apk"
+              download="TruePower-Receipt-Builder.apk"
+              className="inline-flex items-center gap-2 rounded-full bg-[#12336b] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-[#0b2858]"
+              title="Download the Android receipt printer app"
+            >
+              <Download size={16} /> Download APK
+            </a>
             {isAdmin && (
               <>
                 <button

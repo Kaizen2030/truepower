@@ -45,6 +45,8 @@ next-env.d.ts
 android-thermal/.gradle/
 android-thermal/app/build/
 *.apk
+!public/downloads/
+!public/downloads/TruePower-Receipt-Builder.apk
 
 # local screenshots and device test captures
 *-screen.png
