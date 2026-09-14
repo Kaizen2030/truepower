@@ -222,6 +222,8 @@ export default async function AboutPage() {
     <main className="min-h-screen bg-white">
       <LivelyShowcase slides={showcaseSlides} categories={showcaseCategories} />
       <LivelyProductRail products={productData?.data || []} title="Bestselling water & power solutions" subtitle="Instant showers, water heaters, pumps, solar and electrical products." />
+      <LivelyProductRail products={productData?.data || []} mode="new" badgeLabel="New" title="New arrivals" subtitle="Fresh products recently added to the TruePower catalogue." />
+      <LivelyProductRail products={productData?.data || []} mode="electrical" badgeLabel="Essential" title="Electrical & solar essentials" subtitle="Bulbs, plugs, switches, solar equipment and power accessories." />
       {/* HERO SECTION */}
       <section className="relative overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)]">
         <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 animate-drift rounded-full bg-[#ffd92f]/25 blur-3xl" />

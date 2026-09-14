@@ -18,17 +18,26 @@ function categoryName(product) {
   return product.catLabel || product.category || product.cat || "TruePower solutions";
 }
 
-export default function LivelyProductRail({ products = [], title = "Featured TruePower solutions", subtitle = "Popular products for homes, rentals, and projects." }) {
-  const visible = products
+export default function LivelyProductRail({ products = [], title = "Featured TruePower solutions", subtitle = "Popular products for homes, rentals, and projects.", mode = "featured", badgeLabel = "Popular" }) {
+  const ranked = [...products].sort((a, b) => {
+    const score = (product) => {
+      const text = `${product.name || ""} ${product.cat || ""} ${product.category || ""}`.toLowerCase();
+      if (mode === "new") return new Date(product.created_at || 0).getTime();
+      if (mode === "electrical") return (/(bulb|light|plug|socket|switch|cable|electrical)/.test(text) ? 30 : 0) + (/(solar|inverter|battery)/.test(text) ? 15 : 0);
+      if (mode === "water") return (/(shower|heater|anlabeier|pump|water)/.test(text) ? 30 : 0);
+      return (/(shower|heater|anlabeier|instant)/.test(text) ? 30 : 0) + (/(pump|solar|bulb|lighting|electrical|plug)/.test(text) ? 15 : 0);
+    };
+    return score(b) - score(a);
+  });
+  const matching = mode === "new" ? products : ranked.filter((product) => {
+    const text = `${product.name || ""} ${product.cat || ""} ${product.category || ""}`.toLowerCase();
+    if (mode === "electrical") return /(bulb|light|plug|socket|switch|cable|electrical|solar|inverter|battery)/.test(text);
+    if (mode === "water") return /(shower|heater|anlabeier|pump|water)/.test(text);
+    return /(shower|heater|anlabeier|instant|pump|solar|bulb|lighting|electrical|plug)/.test(text);
+  });
+  const visible = matching
     .filter((product) => productImage(product))
-    .sort((a, b) => {
-      const score = (product) => {
-        const text = `${product.name || ""} ${product.cat || ""} ${product.category || ""}`.toLowerCase();
-        return (/(shower|heater|anlabeier|instant)/.test(text) ? 30 : 0) +
-          (/(pump|solar|bulb|lighting|electrical|plug)/.test(text) ? 15 : 0);
-      };
-      return score(b) - score(a);
-    })
+    .sort((a, b) => ranked.indexOf(a) - ranked.indexOf(b))
     .slice(0, 10);
   const railRef = useRef(null);
   if (!visible.length) return null;
@@ -41,7 +50,7 @@ export default function LivelyProductRail({ products = [], title = "Featured Tru
           {visible.map((product, index) => {
             const image = productImage(product);
             return <Link href={`/product/${product.id}`} key={product.id || index} className="group w-[210px] shrink-0 snap-start overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:w-[230px]">
-              <div className="relative h-48 overflow-hidden bg-[#f5f8ff]"><img src={image} alt={product.name || "TruePower product"} className="h-full w-full object-contain p-3 transition duration-700 group-hover:scale-110" /><span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#292566] shadow-sm"><Sparkles size={11} className="mr-1 inline text-[#f2bd00]" /> {index < 3 ? "Bestseller" : "Popular"}</span><span className="absolute right-3 top-3 rounded-full bg-white/90 p-1.5 text-slate-400 shadow-sm"><Heart size={14} /></span></div>
+              <div className="relative h-48 overflow-hidden bg-[#f5f8ff]"><img src={image} alt={product.name || "TruePower product"} className="h-full w-full object-contain p-3 transition duration-700 group-hover:scale-110" /><span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-[#292566] shadow-sm"><Sparkles size={11} className="mr-1 inline text-[#f2bd00]" /> {index < 3 ? badgeLabel : "Available"}</span><span className="absolute right-3 top-3 rounded-full bg-white/90 p-1.5 text-slate-400 shadow-sm"><Heart size={14} /></span></div>
               <div className="p-4"><p className="line-clamp-2 min-h-[2.75rem] text-sm font-bold leading-snug text-slate-900">{product.name || "TruePower solution"}</p><p className="mt-2 text-xs text-slate-500">{categoryName(product)}</p><p className="mt-2 text-base font-extrabold text-[#292566]">KSh {Number(product.price || 0).toLocaleString()}</p></div>
             </Link>;
           })}

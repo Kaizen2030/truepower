@@ -64,6 +64,7 @@ export default async function ServicesPage() {
     <main className="min-h-screen bg-white overflow-x-hidden">
       <LivelyShowcase slides={serviceSlides} categories={services.slice(0, 6).map((service) => ({ image: service.images?.[0]?.url || service.image_url, label: service.title || "Installation service", href: "#services" })).filter((item) => item.image)} />
       <LivelyProductRail products={productData?.data || []} title="Products we install and support" subtitle="Choose the right shower, heater, pump, solar or electrical solution." />
+      <LivelyProductRail products={productData?.data || []} mode="electrical" badgeLabel="Service essential" title="Power & electrical essentials" subtitle="Reliable bulbs, plugs, switches, solar and backup-power equipment." />
       <section className="relative flex min-h-[60vh] items-center overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)]">
         <div className="absolute inset-0">
           <div className="absolute -left-20 top-20 h-96 w-96 animate-drift rounded-full bg-[#ffd92f]/25 blur-3xl" />

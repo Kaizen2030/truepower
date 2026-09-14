@@ -180,6 +180,7 @@ export default async function PortfolioPage() {
     <main className="min-h-screen bg-white overflow-x-hidden">
       <LivelyShowcase slides={showcaseSlides} categories={(galleryImages || []).slice(0, 6).map((image) => ({ image: image.image_url, label: image.title || portfolioCategoryLabel(image.category), href: "#projects" }))} />
       <LivelyProductRail products={productData?.data || []} title="Products behind the projects" subtitle="Explore the instant showers, water heaters, pumps and electrical products we install." />
+      <LivelyProductRail products={productData?.data || []} mode="water" badgeLabel="Installation pick" title="Water systems we install" subtitle="Shower heads, instant heaters, pumps and complete water-heating solutions." />
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)] text-slate-950">
