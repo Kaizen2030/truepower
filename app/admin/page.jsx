@@ -1253,33 +1253,33 @@ export default function AdminPage() {
                     e.preventDefault();
                     handleProductDrop(p.id);
                   }}
-                  className={`card cursor-move p-4 transition-all ${draggedProductId === p.id ? "opacity-60 ring-2 ring-brand-200" : ""} ${dragOverProductId === p.id ? "ring-2 ring-brand-400 shadow-product-hover" : ""}`}
+                  className={`card relative cursor-move overflow-hidden p-0 transition-all ${draggedProductId === p.id ? "opacity-60 ring-2 ring-brand-200" : ""} ${dragOverProductId === p.id ? "ring-2 ring-brand-400 shadow-product-hover" : ""}`}
                 >
-                  <div className="mb-3 flex items-center justify-between">
+                  <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between p-3">
                     <button type="button" draggable onDragStart={() => setDraggedProductId(p.id)} className="rounded-xl border border-border bg-muted p-2 text-sub hover:text-brand-500" title="Drag to reorder"><GripVertical size={16} /></button>
-                    <div className="flex items-center gap-1">
-                      <button type="button" onClick={() => startEdit(p)} className="rounded-xl p-2 text-sub transition-colors hover:bg-brand-50 hover:text-brand-500" title="Edit product"><Edit2 size={16} /></button>
-                      <button type="button" onClick={() => handleDelete(p.id)} className="rounded-xl p-2 text-sub transition-colors hover:bg-red-50 hover:text-red-500" title="Delete product"><Trash2 size={16} /></button>
+                    <div className="flex items-center gap-1 rounded-xl border border-white/70 bg-white/90 p-0.5 shadow-sm backdrop-blur">
+                      <button type="button" onClick={() => startEdit(p)} className="rounded-lg p-2 text-sub transition-colors hover:bg-brand-50 hover:text-brand-500" title="Edit product"><Edit2 size={16} /></button>
+                      <button type="button" onClick={() => handleDelete(p.id)} className="rounded-lg p-2 text-sub transition-colors hover:bg-red-50 hover:text-red-500" title="Delete product"><Trash2 size={16} /></button>
                     </div>
                   </div>
-                  <div className="flex h-40 w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 sm:h-36">
+                  <div className="relative flex h-64 w-full items-center justify-center overflow-hidden bg-slate-50 sm:h-56">
                     {p.images?.[0] ? (
                       <img
                         src={p.images[0]}
                         alt=""
-                        className="h-full w-full object-contain p-3"
+                        className="h-full w-full object-contain p-2"
                       />
                     ) : (
                       <Package size={42} className="text-slate-300" />
                     )}
                   </div>
-                  <div className="mt-4 min-w-0">
-                    <p className="line-clamp-2 min-h-[2.5rem] font-display text-sm font-bold leading-snug text-ink">
+                  <div className="absolute inset-x-0 bottom-0 bg-slate-950/80 px-4 py-3 text-white backdrop-blur-[2px]">
+                    <p className="line-clamp-2 min-h-[2.5rem] text-center text-sm font-bold leading-snug">
                       {p.name}
                     </p>
-                    <p className="mt-1 text-xs capitalize text-sub">
+                    <p className="mt-1 text-center text-xs capitalize text-white/80">
                       {getCategoryLabel(p.cat, p.catLabel)} · KSh{" "}
-                      {Number(p.price).toLocaleString()}
+                      <span className="font-bold text-white">{Number(p.price).toLocaleString()}</span>
                     </p>
                   </div>
                 </div>
