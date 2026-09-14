@@ -1235,7 +1235,7 @@ export default function AdminPage() {
             )}
 
             {/* Product list */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
               {products.map((p) => (
                 <div
                   key={p.id}
@@ -1253,50 +1253,34 @@ export default function AdminPage() {
                     e.preventDefault();
                     handleProductDrop(p.id);
                   }}
-                  className={`card p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4 cursor-move transition-all ${draggedProductId === p.id ? "opacity-60 ring-2 ring-brand-200" : ""} ${dragOverProductId === p.id ? "ring-2 ring-brand-400 shadow-product-hover" : ""}`}
+                  className={`card cursor-move p-4 transition-all ${draggedProductId === p.id ? "opacity-60 ring-2 ring-brand-200" : ""} ${dragOverProductId === p.id ? "ring-2 ring-brand-400 shadow-product-hover" : ""}`}
                 >
-                  <button
-                    type="button"
-                    draggable
-                    onDragStart={() => setDraggedProductId(p.id)}
-                    className="shrink-0 rounded-xl border border-border bg-muted p-2 text-sub hover:text-brand-500"
-                    title="Drag to reorder"
-                  >
-                    <GripVertical size={16} />
-                  </button>
-                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-muted shrink-0">
+                  <div className="mb-3 flex items-center justify-between">
+                    <button type="button" draggable onDragStart={() => setDraggedProductId(p.id)} className="rounded-xl border border-border bg-muted p-2 text-sub hover:text-brand-500" title="Drag to reorder"><GripVertical size={16} /></button>
+                    <div className="flex items-center gap-1">
+                      <button type="button" onClick={() => startEdit(p)} className="rounded-xl p-2 text-sub transition-colors hover:bg-brand-50 hover:text-brand-500" title="Edit product"><Edit2 size={16} /></button>
+                      <button type="button" onClick={() => handleDelete(p.id)} className="rounded-xl p-2 text-sub transition-colors hover:bg-red-50 hover:text-red-500" title="Delete product"><Trash2 size={16} /></button>
+                    </div>
+                  </div>
+                  <div className="flex h-40 w-full items-center justify-center overflow-hidden rounded-2xl border border-slate-100 bg-slate-50 sm:h-36">
                     {p.images?.[0] ? (
                       <img
                         src={p.images[0]}
                         alt=""
-                        className="w-full h-full object-cover"
+                        className="h-full w-full object-contain p-3"
                       />
                     ) : (
-                      <div className="w-full h-full bg-muted" />
+                      <Package size={42} className="text-slate-300" />
                     )}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-display font-semibold text-sm text-ink truncate">
+                  <div className="mt-4 min-w-0">
+                    <p className="line-clamp-2 min-h-[2.5rem] font-display text-sm font-bold leading-snug text-ink">
                       {p.name}
                     </p>
-                    <p className="text-sub text-xs capitalize">
+                    <p className="mt-1 text-xs capitalize text-sub">
                       {getCategoryLabel(p.cat, p.catLabel)} · KSh{" "}
                       {Number(p.price).toLocaleString()}
                     </p>
-                  </div>
-                  <div className="flex gap-2 mt-3 sm:mt-0 shrink-0">
-                    <button
-                      onClick={() => startEdit(p)}
-                      className="p-2 text-sub hover:text-brand-500 transition-colors"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(p.id)}
-                      className="p-2 text-sub hover:text-red-400 transition-colors"
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 </div>
               ))}
