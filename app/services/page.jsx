@@ -55,26 +55,25 @@ export default async function ServicesPage() {
   ];
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
-      <section className="relative flex min-h-[60vh] items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#071b52] via-[#102d73] to-[#1b4fd8]">
-          <div className="absolute inset-0 bg-[#071b52]/20" />
-          <div className="absolute top-20 -left-20 w-96 h-96 rounded-full bg-white/10 blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 -right-20 w-96 h-96 rounded-full bg-white/10 blur-3xl animate-pulse" />
+      <section className="relative flex min-h-[60vh] items-center overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)]">
+        <div className="absolute inset-0">
+          <div className="absolute -left-20 top-20 h-96 w-96 animate-drift rounded-full bg-[#ffd92f]/25 blur-3xl" />
+          <div className="absolute -right-20 bottom-20 h-96 w-96 animate-float rounded-full bg-[#ff8a65]/15 blur-3xl" />
         </div>
 
         <div className="relative w-full mx-auto px-4 py-16 sm:px-6 sm:py-20 lg:px-10 xl:px-12">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
-              <Sparkles size={16} className="text-yellow-300" />
-              <span className="text-white/90 text-sm font-medium">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-orange-200 bg-white/80 px-4 py-1.5 shadow-sm backdrop-blur">
+              <Sparkles size={16} className="text-brand-500" />
+              <span className="text-slate-700 text-sm font-medium">
                 Expert Services in Nairobi
               </span>
             </div>
-            <h1 className="font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-white mb-6 leading-tight">
+            <h1 className="animate-fade-up font-display font-extrabold text-4xl sm:text-6xl lg:text-7xl text-slate-950 mb-6 leading-tight" style={{ animation: "fadeUp 0.7s ease-out forwards" }}>
               Professional <br />
-              <span className="text-yellow-300">Installation & Repair</span>
+              <span className="text-brand-500">Installation & Repair</span>
             </h1>
-            <p className="text-white/90 text-base sm:text-lg lg:text-xl mb-8 max-w-xl leading-relaxed">
+            <p className="animate-fade-up text-slate-600 text-base sm:text-lg lg:text-xl mb-8 max-w-xl leading-relaxed" style={{ animation: "fadeUp 0.7s ease-out 120ms forwards" }}>
               From electric fence and CCTV to instant showers, solar systems,
               inverters, and appliance repair - Nairobi&apos;s most trusted service
               team.
@@ -84,13 +83,13 @@ export default async function ServicesPage() {
                 href="https://wa.me/254701039256"
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-2 rounded-full bg-[#ffd92f] px-8 py-3.5 font-display font-bold text-[#071b52] shadow-lg transition-all hover:scale-105"
+                className="flex items-center gap-2 rounded-full bg-[#ffd92f] px-8 py-3.5 font-display font-bold text-slate-950 shadow-lg transition-all hover:scale-105"
               >
                 <MessageCircle size={18} /> Talk to an Expert
               </a>
               <Link
                 href="/portfolio"
-                className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-8 py-3.5 font-display font-bold text-white backdrop-blur transition-all hover:scale-105 hover:bg-white/20"
+                className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-8 py-3.5 font-display font-bold text-slate-700 shadow-sm transition-all hover:scale-105"
               >
                 View Portfolio <ArrowRight size={16} />
               </Link>

@@ -47,7 +47,7 @@ export default function ServiceImageCarousel({ images, title }) {
   }
 
   return (
-    <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-xl bg-gray-900">
+    <div className="relative rounded-xl bg-[#f5f8ff] shadow-xl sm:rounded-2xl overflow-hidden">
       <div className="relative h-52 w-full sm:h-56 lg:h-80 xl:h-[26rem]">
         {images.map((img, idx) => (
           <div
