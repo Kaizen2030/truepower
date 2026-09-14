@@ -70,3 +70,9 @@ v231-*.png
 final-*.png
 admin_page.html
 ppas.txt
+
+# Android Studio/project-local state
+android-thermal/.idea/
+android-thermal/.kotlin/
+android-thermal/build/
+android-thermal/local.properties
