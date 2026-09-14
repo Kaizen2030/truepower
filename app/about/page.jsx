@@ -209,7 +209,9 @@ export default async function AboutPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* HERO SECTION */}
-      <section className="relative overflow-hidden bg-white border-b border-gray-100">
+      <section className="relative overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)]">
+        <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 animate-drift rounded-full bg-[#ffd92f]/25 blur-3xl" />
+        <div className="pointer-events-none absolute -right-24 bottom-0 h-80 w-80 animate-float rounded-full bg-[#ff8a65]/15 blur-3xl" />
         <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
           <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Left column */}
@@ -221,11 +223,11 @@ export default async function AboutPage() {
                 </span>
               </div>
 
-              <h1 className="font-display text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-6xl">
+              <h1 className="animate-fade-up font-display text-4xl font-bold leading-tight text-gray-900 sm:text-5xl lg:text-6xl" style={{ animation: "fadeUp 0.7s ease-out forwards" }}>
                 {hero.title}
               </h1>
 
-              <p className="mt-4 text-base leading-relaxed text-gray-600 max-w-md">
+              <p className="animate-fade-up mt-4 max-w-md text-base leading-relaxed text-gray-600" style={{ animation: "fadeUp 0.7s ease-out 120ms forwards" }}>
                 {hero.subtitle}
               </p>
 
@@ -261,7 +263,7 @@ export default async function AboutPage() {
             {/* Right column - image collage with proper sizing */}
             <div className="space-y-3">
               {/* Main large image */}
-              <div className="relative w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 aspect-[16/9]">
+              <div className="group relative animate-fade-up w-full overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 aspect-[16/9] shadow-lg" style={{ animation: "fadeUp 0.7s ease-out 180ms forwards" }}>
                 <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                   <Zap size={48} />
                 </div>
@@ -270,7 +272,7 @@ export default async function AboutPage() {
                     src={heroVisuals[0].image_url}
                     alt={heroVisuals[0].title || "Featured product"}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority
                   />
@@ -287,7 +289,7 @@ export default async function AboutPage() {
 
               {/* Two smaller images */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-blue-50 aspect-[4/3]">
+                <div className="group relative animate-fade-up w-full overflow-hidden rounded-xl border border-gray-200 bg-blue-50 aspect-[4/3]" style={{ animation: "fadeUp 0.7s ease-out 300ms forwards" }}>
                   <div className="absolute inset-0 flex items-center justify-center text-blue-200">
                     <Sun size={32} />
                   </div>
@@ -296,7 +298,7 @@ export default async function AboutPage() {
                       src={heroVisuals[1].image_url}
                       alt="Solar"
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                       sizes="(max-width: 768px) 50vw, 25vw"
                     />
                   )}
@@ -306,7 +308,7 @@ export default async function AboutPage() {
                     <p className="text-sm font-medium text-white">Hybrid setup</p>
                   </div>
                 </div>
-                <div className="relative w-full overflow-hidden rounded-xl border border-gray-200 bg-emerald-50 aspect-[4/3]">
+                <div className="group relative animate-fade-up w-full overflow-hidden rounded-xl border border-gray-200 bg-emerald-50 aspect-[4/3]" style={{ animation: "fadeUp 0.7s ease-out 420ms forwards" }}>
                   <div className="absolute inset-0 flex items-center justify-center text-emerald-200">
                     <Store size={32} />
                   </div>
@@ -315,7 +317,7 @@ export default async function AboutPage() {
                       src={heroVisuals[2].image_url}
                       alt="Showroom"
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
                       sizes="(max-width: 768px) 50vw, 25vw"
                     />
                   )}
@@ -338,7 +340,7 @@ export default async function AboutPage() {
             {stats.map((stat, idx) => (
               <div
                 key={stat.label}
-                className={`py-6 px-4 text-center ${idx < 2 ? 'border-b border-gray-100 md:border-b-0' : ''} ${idx === 0 || idx === 2 ? 'border-r border-gray-100' : ''}`}
+                className={`group py-6 px-4 text-center transition duration-300 hover:-translate-y-1 hover:bg-[#fffaf4] ${idx < 2 ? 'border-b border-gray-100 md:border-b-0' : ''} ${idx === 0 || idx === 2 ? 'border-r border-gray-100' : ''}`}
               >
                 <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
                 <p className="text-xs text-gray-500 mt-1">{stat.label}</p>
@@ -365,10 +367,11 @@ export default async function AboutPage() {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
+            {services.map((service, idx) => (
               <div
                 key={service.title}
-                className="flex gap-4 p-5 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                className="animate-fade-up flex gap-4 rounded-xl border border-gray-100 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                style={{ animation: `fadeUp 0.55s ease-out ${idx * 90}ms forwards` }}
               >
                 <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0">
                   <DynamicIcon name={service.icon} size={24} />
@@ -443,7 +446,7 @@ export default async function AboutPage() {
             {/* Right column - Image grid with proper sizing */}
             <div className="grid grid-cols-2 gap-3 auto-rows-min">
               {/* Main image - spans both columns */}
-              <div className="col-span-2 relative w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100 aspect-[16/9]">
+              <div className="group col-span-2 relative w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-md aspect-[16/9]">
                 <div className="absolute inset-0 flex items-center justify-center text-gray-300">
                   <CameraIcon size={36} />
                 </div>
@@ -452,7 +455,7 @@ export default async function AboutPage() {
                     src={galleryPreview[0].image_url}
                     alt="Recent installation"
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 )}
@@ -464,7 +467,7 @@ export default async function AboutPage() {
               </div>
 
               {/* Bottom left image */}
-              <div className="relative w-full overflow-hidden rounded-lg border border-gray-200 bg-blue-50 aspect-[4/3]">
+              <div className="group relative w-full overflow-hidden rounded-lg border border-gray-200 bg-blue-50 aspect-[4/3]">
                 <div className="absolute inset-0 flex items-center justify-center text-blue-200">
                   <Droplets size={28} />
                 </div>
@@ -473,7 +476,7 @@ export default async function AboutPage() {
                     src={galleryPreview[1].image_url}
                     alt="Borehole setup"
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 )}
@@ -485,7 +488,7 @@ export default async function AboutPage() {
               </div>
 
               {/* Bottom right image */}
-              <div className="relative w-full overflow-hidden rounded-lg border border-gray-200 bg-emerald-50 aspect-[4/3]">
+              <div className="group relative w-full overflow-hidden rounded-lg border border-gray-200 bg-emerald-50 aspect-[4/3]">
                 <div className="absolute inset-0 flex items-center justify-center text-emerald-200">
                   <Sun size={28} />
                 </div>
@@ -494,7 +497,7 @@ export default async function AboutPage() {
                     src={galleryPreview[2].image_url}
                     alt="Hybrid system"
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                     sizes="(max-width: 768px) 50vw, 25vw"
                   />
                 )}
@@ -534,9 +537,10 @@ export default async function AboutPage() {
               {testimonials.slice(0, 3).map((testimonial, index) => (
                 <div
                   key={testimonial.id || index}
-                  className={`bg-white rounded-xl border p-6 ${
+                  className={`animate-fade-up rounded-xl border bg-white p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
                     index === 0 ? 'border-blue-300 shadow-md' : 'border-gray-200 shadow-sm'
                   }`}
+                  style={{ animation: `fadeUp 0.55s ease-out ${index * 100}ms forwards` }}
                 >
                   {index === 0 && (
                     <span className="inline-block bg-blue-50 text-blue-600 text-[10px] font-semibold px-2 py-0.5 rounded-full mb-3">
