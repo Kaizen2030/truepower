@@ -1573,15 +1573,19 @@ export default function ReceiptBuilder() {
     : "Payment after installation";
 
   return (
-    <div className="grid lg:grid-cols-[1fr_420px] gap-6 sm:gap-8 px-3 py-4 sm:px-4 sm:py-8 lg:px-10 xl:px-12 overflow-x-hidden">
+    <div className="mx-auto grid w-full max-w-[1600px] grid-cols-1 gap-5 overflow-x-hidden px-3 py-4 sm:gap-8 sm:px-5 sm:py-8 lg:grid-cols-[minmax(0,1fr)_410px] lg:px-8 xl:grid-cols-[minmax(0,1fr)_440px] xl:px-12">
       {activePanel === "builder" ? (
         <>
-          <div className="space-y-6 print:hidden min-w-0">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="order-2 min-w-0 space-y-5 print:hidden lg:order-1 lg:space-y-6">
+            <div className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-white to-blue-50/60 p-4 shadow-sm sm:p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="font-display font-bold text-lg sm:text-xl">Receipt Builder</h2>
-                <p className="mt-1 text-xs text-sub sm:text-sm">
-                  Build the receipt on the left and preview it on the right.
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-blue-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600" /> Sales workspace
+                </div>
+                <h2 className="font-display text-xl font-bold tracking-tight text-slate-950 sm:text-2xl">Receipt Builder</h2>
+                <p className="mt-1 text-xs leading-relaxed text-sub sm:text-sm">
+                  Enter the sale details, review the live receipt, then print or save it.
                 </p>
               </div>
               <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:flex sm:flex-row sm:flex-wrap">
@@ -1608,6 +1612,7 @@ export default function ReceiptBuilder() {
                   <Trash2 size={16} /> Recycle Bin
                 </button>
               </div>
+              </div>
             </div>
 
             {loadError && (
@@ -1620,7 +1625,12 @@ export default function ReceiptBuilder() {
               </div>
             )}
 
-            <div className="card p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="card border-slate-200 p-4 shadow-sm sm:p-5">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-50 text-sm font-bold text-blue-700">01</div>
+                <div><h3 className="text-sm font-bold text-slate-900">Receipt details</h3><p className="text-xs text-sub">Identify this transaction and the customer.</p></div>
+              </div>
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div>
                 <label className="label">Receipt #</label>
                 <input
@@ -1656,14 +1666,15 @@ export default function ReceiptBuilder() {
                   placeholder="0712345678"
                 />
               </div>
+              </div>
             </div>
 
-            <div className="card p-4 sm:p-5 overflow-hidden">
+            <div className="card overflow-hidden border-slate-200 p-4 shadow-sm sm:p-5">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
                 <div>
-                  <label className="label mb-0">Items</label>
+                  <div className="flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-emerald-50 text-sm font-bold text-emerald-700">02</div><label className="label mb-0">Items</label></div>
                   <p className="mt-1 text-xs text-sub">
-                    Each line becomes one row on the receipt preview.
+                    Each line becomes a clean product row with quantity and amount.
                   </p>
                 </div>
                 <div className="relative w-full sm:w-auto min-w-0">
@@ -1722,34 +1733,15 @@ export default function ReceiptBuilder() {
                 </div>
               </div>
 
-              <div className="space-y-3 min-w-0">
+              <div className="min-w-0 space-y-3">
                 {lines.map((l) => (
                   <div
                     key={l.id}
-                    className="rounded-2xl border border-border bg-white p-3 shadow-sm grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_70px_110px_36px] gap-2 sm:items-center"
+                    className="rounded-2xl border border-slate-200 bg-slate-50/60 p-3 shadow-sm transition hover:border-blue-200 hover:bg-white sm:grid sm:grid-cols-[minmax(0,1fr)_76px_120px_36px] sm:items-end sm:gap-2"
                   >
-                    <input
-                      className="input py-2.5 sm:py-3"
-                      placeholder="Description (e.g. Labour, Delivery, Product name)"
-                      value={l.description}
-                      onChange={(e) => updateLine(l.id, { description: e.target.value })}
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      className="input py-2.5 sm:py-3 text-center"
-                      placeholder="Qty"
-                      value={l.qty}
-                      onChange={(e) => updateLine(l.id, { qty: e.target.value })}
-                    />
-                    <input
-                      type="number"
-                      min="0"
-                      className="input py-2.5 sm:py-3 text-right"
-                      placeholder="Price"
-                      value={l.price}
-                      onChange={(e) => updateLine(l.id, { price: e.target.value })}
-                    />
+                    <label className="block min-w-0"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Product / service</span><input className="input py-2.5 sm:py-3" placeholder="e.g. Black Anlabeier" value={l.description} onChange={(e) => updateLine(l.id, { description: e.target.value })} /></label>
+                    <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Qty</span><input type="number" min="0" className="input py-2.5 text-center sm:py-3" placeholder="1" value={l.qty} onChange={(e) => updateLine(l.id, { qty: e.target.value })} /></label>
+                    <label className="block"><span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.14em] text-slate-500">Unit price</span><input type="number" min="0" className="input py-2.5 text-right sm:py-3" placeholder="0" value={l.price} onChange={(e) => updateLine(l.id, { price: e.target.value })} /></label>
                     <button
                       onClick={() => removeLine(l.id)}
                       className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 p-2 text-red-500 justify-self-end transition hover:border-red-300 hover:bg-red-100 sm:justify-self-center"
@@ -1769,8 +1761,8 @@ export default function ReceiptBuilder() {
               </button>
             </div>
 
-            <div className="card p-4 sm:p-5">
-              <label className="label">Terms & Notes</label>
+            <div className="card border-slate-200 p-4 shadow-sm sm:p-5">
+              <div className="mb-3 flex items-center gap-3"><div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-amber-50 text-sm font-bold text-amber-700">03</div><div><label className="label mb-0">Terms & Notes</label><p className="text-xs text-sub">These words appear below the total.</p></div></div>
               <textarea
                 className="input h-24 resize-none py-2.5 sm:py-3"
                 value={notes}
@@ -1778,7 +1770,9 @@ export default function ReceiptBuilder() {
               />
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-3 shadow-sm sm:p-4">
+              <div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-sm font-bold text-slate-900">Ready to finish?</p><p className="text-xs text-sub">Choose how you want to deliver this receipt.</p></div><Printer size={18} className="text-blue-600" /></div>
+              <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
                 onClick={handleThermalPrint}
                 disabled={thermalPrinting || saving}
@@ -1799,14 +1793,17 @@ export default function ReceiptBuilder() {
               <button onClick={handleSave} disabled={saving} className="btn-ghost justify-center">
                 {saving ? "Saving..." : savedId ? "Update record" : "Save receipt record"}
               </button>
+              </div>
             </div>
           </div>
 
-          <div className="lg:sticky lg:top-24 lg:self-start min-w-0">
-            <div
+          <div className="order-1 min-w-0 lg:order-2 lg:sticky lg:top-24 lg:self-start">
+            <div className="rounded-[2rem] border border-slate-200 bg-slate-100/80 p-3 shadow-sm sm:p-5">
+              <div className="mb-3 flex items-center justify-between px-1 sm:mb-4"><div><p className="text-sm font-bold text-slate-900">Live preview</p><p className="text-xs text-sub">58mm thermal receipt</p></div><span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 shadow-sm">Ready</span></div>
+              <div
               ref={printRef}
               id="receipt-print-area"
-              className="receipt-sheet"
+              className="receipt-sheet rounded-lg shadow-xl ring-1 ring-slate-900/5"
             >
               <div className="receipt-header">
                 <img className="receipt-logo" src="/logo.png" alt="TruePower Solutions" />
@@ -1881,6 +1878,7 @@ export default function ReceiptBuilder() {
                   <strong>{business.phone}</strong>.
                 </p>
                 <p className="receipt-footer-link">{business.website}</p>
+              </div>
               </div>
             </div>
           </div>
