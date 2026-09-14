@@ -225,7 +225,7 @@ export default async function PortfolioPage() {
             {heroShots.length > 0 ? (
               <>
                 {/* Main featured image */}
-                <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-slate-50 shadow-sm aspect-[4/5] sm:aspect-[16/10]">
+                <div className="relative animate-fade-up overflow-hidden rounded-[1.75rem] border border-white/15 bg-slate-50 shadow-[0_24px_60px_rgba(0,0,0,0.22)] aspect-[4/5] sm:aspect-[16/10]" style={{ animation: "fadeUp 0.7s ease-out 180ms forwards" }}>
                   <Image
                     src={heroShots[0].image_url}
                     alt={heroShots[0].title || "TruePower installation"}
@@ -259,7 +259,8 @@ export default async function PortfolioPage() {
                     {heroShots.slice(1, 3).map((shot, i) => (
                       <div
                         key={shot.image_url}
-                        className="relative overflow-hidden rounded-[1.5rem] border border-border bg-slate-50 shadow-sm aspect-[4/5] sm:h-48 sm:aspect-auto"
+                        className="relative animate-fade-up overflow-hidden rounded-[1.5rem] border border-white/15 bg-slate-50 shadow-lg aspect-[4/5] sm:h-48 sm:aspect-auto"
+                        style={{ animation: `fadeUp 0.7s ease-out ${350 + i * 120}ms forwards` }}
                       >
                         <Image
                           src={shot.image_url}

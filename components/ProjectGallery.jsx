@@ -59,10 +59,11 @@ export default function ProjectGallery({
         ) : (
           /* GRID */
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-            {filteredImages.map((img) => (
+            {filteredImages.map((img, index) => (
               <div
                 key={img.id}
-                className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_14px_35px_rgba(7,27,82,0.08)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(7,27,82,0.14)]"
+                className="group animate-fade-up relative aspect-[4/3] cursor-pointer overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_14px_35px_rgba(7,27,82,0.08)] transition hover:-translate-y-1 hover:shadow-[0_20px_45px_rgba(7,27,82,0.14)]"
+                style={{ animation: `fadeUp 0.6s ease-out ${index * 90}ms forwards` }}
                 onClick={() => setSelectedImage(img)}
               >
                 <img

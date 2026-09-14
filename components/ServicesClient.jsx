@@ -43,9 +43,9 @@ export default function ServicesClient({ services }) {
 
   return (
     <>
-      <section className="py-8  border-b border-border sticky top-[68px] z-30 backdrop-blur-md bg-white/95">
+      <section className="sticky top-[68px] z-30 border-b border-border bg-white/95 py-5 backdrop-blur-md">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
-          <div className="flex gap-3 overflow-x-auto pb-1 sm:flex-wrap sm:justify-center">
+          <div className="flex flex-wrap justify-center gap-2 pb-1">
             {filters.map((filter) => (
               <button
                 key={filter.key}
@@ -53,7 +53,7 @@ export default function ServicesClient({ services }) {
                 onClick={() => setActiveFilter(filter.key)}
                 className={`flex shrink-0 items-center gap-2 px-4 py-2.5 rounded-full font-display font-semibold text-sm transition-all duration-300 sm:px-5 ${
                   activeFilter === filter.key
-                    ? "bg-brand-500 text-white shadow-lg scale-105"
+                    ? "bg-[#292566] text-white shadow-lg scale-105"
                     : "bg-white border border-border text-sub hover:border-brand-300 hover:text-brand-500 hover:scale-105"
                 }`}
               >
@@ -64,7 +64,7 @@ export default function ServicesClient({ services }) {
           </div>
         </div>
       </section>
-      <section className="py-16 lg:py-20 bg-white">
+      <section className="bg-[#f5f8ff] py-16 lg:py-20">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
           {filteredServices.length === 0 ? (
             <div className="text-center py-20">
@@ -79,7 +79,7 @@ export default function ServicesClient({ services }) {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-2 xl:gap-10">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-6 lg:grid-cols-2 xl:gap-10">
               {filteredServices.map((service, idx) => (
                 <ServiceCard key={service.id} service={service} index={idx} />
               ))}

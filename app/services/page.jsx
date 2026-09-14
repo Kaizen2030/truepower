@@ -55,9 +55,9 @@ export default async function ServicesPage() {
   ];
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
-      <section className="relative min-h-[60vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-900 via-brand-700 to-brand-500">
-          <div className="absolute inset-0 bg-black/30" />
+      <section className="relative flex min-h-[60vh] items-center overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#071b52] via-[#102d73] to-[#1b4fd8]">
+          <div className="absolute inset-0 bg-[#071b52]/20" />
           <div className="absolute top-20 -left-20 w-96 h-96 rounded-full bg-white/10 blur-3xl animate-pulse" />
           <div className="absolute bottom-20 -right-20 w-96 h-96 rounded-full bg-white/10 blur-3xl animate-pulse" />
         </div>
@@ -84,13 +84,13 @@ export default async function ServicesPage() {
                 href="https://wa.me/254701039256"
                 target="_blank"
                 rel="noreferrer"
-                className="bg-white text-brand-600 hover:bg-brand-50 px-8 py-3.5 rounded-full font-display font-bold flex items-center gap-2 transition-all hover:scale-105 shadow-lg"
+                className="flex items-center gap-2 rounded-full bg-[#ffd92f] px-8 py-3.5 font-display font-bold text-[#071b52] shadow-lg transition-all hover:scale-105"
               >
                 <MessageCircle size={18} /> Talk to an Expert
               </a>
               <Link
                 href="/portfolio"
-                className="bg-brand-500 hover:bg-brand-400 text-white px-8 py-3.5 rounded-full font-display font-bold flex items-center gap-2 transition-all hover:scale-105 border border-white/20"
+                className="flex items-center gap-2 rounded-full border border-white/25 bg-white/10 px-8 py-3.5 font-display font-bold text-white backdrop-blur transition-all hover:scale-105 hover:bg-white/20"
               >
                 View Portfolio <ArrowRight size={16} />
               </Link>

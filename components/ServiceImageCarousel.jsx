@@ -48,7 +48,7 @@ export default function ServiceImageCarousel({ images, title }) {
 
   return (
     <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-xl bg-gray-900">
-      <div className="relative w-full h-36 sm:h-56 lg:h-80 xl:h-[26rem]">
+      <div className="relative h-52 w-full sm:h-56 lg:h-80 xl:h-[26rem]">
         {images.map((img, idx) => (
           <div
             key={idx}
@@ -68,7 +68,7 @@ export default function ServiceImageCarousel({ images, title }) {
             <img
               src={img.url}
               alt={img.caption || title}
-              className="relative w-full h-full object-contain p-2 sm:p-4 lg:p-5 z-10"
+              className="relative z-10 h-full w-full object-contain p-2 transition-transform duration-700 group-hover:scale-105 sm:p-4 lg:p-5"
               onError={(e) => {
                 e.target.src = "https://placehold.co/800x800?text=TruePower";
               }}

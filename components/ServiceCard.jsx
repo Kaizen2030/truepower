@@ -47,7 +47,7 @@ export default function ServiceCard({ service, index }) {
 
   return (
     <div
-      className="group rounded-2xl sm:rounded-3xl bg-white border border-border overflow-hidden hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+      className="group rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-[0_14px_35px_rgba(7,27,82,0.08)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_22px_50px_rgba(7,27,82,0.16)]"
       style={{
         animation: `fadeUp 0.6s ease-out ${animationDelay}ms forwards`,
         opacity: 0,
