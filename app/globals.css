@@ -19,6 +19,7 @@
     color: #0f172a;
     font-family: "Inter", sans-serif;
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
     font-size: 15px;
     line-height: 1.6;
   }

@@ -900,8 +900,8 @@ export default function AdminPage() {
 
   // ── Render ────────────────────────────────────────────────
   return (
-    <main className="pt-16 min-h-screen">
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
+    <main className="min-w-0 max-w-full overflow-x-hidden pt-16 min-h-screen">
+      <div className="mx-auto w-full min-w-0 max-w-full overflow-x-hidden px-4 py-8 sm:px-6 lg:px-10 xl:px-12">
         {/* Header */}
         <div className="flex flex-col gap-4 sm:gap-6 sm:flex-row sm:items-center sm:justify-between mb-8">
           <div>
@@ -937,13 +937,13 @@ export default function AdminPage() {
         </div>
 
         {/* Tabs */}
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 border-b border-border mb-8">
-          <div className="flex gap-2 min-w-max">
+        <div className="mb-8 overflow-hidden border-b border-border pb-2">
+          <div className="grid grid-cols-2 gap-1 sm:flex sm:flex-wrap sm:gap-2">
             {visibleTabs.map((t) => (
               <button
                 key={t.key}
                 onClick={() => setTab(t.key)}
-                className={`flex-shrink-0 flex items-center gap-2 px-4 py-3 font-display font-semibold text-sm transition-colors border-b-2 -mb-[2px] ${
+                className={`flex min-w-0 items-center justify-center gap-2 px-2 py-3 text-center font-display text-xs font-semibold transition-colors border-b-2 -mb-[2px] sm:flex-shrink-0 sm:px-4 sm:text-sm ${
                   currentTab === t.key
                     ? "border-brand-500 text-brand-500"
                     : "border-transparent text-sub hover:text-ink"
