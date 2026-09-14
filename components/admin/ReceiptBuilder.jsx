@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Bluetooth, Plus, Trash2, Printer, Share2, Search, X, History, Download } from "lucide-react";
+import { Bluetooth, Plus, Trash2, Printer, Share2, Search, X, History, Download, Package } from "lucide-react";
 import { getProducts, supabase } from "@/lib/supabase";
 import { buildThermalReceipt } from "@/lib/thermalReceipt";
 
@@ -1715,14 +1715,24 @@ export default function ReceiptBuilder() {
                             <button
                               key={p.id}
                               onClick={() => addProductLine(p)}
-                            type="button"
-                            className="flex w-full items-start justify-between gap-3 rounded-2xl px-3 py-3 text-left transition hover:bg-muted active:bg-blue-50"
+                              type="button"
+                              className="group flex w-full items-center gap-3 rounded-2xl border border-transparent px-2 py-3 text-left transition hover:border-blue-100 hover:bg-blue-50/60 active:bg-blue-50 sm:px-3"
                             >
-                              <span className="min-w-0 flex-1 whitespace-normal break-words text-sm leading-snug">
-                                {p.name}
+                              {(() => {
+                                const image = Array.isArray(p.images) ? p.images[0] : p.image_url;
+                                return image ? (
+                                  <img src={image} alt="" className="h-14 w-14 shrink-0 rounded-2xl border border-slate-200 bg-white object-cover" />
+                                ) : (
+                                  <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-blue-600"><Package size={22} /></span>
+                                );
+                              })()}
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-sm font-bold leading-snug text-slate-900">{p.name}</span>
+                                <span className="mt-1 block text-xs text-sub">Tap to add · Qty 1</span>
                               </span>
-                              <span className="text-sm font-semibold text-brand-500 whitespace-nowrap shrink-0">
-                                KSh {formatMoney(p.price)}
+                              <span className="flex shrink-0 flex-col items-end gap-1">
+                                <span className="whitespace-nowrap text-sm font-bold text-brand-600">KSh {formatMoney(p.price)}</span>
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-blue-600"><Plus size={12} /> Add</span>
                               </span>
                             </button>
                           ))}
