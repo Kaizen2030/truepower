@@ -1273,7 +1273,7 @@ export default function AdminPage() {
                       <Package size={42} className="text-slate-300" />
                     )}
                   </div>
-                  <div className="absolute inset-x-0 bottom-0 bg-slate-950/80 px-4 py-3 text-white backdrop-blur-[2px]">
+                  <div className="absolute inset-x-0 bottom-0 bg-[#292566] px-4 py-3 text-white shadow-[0_-8px_20px_rgba(41,37,102,0.16)]">
                     <p className="line-clamp-2 min-h-[2.5rem] text-center text-sm font-bold leading-snug">
                       {p.name}
                     </p>
