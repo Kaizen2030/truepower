@@ -3,6 +3,15 @@
 import { useState } from "react";
 import { Camera, X } from "lucide-react";
 
+function displayCategory(category = "") {
+  const value = String(category).toLowerCase();
+  if (value === "product") return "Shower & Water Systems";
+  if (value === "showroom") return "Showroom Products";
+  if (value === "installation") return "Completed Installation";
+  if (value === "solar") return "Solar Installation";
+  return category || "TruePower Project";
+}
+
 export default function ProjectGallery({
   galleryImages = [],
   categories = [],
@@ -86,7 +95,7 @@ export default function ProjectGallery({
 
                 {/* CATEGORY BADGE */}
                 <div className="absolute right-3 top-3 rounded-full bg-black/50 px-2 py-1 text-xs text-white backdrop-blur-sm">
-                  {img.category}
+                  {displayCategory(img.category)}
                 </div>
               </div>
             ))}

@@ -51,6 +51,15 @@ const PortfolioIconMap = {
   Briefcase,
 };
 
+function portfolioCategoryLabel(category = "") {
+  const value = String(category).toLowerCase();
+  if (value === "product") return "Shower & Water Systems";
+  if (value === "showroom") return "Showroom Products";
+  if (value === "installation") return "Completed Installation";
+  if (value === "solar") return "Solar Installation";
+  return category || "TruePower Project";
+}
+
 function DynamicPortfolioIcon({ name, size = 24, className = "" }) {
   const IconComponent = PortfolioIconMap[name] || Sparkles;
   return <IconComponent size={size} className={className} />;
@@ -118,7 +127,7 @@ export default async function PortfolioPage() {
     };
 
   const heroShots = (galleryImages || []).filter((image) => image?.image_url).slice(0, 3);
-  const showcaseSlides = heroShots.map((shot) => ({ image: shot.image_url, kicker: shot.category || "Completed installation", title: shot.title || shot.description || "Water heater and shower installation", description: shot.location || "A completed TruePower installation in Kenya.", href: "#projects", action: "View this project" }));
+  const showcaseSlides = heroShots.map((shot) => ({ image: shot.image_url, kicker: portfolioCategoryLabel(shot.category), title: shot.title || shot.description || portfolioCategoryLabel(shot.category), description: shot.location || "A completed TruePower installation in Kenya.", href: "#projects", action: "View this project" }));
 
   const processSteps = [
     {
@@ -166,7 +175,7 @@ export default async function PortfolioPage() {
 
   return (
     <main className="min-h-screen bg-white overflow-x-hidden">
-      <LivelyShowcase slides={showcaseSlides} categories={(galleryImages || []).slice(0, 6).map((image) => ({ image: image.image_url, label: image.title || image.category || "Installation", href: "#projects" }))} />
+      <LivelyShowcase slides={showcaseSlides} categories={(galleryImages || []).slice(0, 6).map((image) => ({ image: image.image_url, label: image.title || portfolioCategoryLabel(image.category), href: "#projects" }))} />
 
       {/* ── HERO ── */}
       <section className="relative overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)] text-slate-950">
