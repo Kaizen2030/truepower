@@ -31,6 +31,8 @@ import {
 } from "@/lib/supabase";
 import { getPublishedBlogs } from "@/lib/blogs";
 import { getProducts } from "@/lib/products";
+import LivelyTrustStrip from "@/components/LivelyTrustStrip";
+import LivelyCategoryRail from "@/components/LivelyCategoryRail";
 
 export const metadata = createSeo({
   title: "About TruePower Kenya",
@@ -333,6 +335,9 @@ export default async function AboutPage() {
         </div>
       </section>
 
+      <LivelyTrustStrip />
+      <LivelyCategoryRail items={[{ label: "Our story", icon: "Sparkles", href: "#story" }, { label: "What we do", icon: "Zap", href: "#services" }, { label: "Our projects", icon: "Camera", href: "/portfolio" }, { label: "Talk to us", icon: "MessageCircle", href: "https://wa.me/254701039256" }]} />
+
       {/* STATS SECTION */}
       <section className="border-b border-gray-100 bg-white">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -352,7 +357,7 @@ export default async function AboutPage() {
       </section>
 
       {/* SERVICES SECTION */}
-      <section className="bg-gray-50 py-16 border-b border-gray-100">
+      <section id="services" className="bg-gray-50 py-16 border-b border-gray-100">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <span className="inline-flex items-center rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-medium text-gray-600">
@@ -394,7 +399,7 @@ export default async function AboutPage() {
       </section>
 
       {/* STORY + VALUES SECTION */}
-      <section className="py-16 bg-white border-b border-gray-100">
+      <section id="story" className="py-16 bg-white border-b border-gray-100">
         <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-12 lg:grid-cols-2 lg:gap-16">
             {/* Left column */}

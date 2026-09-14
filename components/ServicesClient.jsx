@@ -64,7 +64,7 @@ export default function ServicesClient({ services }) {
           </div>
         </div>
       </section>
-      <section className="bg-[#f5f8ff] py-16 lg:py-20">
+      <section id="services" className="bg-[#f5f8ff] py-16 lg:py-20">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12">
           {filteredServices.length === 0 ? (
             <div className="text-center py-20">

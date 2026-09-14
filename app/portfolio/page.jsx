@@ -22,6 +22,8 @@ import {
 import { getGalleryImages, getTestimonials, getPageContent } from "@/lib/supabase";
 import { createSeo } from "@/components/Seo";
 import ProjectGallery from "@/components/ProjectGallery";
+import LivelyTrustStrip from "@/components/LivelyTrustStrip";
+import LivelyCategoryRail from "@/components/LivelyCategoryRail";
 
 export const metadata = createSeo({
   title: "Portfolio & Installations",
@@ -309,6 +311,9 @@ export default async function PortfolioPage() {
       </section>
 
       {/* ── STATS ── */}
+      <LivelyTrustStrip items={["REAL PROJECT PHOTOS", "INSTALLATION SUPPORT", "TRUSTED ACROSS NAIROBI", "WHATSAPP QUOTES", "SEE IT. CHOOSE IT. INSTALL IT."]} />
+      <LivelyCategoryRail items={[{ label: "All work", icon: "Camera", href: "#projects" }, { label: "Installations", icon: "Wrench", href: "#projects" }, { label: "Water systems", icon: "Droplets", href: "#projects" }, { label: "Solar projects", icon: "Sun", href: "#projects" }]} />
+
       <section className="border-b border-border bg-white">
         <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">
           <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border">
@@ -374,7 +379,7 @@ export default async function PortfolioPage() {
       </section>
 
       {/* ── GALLERY ── */}
-      <section className="bg-white">
+      <section id="projects" className="bg-white">
         <ProjectGallery
           galleryImages={galleryImages || []}
           categories={categories}

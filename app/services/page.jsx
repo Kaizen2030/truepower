@@ -4,6 +4,8 @@ import Link from "next/link";
 
 import { createSeo } from "@/components/Seo";
 import ProjectGallery from "@/components/ProjectGallery";
+import LivelyTrustStrip from "@/components/LivelyTrustStrip";
+import LivelyCategoryRail from "@/components/LivelyCategoryRail";
 import {
   ArrowRight,
   Check,
@@ -97,6 +99,9 @@ export default async function ServicesPage() {
           </div>
         </div>
       </section>
+
+      <LivelyTrustStrip items={["FAST QUOTES", "CERTIFIED TECHNICIANS", "SAME-DAY NAIROBI SERVICE", "WARRANTY ON OUR WORK", "WHATSAPP SUPPORT"]} />
+      <LivelyCategoryRail items={[{ label: "Instant showers", icon: "Droplets", href: "#services" }, { label: "Solar systems", icon: "Sun", href: "#services" }, { label: "Electrical", icon: "Zap", href: "#services" }, { label: "Repairs", icon: "Wrench", href: "#services" }]} />
 
       <section className="border-b border-border bg-white relative z-10 container">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-10 xl:px-12 py-8">
