@@ -183,8 +183,8 @@ export default async function AboutPage() {
   const heroVisuals = [...galleryPreview, ...productPreview]
     .filter((item) => item?.image_url)
     .slice(0, 4);
-  const showcaseSlides = heroVisuals.map((item, index) => ({ image: item.image_url, kicker: index === 0 ? "TruePower in action" : "Explore TruePower", title: item.title || "Built for Kenyan conditions", description: item.description || "Real products, real projects, and practical support.", href: "/portfolio", action: "See our work" }));
-  const showcaseCategories = productPreview.map((item) => ({ image: item.image_url, label: item.title, href: "/shop" }));
+  const showcaseSlides = [...productPreview, ...galleryPreview].filter((item) => item?.image_url).slice(0, 5).map((item, index) => ({ image: item.image_url, kicker: item.category || (index < productPreview.length ? "TruePower product" : "Completed installation"), title: item.title || item.name || "TruePower solution", description: item.description || item.location || "Real products and completed work for Kenyan homes.", href: index < productPreview.length ? "/shop" : "/portfolio", action: index < productPreview.length ? "Shop this solution" : "View the project" }));
+  const showcaseCategories = productPreview.map((item) => ({ image: item.image_url, label: item.title || "Water and power solution", href: "/shop" }));
 
   const storyParagraphs = story.paragraphs?.length
     ? story.paragraphs
@@ -213,6 +213,7 @@ export default async function AboutPage() {
 
   return (
     <main className="min-h-screen bg-white">
+      <LivelyShowcase slides={showcaseSlides} categories={showcaseCategories} />
       {/* HERO SECTION */}
       <section className="relative overflow-hidden border-b border-orange-100 bg-[linear-gradient(135deg,#fffaf4_0%,#fff_52%,#eef5ff_100%)]">
         <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 animate-drift rounded-full bg-[#ffd92f]/25 blur-3xl" />
@@ -340,7 +341,6 @@ export default async function AboutPage() {
 
       <LivelyTrustStrip />
       <LivelyCategoryRail items={[{ label: "Our story", icon: "Sparkles", href: "#story" }, { label: "What we do", icon: "Zap", href: "#services" }, { label: "Our projects", icon: "Camera", href: "/portfolio" }, { label: "Talk to us", icon: "MessageCircle", href: "https://wa.me/254701039256" }]} />
-      <LivelyShowcase slides={showcaseSlides} categories={showcaseCategories} />
 
       {/* STATS SECTION */}
       <section className="border-b border-gray-100 bg-white">
