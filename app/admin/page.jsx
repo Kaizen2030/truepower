@@ -2508,6 +2508,23 @@ export default function AdminPage() {
 
         {currentTab === "receipt" && (
           <div className="space-y-8">
+            <section className="overflow-hidden rounded-3xl border border-blue-100 bg-gradient-to-br from-[#eef5ff] via-white to-[#fff8d6] p-5 shadow-sm sm:p-7">
+              <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-[#2457d6]">Android printing</p>
+                  <h2 className="font-display text-xl font-extrabold text-[#12336b] sm:text-2xl">TruePower Receipt Printer APK</h2>
+                  <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Install this app on an Android phone to connect the admin receipt builder directly to a paired Bluetooth thermal printer.</p>
+                </div>
+                <a
+                  href="/downloads/TruePower-Receipt-Builder.apk"
+                  download="TruePower-Receipt-Builder.apk"
+                  className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-[#12336b] px-5 py-3 text-sm font-bold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-[#0b2858]"
+                >
+                  <Download size={17} /> Download APK
+                </a>
+              </div>
+              <p className="mt-4 border-t border-blue-100 pt-3 text-xs font-medium text-slate-500">After downloading: open the APK on the Android phone, allow installation, pair the printer in Bluetooth settings, then return to Receipt Builder.</p>
+            </section>
             <ReceiptBuilder />
           </div>
         )}
