@@ -24,6 +24,7 @@ import { createSeo } from "@/components/Seo";
 import ProjectGallery from "@/components/ProjectGallery";
 import LivelyTrustStrip from "@/components/LivelyTrustStrip";
 import LivelyCategoryRail from "@/components/LivelyCategoryRail";
+import LivelyShowcase from "@/components/LivelyShowcase";
 
 export const metadata = createSeo({
   title: "Portfolio & Installations",
@@ -117,6 +118,7 @@ export default async function PortfolioPage() {
     };
 
   const heroShots = (galleryImages || []).filter((image) => image?.image_url).slice(0, 3);
+  const showcaseSlides = heroShots.map((shot) => ({ image: shot.image_url, kicker: shot.category || "Featured project", title: shot.title || "TruePower installation", description: shot.description || shot.location || "A completed TruePower project.", href: "#projects", action: "View projects" }));
 
   const processSteps = [
     {
@@ -313,6 +315,7 @@ export default async function PortfolioPage() {
       {/* ── STATS ── */}
       <LivelyTrustStrip items={["REAL PROJECT PHOTOS", "INSTALLATION SUPPORT", "TRUSTED ACROSS NAIROBI", "WHATSAPP QUOTES", "SEE IT. CHOOSE IT. INSTALL IT."]} />
       <LivelyCategoryRail items={[{ label: "All work", icon: "Camera", href: "#projects" }, { label: "Installations", icon: "Wrench", href: "#projects" }, { label: "Water systems", icon: "Droplets", href: "#projects" }, { label: "Solar projects", icon: "Sun", href: "#projects" }]} />
+      <LivelyShowcase slides={showcaseSlides} categories={(galleryImages || []).slice(0, 6).map((image) => ({ image: image.image_url, label: image.category || "Project", href: "#projects" }))} />
 
       <section className="border-b border-border bg-white">
         <div className="mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-12">

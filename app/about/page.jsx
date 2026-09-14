@@ -33,6 +33,7 @@ import { getPublishedBlogs } from "@/lib/blogs";
 import { getProducts } from "@/lib/products";
 import LivelyTrustStrip from "@/components/LivelyTrustStrip";
 import LivelyCategoryRail from "@/components/LivelyCategoryRail";
+import LivelyShowcase from "@/components/LivelyShowcase";
 
 export const metadata = createSeo({
   title: "About TruePower Kenya",
@@ -182,6 +183,8 @@ export default async function AboutPage() {
   const heroVisuals = [...galleryPreview, ...productPreview]
     .filter((item) => item?.image_url)
     .slice(0, 4);
+  const showcaseSlides = heroVisuals.map((item, index) => ({ image: item.image_url, kicker: index === 0 ? "TruePower in action" : "Explore TruePower", title: item.title || "Built for Kenyan conditions", description: item.description || "Real products, real projects, and practical support.", href: "/portfolio", action: "See our work" }));
+  const showcaseCategories = productPreview.map((item) => ({ image: item.image_url, label: item.title, href: "/shop" }));
 
   const storyParagraphs = story.paragraphs?.length
     ? story.paragraphs
@@ -337,6 +340,7 @@ export default async function AboutPage() {
 
       <LivelyTrustStrip />
       <LivelyCategoryRail items={[{ label: "Our story", icon: "Sparkles", href: "#story" }, { label: "What we do", icon: "Zap", href: "#services" }, { label: "Our projects", icon: "Camera", href: "/portfolio" }, { label: "Talk to us", icon: "MessageCircle", href: "https://wa.me/254701039256" }]} />
+      <LivelyShowcase slides={showcaseSlides} categories={showcaseCategories} />
 
       {/* STATS SECTION */}
       <section className="border-b border-gray-100 bg-white">
