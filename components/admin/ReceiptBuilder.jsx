@@ -250,6 +250,7 @@ export default function ReceiptBuilder() {
   const [products, setProducts] = useState([]);
   const [productQuery, setProductQuery] = useState("");
   const [showProductPicker, setShowProductPicker] = useState(false);
+  const [showMobilePreview, setShowMobilePreview] = useState(false);
   const [loadError, setLoadError] = useState("");
 
   const [business, setBusiness] = useState({
@@ -1775,6 +1776,9 @@ export default function ReceiptBuilder() {
             <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-3 shadow-sm sm:p-4">
               <div className="mb-3 flex items-center justify-between gap-3"><div><p className="text-sm font-bold text-slate-900">Ready to finish?</p><p className="text-xs text-sub">Choose how you want to deliver this receipt.</p></div><Printer size={18} className="text-blue-600" /></div>
               <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              <button type="button" onClick={() => setShowMobilePreview(true)} className="btn-outline justify-center lg:hidden">
+                <Printer size={16} /> Preview receipt
+              </button>
               <button
                 onClick={handleThermalPrint}
                 disabled={thermalPrinting || saving}
@@ -1799,9 +1803,9 @@ export default function ReceiptBuilder() {
             </div>
           </div>
 
-          <div className="order-1 min-w-0 lg:order-2 lg:sticky lg:top-24 lg:self-start">
-            <div className="rounded-[2rem] border border-slate-200 bg-slate-100/80 p-3 shadow-sm sm:p-5">
-              <div className="mb-3 flex items-center justify-between px-1 sm:mb-4"><div><p className="text-sm font-bold text-slate-900">Live preview</p><p className="text-xs text-sub">58mm thermal receipt</p></div><span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 shadow-sm">Ready</span></div>
+          <div className={showMobilePreview ? "fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 p-3 sm:p-6" : "order-1 absolute -left-[10000px] top-0 min-w-0 pointer-events-none lg:static lg:sticky lg:top-24 lg:order-2 lg:pointer-events-auto lg:self-start"}>
+            <div className="relative mx-auto rounded-[2rem] border border-slate-200 bg-slate-100/80 p-3 shadow-sm sm:p-5 lg:mx-0">
+              <div className="mb-3 flex items-center justify-between px-1 sm:mb-4"><div><p className="text-sm font-bold text-slate-900">Live preview</p><p className="text-xs text-sub">58mm thermal receipt</p></div><div className="flex items-center gap-2"><span className="rounded-full bg-white px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 shadow-sm">Ready</span><button type="button" onClick={() => setShowMobilePreview(false)} className="rounded-full border border-slate-300 bg-white px-3 py-1 text-xs font-semibold text-slate-700 lg:hidden">Back</button></div></div>
               <div
               ref={printRef}
               id="receipt-print-area"
