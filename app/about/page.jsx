@@ -145,6 +145,12 @@ const DEFAULT_VALUES = [
   },
 ];
 
+function showcaseProductName(name = "") {
+  const value = String(name).trim();
+  if (/industrial plug|industrial socket|ip44/i.test(value)) return "IP44 Industrial Plug 16A/32A";
+  return value.length > 42 ? `${value.split(/\s+/).slice(0, 6).join(" ")}…` : value;
+}
+
 const DEFAULT_HERO = {
   badge: "About TruePower",
   title: "Kenya's honest guide to hot water and power.",
@@ -177,7 +183,7 @@ export default async function AboutPage() {
     .map((product) => ({
       id: product.id,
       image_url: product.image_url || product.images?.[0],
-      title: product.name,
+      title: showcaseProductName(product.name),
       description: product.model || product.catLabel || product.category || "Product",
     }));
   const heroVisuals = [...galleryPreview, ...productPreview]
