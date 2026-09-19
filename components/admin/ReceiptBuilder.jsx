@@ -547,6 +547,25 @@ export default function ReceiptBuilder() {
     const rightEdge = pageWidth - margin;
     let y = 18;
 
+    try {
+      const logoResponse = await fetch("/logo.png", { cache: "no-store" });
+      if (logoResponse.ok) {
+        const logoBlob = await logoResponse.blob();
+        const logoDataUrl = await new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => resolve(null);
+          reader.readAsDataURL(logoBlob);
+        });
+        if (logoDataUrl) {
+          pdf.addImage(logoDataUrl, "PNG", pageWidth / 2 - 15, y, 30, 30);
+          y += 36;
+        }
+      }
+    } catch {
+      // The text header remains usable if the logo cannot be loaded offline.
+    }
+
     const centerText = (value, size, weight = "normal") => {
       pdf.setFont("helvetica", weight);
       pdf.setFontSize(size);
