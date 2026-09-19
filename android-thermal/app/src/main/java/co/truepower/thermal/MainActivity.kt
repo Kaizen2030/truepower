@@ -264,8 +264,8 @@ class MainActivity : AppCompatActivity() {
                         val words = beforeAmount.split(Regex("\\s+")).filter(String::isNotEmpty)
                         val quantity = words.lastOrNull { it.matches(Regex("(?i)x\\d+(\\.\\d+)?")) } ?: "x1"
                         val descriptionWords = words.filterNot { it.equals(quantity, ignoreCase = true) }
-                        val compactDescription = descriptionWords.take(5).joinToString(" ") +
-                            if (descriptionWords.size > 5) "..." else ""
+                        val compactDescription = descriptionWords.take(3).joinToString(" ") +
+                            if (descriptionWords.size > 3) "..." else ""
                         listOf("$compactDescription|${listOf(amount, quantity).filter(String::isNotEmpty).joinToString(" ")}")
                     }
                 }

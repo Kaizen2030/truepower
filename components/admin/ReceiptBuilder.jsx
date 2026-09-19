@@ -2201,20 +2201,16 @@ export default function ReceiptBuilder() {
         }
 
         .receipt-item-description span {
-          display: flex;
-          align-items: baseline;
+          display: block;
           line-height: 1.25;
-          min-width: 0;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          white-space: normal;
+          overflow: visible;
+          text-overflow: clip;
+          overflow-wrap: anywhere;
         }
 
         .receipt-leader {
-          flex: 1 1 auto;
-          min-width: 0.5rem;
-          margin: 0 0.25rem;
-          border-bottom: 1px dotted #000000;
+          display: none;
         }
 
         .receipt-item-price,
