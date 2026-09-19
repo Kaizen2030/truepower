@@ -582,14 +582,14 @@ export default function ReceiptBuilder() {
     };
 
     centerText(business.name || "TruePower Solutions", 18, "bold");
-    centerText(business.phone, 10, "normal");
-    centerText(String(business.website || "").replace(/^https?:\/\//i, ""), 10, "normal");
-    centerText(buildReceiptSubtitle(), 10, "normal");
+    centerText(business.phone, 11, "normal");
+    centerText(String(business.website || "").replace(/^https?:\/\//i, ""), 11, "normal");
+    centerText(buildReceiptSubtitle(), 11, "normal");
     divider(true);
 
     centerText("RECEIPT", 17, "bold");
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(10);
+    pdf.setFontSize(12);
     pdf.text(`Receipt No.: ${receiptNumber || ""}`, margin, y);
     pdf.text(`Date: ${receiptDate || ""}`, rightEdge, y, { align: "right" });
     y += 8;
@@ -604,7 +604,7 @@ export default function ReceiptBuilder() {
     const quantityX = rightEdge - 35;
     const descriptionWidth = contentWidth - 62;
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(10);
+    pdf.setFontSize(12);
     pdf.text("ITEM", margin, y);
     pdf.text("QTY", quantityX, y, { align: "center" });
     pdf.text("AMOUNT", amountX, y, { align: "right" });
@@ -612,7 +612,7 @@ export default function ReceiptBuilder() {
     divider();
 
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(10);
+    pdf.setFontSize(12);
     lines
       .filter((line) => line.description.trim())
       .forEach((line) => {
@@ -621,28 +621,28 @@ export default function ReceiptBuilder() {
         pdf.text(descriptionLines, margin, y);
         pdf.text(`x${Number(line.qty) || 0}`, quantityX, y, { align: "center" });
         pdf.text(`KSh ${formatMoney(amount)}`, amountX, y, { align: "right" });
-        y += Math.max(7, descriptionLines.length * 5 + 2);
+        y += Math.max(8, descriptionLines.length * 6 + 2);
       });
 
     y += 2;
     divider();
     pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(13);
+    pdf.setFontSize(15);
     pdf.text("TOTAL", margin, y);
     pdf.text(`KSh ${formatMoney(total)}`, amountX, y, { align: "right" });
     y += 9;
     divider(true);
 
-    centerText("TERMS & CONDITIONS", 11, "bold");
+    centerText("TERMS & CONDITIONS", 13, "bold");
     pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(10);
+    pdf.setFontSize(12);
     const noteLines = pdf.splitTextToSize(receiptNotes || "", contentWidth - 20);
     pdf.text(noteLines, pageWidth / 2, y, { align: "center" });
-    y += Math.max(8, noteLines.length * 5 + 5);
+    y += Math.max(9, noteLines.length * 6 + 5);
     divider(true);
-    centerText("Thank you for shopping with us.", 11, "bold");
-    centerText(`Call or WhatsApp: ${business.phone || ""}`, 10);
-    centerText(business.website, 10);
+    centerText("Thank you for shopping with us.", 13, "bold");
+    centerText(`Call or WhatsApp: ${business.phone || ""}`, 12);
+    centerText(business.website, 12);
 
     return pdf;
   }
