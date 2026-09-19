@@ -248,7 +248,10 @@ class MainActivity : AppCompatActivity() {
                     listOf(line)
                 }
                 inItems && line.isNotBlank() && !line.all { it == '-' } -> {
-                    val amountMatch = Regex("(?i)(KSh\\s+.*)$").find(line)
+                    // Receipts created by older web builds used `KSh40,000`,
+                    // while newer receipts use `KSh 40,000`. Accept both
+                    // forms so products are never dropped during conversion.
+                    val amountMatch = Regex("(?i)(KSh\\s*.*)$").find(line)
                     if (amountMatch == null) {
                         // Continuation lines are already represented by the
                         // compact first line of the same product.
@@ -305,14 +308,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         val preparedLines = separatedLines.flatMap { rawLine ->
-            val productParts = rawLine.split('|', limit = 2)
-            if (productParts.size == 2) {
-                val left = productParts[0].trim()
-                val right = productParts[1].trim()
-                val dots = ".".repeat(maxOf(1, 29 - left.length - right.length))
-                listOf("$left $dots $right")
-            } else listOf(rawLine)
+            // Product rows are rendered as two fixed columns below. Keep the
+            // separator intact so a long name cannot wrap over the amount.
+            listOf(rawLine)
         }.flatMap { rawLine ->
+            if (rawLine.contains('|')) return@flatMap listOf(rawLine)
             val words = rawLine.split(Regex("\\s+")).filter(String::isNotEmpty)
             if (words.isEmpty()) return@flatMap listOf("")
             val chunks = mutableListOf<String>()
@@ -333,7 +333,7 @@ class MainActivity : AppCompatActivity() {
             if (current.isNotEmpty()) chunks.add(current)
             chunks
         }
-        val lineHeight = 34
+        val lineHeight = 40
         val heightMm = maxOf(100, ((preparedLines.size * lineHeight + 36) * 25.4 / 203).toInt() + 4)
         val tspl = StringBuilder()
             .append("SIZE 58 mm,").append(heightMm).append(" mm\r\n")
@@ -346,6 +346,17 @@ class MainActivity : AppCompatActivity() {
             val line = rawLine.replace('"', '\'')
             if (line == "--------------------------------") {
                 tspl.append("BAR 4,").append(index * lineHeight + 18).append(",376,2\r\n")
+                return@forEachIndexed
+            }
+            val productParts = line.split('|', limit = 2)
+            if (productParts.size == 2) {
+                val description = productParts[0].trim().take(20)
+                val amount = productParts[1].trim()
+                val y = index * lineHeight + 12
+                tspl.append("TEXT 4,").append(y)
+                    .append(",\"1\",0,1,1,\"").append(description).append("\"\r\n")
+                tspl.append("TEXT 190,").append(y)
+                    .append(",\"1\",0,1,1,\"").append(amount).append("\"\r\n")
                 return@forEachIndexed
             }
             val productRow = line.contains("KSh", ignoreCase = true) && line.contains(".")

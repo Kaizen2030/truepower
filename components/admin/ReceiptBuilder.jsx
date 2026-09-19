@@ -532,7 +532,7 @@ export default function ReceiptBuilder() {
   );
   const total = subtotal;
 
-  async function createReceiptPdf() {
+  async function createReceiptPdf({ paper = "58mm" } = {}) {
     const source = printRef.current;
     if (!source) return null;
 
@@ -553,22 +553,31 @@ export default function ReceiptBuilder() {
       windowWidth: source.scrollWidth,
     });
 
-    const pageWidthMm = 58;
-    const pageHeightMm = Math.max(60, (canvas.height / canvas.width) * pageWidthMm);
+    const isA4 = paper === "a4";
+    const imageRatio = canvas.height / canvas.width;
+    const pageWidthMm = isA4 ? 210 : 58;
+    const pageHeightMm = isA4 ? 297 : Math.max(60, imageRatio * pageWidthMm);
     const pdf = new jsPDF({
       compress: true,
-      format: [pageWidthMm, pageHeightMm],
+      format: isA4 ? "a4" : [pageWidthMm, pageHeightMm],
       orientation: "portrait",
       unit: "mm",
     });
 
+    const imageWidthMm = isA4
+      ? Math.min(180, 277 / imageRatio)
+      : pageWidthMm;
+    const imageHeightMm = imageWidthMm * imageRatio;
+    const imageX = isA4 ? (pageWidthMm - imageWidthMm) / 2 : 0;
+    const imageY = isA4 ? Math.max(10, (pageHeightMm - imageHeightMm) / 2) : 0;
+
     pdf.addImage(
       canvas.toDataURL("image/png"),
       "PNG",
-      0,
-      0,
-      pageWidthMm,
-      pageHeightMm,
+      imageX,
+      imageY,
+      imageWidthMm,
+      imageHeightMm,
       undefined,
       "FAST",
     );
@@ -583,7 +592,7 @@ export default function ReceiptBuilder() {
         await saveReceipt();
       }
 
-      const pdf = await createReceiptPdf();
+      const pdf = await createReceiptPdf({ paper: "58mm" });
       if (pdf) {
         pdf.save(`TruePower-Receipt-${receiptNumber || "receipt"}.pdf`);
       }
@@ -666,7 +675,7 @@ export default function ReceiptBuilder() {
     }
 
     try {
-      const pdf = await createReceiptPdf();
+      const pdf = await createReceiptPdf({ paper: "58mm" });
       if (!pdf) return;
 
       const pdfUrl = pdf.output("bloburl");
@@ -677,6 +686,31 @@ export default function ReceiptBuilder() {
       }
     } catch (error) {
       alert(error.message || "Could not prepare the exact 58mm receipt PDF");
+    }
+  }
+
+  async function handleA4Print() {
+    if (!savedId) {
+      try {
+        await saveReceipt();
+      } catch (error) {
+        alert(error.message || "Could not save receipt before printing");
+        return;
+      }
+    }
+
+    try {
+      const pdf = await createReceiptPdf({ paper: "a4" });
+      if (!pdf) return;
+
+      const pdfUrl = pdf.output("bloburl");
+      const printWindow = window.open(pdfUrl, "_blank", "noopener,noreferrer");
+
+      if (!printWindow) {
+        pdf.save(`TruePower-Receipt-A4-${receiptNumber || "receipt"}.pdf`);
+      }
+    } catch (error) {
+      alert(error.message || "Could not prepare the A4 receipt PDF");
     }
   }
 
@@ -1801,6 +1835,9 @@ export default function ReceiptBuilder() {
               </button>
               <button onClick={handlePrint} className="btn-primary justify-center">
                 <Printer size={16} /> Open exact 58mm PDF
+              </button>
+              <button onClick={handleA4Print} className="btn-primary justify-center">
+                <Printer size={16} /> Print A4 PDF
               </button>
               <button onClick={handleDownloadPdf} disabled={exporting} className="btn-outline justify-center">
                 <Download size={16} /> {exporting ? "Exporting..." : "Download 58mm PDF"}
