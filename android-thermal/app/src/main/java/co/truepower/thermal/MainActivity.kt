@@ -258,15 +258,14 @@ class MainActivity : AppCompatActivity() {
                         emptyList()
                     } else {
                         val amount = amountMatch.groupValues[1].trim()
-                            .replace(Regex("(?i)KSh\\s*"), "KSh")
+                            .replace(Regex("(?i)KSh\\s*"), "KSh ")
                             .replace(Regex("\\.00\\b"), "")
                         val beforeAmount = line.substring(0, amountMatch.range.first).trim()
                         val words = beforeAmount.split(Regex("\\s+")).filter(String::isNotEmpty)
                         val quantity = words.lastOrNull { it.matches(Regex("(?i)x\\d+(\\.\\d+)?")) } ?: "x1"
                         val descriptionWords = words.filterNot { it.equals(quantity, ignoreCase = true) }
-                        val shortDescription = descriptionWords.take(3).joinToString(" ") +
-                            if (descriptionWords.size > 3) "..." else ""
-                        listOf("$shortDescription|${listOf(amount, quantity).filter(String::isNotEmpty).joinToString(" ")}")
+                        val fullDescription = descriptionWords.joinToString(" ")
+                        listOf("$fullDescription|${listOf(amount, quantity).filter(String::isNotEmpty).joinToString(" ")}")
                     }
                 }
                 else -> {
@@ -334,7 +333,34 @@ class MainActivity : AppCompatActivity() {
             chunks
         }
         val lineHeight = 40
-        val heightMm = maxOf(100, ((preparedLines.size * lineHeight + 36) * 25.4 / 203).toInt() + 4)
+        fun productDescriptionLines(value: String): List<String> {
+            val words = value.trim().split(Regex("\\s+")).filter(String::isNotEmpty)
+            if (words.isEmpty()) return listOf("")
+
+            val chunks = mutableListOf<String>()
+            var current = ""
+            words.forEach { word ->
+                if (word.length > 22) {
+                    if (current.isNotEmpty()) { chunks.add(current); current = "" }
+                    word.chunked(22).forEach { chunks.add(it) }
+                } else if (current.isEmpty()) {
+                    current = word
+                } else if (current.length + word.length + 1 <= 22) {
+                    current += " $word"
+                } else {
+                    chunks.add(current)
+                    current = word
+                }
+            }
+            if (current.isNotEmpty()) chunks.add(current)
+            return chunks.ifEmpty { listOf("") }
+        }
+
+        val renderedLineCount = preparedLines.sumOf { rawLine ->
+            val productParts = rawLine.split('|', limit = 2)
+            if (productParts.size == 2) productDescriptionLines(productParts[0]).size else 1
+        }
+        val heightMm = maxOf(100, ((renderedLineCount * lineHeight + 36) * 25.4 / 203).toInt() + 4)
         val tspl = StringBuilder()
             .append("SIZE 58 mm,").append(heightMm).append(" mm\r\n")
             .append("GAP 2 mm,0 mm\r\n")
@@ -342,22 +368,26 @@ class MainActivity : AppCompatActivity() {
             .append("DIRECTION 1\r\n")
             .append("CLS\r\n")
 
-        preparedLines.forEachIndexed { index, rawLine ->
+        var y = 12
+        preparedLines.forEach { rawLine ->
             val line = rawLine.replace('"', '\'')
             if (line == "--------------------------------") {
-                tspl.append("BAR 4,").append(index * lineHeight + 18).append(",376,2\r\n")
-                return@forEachIndexed
+                tspl.append("BAR 4,").append(y + 6).append(",376,2\r\n")
+                y += lineHeight
+                return@forEach
             }
             val productParts = line.split('|', limit = 2)
             if (productParts.size == 2) {
-                val description = productParts[0].trim().take(20)
+                val descriptions = productDescriptionLines(productParts[0])
                 val amount = productParts[1].trim()
-                val y = index * lineHeight + 12
-                tspl.append("TEXT 4,").append(y)
-                    .append(",\"1\",0,1,1,\"").append(description).append("\"\r\n")
+                descriptions.forEachIndexed { lineIndex, description ->
+                    tspl.append("TEXT 4,").append(y + lineIndex * lineHeight)
+                        .append(",\"1\",0,1,1,\"").append(description).append("\"\r\n")
+                }
                 tspl.append("TEXT 190,").append(y)
                     .append(",\"1\",0,1,1,\"").append(amount).append("\"\r\n")
-                return@forEachIndexed
+                y += descriptions.size * lineHeight
+                return@forEach
             }
             val productRow = line.contains("KSh", ignoreCase = true) && line.contains(".")
             val itemHeading = line.contains("ITEM", ignoreCase = true) &&
@@ -365,7 +395,7 @@ class MainActivity : AppCompatActivity() {
             val prominent = line.length <= 22 && (line.contains("Pochi", ignoreCase = true) ||
                 line.contains("WhatsApp", ignoreCase = true) || line.startsWith("+") ||
                 line.startsWith("www", ignoreCase = true) || line.startsWith("http", ignoreCase = true))
-            val large = !productRow && (index == 0 || line == "TRUEPOWER SOLUTIONS" || line == "RECEIPT" ||
+            val large = !productRow && (y == 12 || line == "TRUEPOWER SOLUTIONS" || line == "RECEIPT" ||
                 line.startsWith("TOTAL") || line == "TERMS & CONDITIONS")
             val font = when {
                 large -> "3"
@@ -380,8 +410,9 @@ class MainActivity : AppCompatActivity() {
                 else -> 8
             }
             val x = if (productRow) 4 else maxOf(4, (printableWidthDots - line.length * charWidth) / 2)
-            tspl.append("TEXT ").append(x).append(',').append(index * lineHeight + 12)
+            tspl.append("TEXT ").append(x).append(',').append(y)
                 .append(",\"").append(font).append("\",0,1,1,\"").append(line).append("\"\r\n")
+            y += lineHeight
         }
         tspl.append("PRINT 1,1\r\n")
         return tspl.toString().toByteArray(Charsets.US_ASCII)

@@ -532,7 +532,105 @@ export default function ReceiptBuilder() {
   );
   const total = subtotal;
 
+  async function createA4ReceiptPdf() {
+    const { jsPDF } = await import("jspdf");
+    const pdf = new jsPDF({
+      compress: true,
+      format: "a4",
+      orientation: "portrait",
+      unit: "mm",
+    });
+
+    const pageWidth = 210;
+    const margin = 18;
+    const contentWidth = pageWidth - margin * 2;
+    const rightEdge = pageWidth - margin;
+    let y = 18;
+
+    const centerText = (value, size, weight = "normal") => {
+      pdf.setFont("helvetica", weight);
+      pdf.setFontSize(size);
+      pdf.text(String(value || ""), pageWidth / 2, y, { align: "center" });
+      y += size * 0.5 + 3;
+    };
+
+    const divider = (dashed = false) => {
+      pdf.setDrawColor(80, 80, 80);
+      pdf.setLineDash(dashed ? [1, 1] : []);
+      pdf.line(margin, y, rightEdge, y);
+      pdf.setLineDash([]);
+      y += 6;
+    };
+
+    centerText(business.name || "TruePower Solutions", 18, "bold");
+    centerText(business.phone, 10, "normal");
+    centerText(String(business.website || "").replace(/^https?:\/\//i, ""), 10, "normal");
+    centerText(buildReceiptSubtitle(), 10, "normal");
+    divider(true);
+
+    centerText("RECEIPT", 17, "bold");
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+    pdf.text(`Receipt No.: ${receiptNumber || ""}`, margin, y);
+    pdf.text(`Date: ${receiptDate || ""}`, rightEdge, y, { align: "right" });
+    y += 8;
+    if (customerName || customerPhone) {
+      pdf.text(`Customer: ${customerName || "Walk-in customer"}`, margin, y);
+      if (customerPhone) pdf.text(customerPhone, rightEdge, y, { align: "right" });
+      y += 8;
+    }
+    divider();
+
+    const amountX = rightEdge;
+    const quantityX = rightEdge - 35;
+    const descriptionWidth = contentWidth - 62;
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(10);
+    pdf.text("ITEM", margin, y);
+    pdf.text("QTY", quantityX, y, { align: "center" });
+    pdf.text("AMOUNT", amountX, y, { align: "right" });
+    y += 4;
+    divider();
+
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+    lines
+      .filter((line) => line.description.trim())
+      .forEach((line) => {
+        const descriptionLines = pdf.splitTextToSize(line.description.trim(), descriptionWidth);
+        const amount = (Number(line.qty) || 0) * (Number(line.price) || 0);
+        pdf.text(descriptionLines, margin, y);
+        pdf.text(`x${Number(line.qty) || 0}`, quantityX, y, { align: "center" });
+        pdf.text(`KSh ${formatMoney(amount)}`, amountX, y, { align: "right" });
+        y += Math.max(7, descriptionLines.length * 5 + 2);
+      });
+
+    y += 2;
+    divider();
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(13);
+    pdf.text("TOTAL", margin, y);
+    pdf.text(`KSh ${formatMoney(total)}`, amountX, y, { align: "right" });
+    y += 9;
+    divider(true);
+
+    centerText("TERMS & CONDITIONS", 11, "bold");
+    pdf.setFont("helvetica", "normal");
+    pdf.setFontSize(10);
+    const noteLines = pdf.splitTextToSize(receiptNotes || "", contentWidth - 20);
+    pdf.text(noteLines, pageWidth / 2, y, { align: "center" });
+    y += Math.max(8, noteLines.length * 5 + 5);
+    divider(true);
+    centerText("Thank you for shopping with us.", 11, "bold");
+    centerText(`Call or WhatsApp: ${business.phone || ""}`, 10);
+    centerText(business.website, 10);
+
+    return pdf;
+  }
+
   async function createReceiptPdf({ paper = "58mm" } = {}) {
+    if (paper === "a4") return createA4ReceiptPdf();
+
     const source = printRef.current;
     if (!source) return null;
 
@@ -553,31 +651,23 @@ export default function ReceiptBuilder() {
       windowWidth: source.scrollWidth,
     });
 
-    const isA4 = paper === "a4";
     const imageRatio = canvas.height / canvas.width;
-    const pageWidthMm = isA4 ? 210 : 58;
-    const pageHeightMm = isA4 ? 297 : Math.max(60, imageRatio * pageWidthMm);
+    const pageWidthMm = 58;
+    const pageHeightMm = Math.max(60, imageRatio * pageWidthMm);
     const pdf = new jsPDF({
       compress: true,
-      format: isA4 ? "a4" : [pageWidthMm, pageHeightMm],
+      format: [pageWidthMm, pageHeightMm],
       orientation: "portrait",
       unit: "mm",
     });
 
-    const imageWidthMm = isA4
-      ? Math.min(180, 277 / imageRatio)
-      : pageWidthMm;
-    const imageHeightMm = imageWidthMm * imageRatio;
-    const imageX = isA4 ? (pageWidthMm - imageWidthMm) / 2 : 0;
-    const imageY = isA4 ? Math.max(10, (pageHeightMm - imageHeightMm) / 2) : 0;
-
     pdf.addImage(
       canvas.toDataURL("image/png"),
       "PNG",
-      imageX,
-      imageY,
-      imageWidthMm,
-      imageHeightMm,
+      0,
+      0,
+      pageWidthMm,
+      pageHeightMm,
       undefined,
       "FAST",
     );
