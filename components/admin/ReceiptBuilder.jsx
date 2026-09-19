@@ -2212,12 +2212,17 @@ export default function ReceiptBuilder() {
 
         .receipt-terms-text {
           margin: 0;
-          font-size: 0.82rem;
+          font-size: 0.74rem;
           color: #000000;
-          line-height: 1.45;
+          line-height: 1.35;
           white-space: pre-line;
           text-align: center;
-          font-weight: 800;
+          text-wrap: balance;
+          word-spacing: normal;
+          letter-spacing: normal;
+          overflow-wrap: normal;
+          word-break: normal;
+          font-weight: 700;
         }
 
         .receipt-terms-text strong,
