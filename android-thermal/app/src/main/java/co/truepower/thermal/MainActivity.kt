@@ -343,7 +343,9 @@ class MainActivity : AppCompatActivity() {
             words.forEach { word ->
                 if (word.length > 22) {
                     if (current.isNotEmpty()) { chunks.add(current); current = "" }
-                    word.chunked(22).forEach { chunks.add(it) }
+                    // Never split a product word into fragments. A whole word
+                    // is preferable to output such as `rainshowe` + `r`.
+                    chunks.add(word)
                 } else if (current.isEmpty()) {
                     current = word
                 } else if (current.length + word.length + 1 <= 22) {

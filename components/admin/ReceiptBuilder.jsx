@@ -2206,7 +2206,9 @@ export default function ReceiptBuilder() {
           white-space: normal;
           overflow: visible;
           text-overflow: clip;
-          overflow-wrap: anywhere;
+          overflow-wrap: normal;
+          word-break: keep-all;
+          hyphens: none;
         }
 
         .receipt-leader {
