@@ -533,7 +533,28 @@ export default function ReceiptBuilder() {
   const total = subtotal;
 
   async function createA4ReceiptPdf() {
-    const { jsPDF } = await import("jspdf");
+    const source = printRef.current;
+    if (!source) return null;
+
+    await waitForElementImages(source);
+
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import("html2canvas"),
+      import("jspdf"),
+    ]);
+
+    const canvas = await html2canvas(source, {
+      backgroundColor: "#ffffff",
+      height: source.scrollHeight,
+      logging: false,
+      scale: 2,
+      useCORS: true,
+      width: source.scrollWidth,
+      windowWidth: source.scrollWidth,
+    });
+
+    const receiptWidthMm = 58;
+    const receiptHeightMm = (canvas.height / canvas.width) * receiptWidthMm;
     const pdf = new jsPDF({
       compress: true,
       format: "a4",
@@ -541,108 +562,18 @@ export default function ReceiptBuilder() {
       unit: "mm",
     });
 
-    const pageWidth = 210;
-    const margin = 18;
-    const contentWidth = pageWidth - margin * 2;
-    const rightEdge = pageWidth - margin;
-    let y = 18;
-
-    try {
-      const logoResponse = await fetch("/logo.png", { cache: "no-store" });
-      if (logoResponse.ok) {
-        const logoBlob = await logoResponse.blob();
-        const logoDataUrl = await new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = () => resolve(null);
-          reader.readAsDataURL(logoBlob);
-        });
-        if (logoDataUrl) {
-          pdf.addImage(logoDataUrl, "PNG", pageWidth / 2 - 15, y, 30, 30);
-          y += 36;
-        }
-      }
-    } catch {
-      // The text header remains usable if the logo cannot be loaded offline.
-    }
-
-    const centerText = (value, size, weight = "normal") => {
-      pdf.setFont("helvetica", weight);
-      pdf.setFontSize(size);
-      pdf.text(String(value || ""), pageWidth / 2, y, { align: "center" });
-      y += size * 0.5 + 3;
-    };
-
-    const divider = (dashed = false) => {
-      pdf.setDrawColor(80, 80, 80);
-      pdf.setLineDash(dashed ? [1, 1] : []);
-      pdf.line(margin, y, rightEdge, y);
-      pdf.setLineDash([]);
-      y += 6;
-    };
-
-    centerText(business.name || "TruePower Solutions", 18, "bold");
-    centerText(business.phone, 11, "normal");
-    centerText(String(business.website || "").replace(/^https?:\/\//i, ""), 11, "normal");
-    centerText(buildReceiptSubtitle(), 11, "normal");
-    divider(true);
-
-    centerText("RECEIPT", 17, "bold");
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(12);
-    pdf.text(`Receipt No.: ${receiptNumber || ""}`, margin, y);
-    pdf.text(`Date: ${receiptDate || ""}`, rightEdge, y, { align: "right" });
-    y += 8;
-    if (customerName || customerPhone) {
-      pdf.text(`Customer: ${customerName || "Walk-in customer"}`, margin, y);
-      if (customerPhone) pdf.text(customerPhone, rightEdge, y, { align: "right" });
-      y += 8;
-    }
-    divider();
-
-    const amountX = rightEdge;
-    const quantityX = rightEdge - 35;
-    const descriptionWidth = contentWidth - 62;
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(12);
-    pdf.text("ITEM", margin, y);
-    pdf.text("QTY", quantityX, y, { align: "center" });
-    pdf.text("AMOUNT", amountX, y, { align: "right" });
-    y += 4;
-    divider();
-
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(12);
-    lines
-      .filter((line) => line.description.trim())
-      .forEach((line) => {
-        const descriptionLines = pdf.splitTextToSize(line.description.trim(), descriptionWidth);
-        const amount = (Number(line.qty) || 0) * (Number(line.price) || 0);
-        pdf.text(descriptionLines, margin, y);
-        pdf.text(`x${Number(line.qty) || 0}`, quantityX, y, { align: "center" });
-        pdf.text(`KSh ${formatMoney(amount)}`, amountX, y, { align: "right" });
-        y += Math.max(8, descriptionLines.length * 6 + 2);
-      });
-
-    y += 2;
-    divider();
-    pdf.setFont("helvetica", "bold");
-    pdf.setFontSize(15);
-    pdf.text("TOTAL", margin, y);
-    pdf.text(`KSh ${formatMoney(total)}`, amountX, y, { align: "right" });
-    y += 9;
-    divider(true);
-
-    centerText("TERMS & CONDITIONS", 13, "bold");
-    pdf.setFont("helvetica", "normal");
-    pdf.setFontSize(12);
-    const noteLines = pdf.splitTextToSize(receiptNotes || "", contentWidth - 20);
-    pdf.text(noteLines, pageWidth / 2, y, { align: "center" });
-    y += Math.max(9, noteLines.length * 6 + 5);
-    divider(true);
-    centerText("Thank you for shopping with us.", 13, "bold");
-    centerText(`Call or WhatsApp: ${business.phone || ""}`, 12);
-    centerText(business.website, 12);
+    // Keep the receipt at the exact Xprinter width and place it on the left
+    // side of the A4 sheet for easy trimming after printing.
+    pdf.addImage(
+      canvas.toDataURL("image/png"),
+      "PNG",
+      10,
+      10,
+      receiptWidthMm,
+      receiptHeightMm,
+      undefined,
+      "FAST",
+    );
 
     return pdf;
   }
