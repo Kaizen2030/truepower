@@ -2239,17 +2239,25 @@ export default function ReceiptBuilder() {
           display: flex;
           justify-content: space-between;
           align-items: center;
+          flex-wrap: nowrap;
+          gap: 0.5rem;
           margin-top: 0.45rem;
           padding-top: 0.25rem;
           border-top: 1px solid #334155;
-          font-size: 0.88rem;
+          font-size: 0.8rem;
           font-weight: 800;
           text-transform: uppercase;
           color: #0f172a;
         }
 
+        .receipt-total-row span,
         .receipt-total-row strong {
-          font-size: 1rem;
+          white-space: nowrap;
+        }
+
+        .receipt-total-row strong {
+          flex: 0 0 auto;
+          font-size: 0.86rem;
           color: #0f172a;
         }
 
